@@ -103,18 +103,48 @@ This creates the `staging` and `mart` schemas and deploys all 9 views in depende
 | `mart.v_industry_breakdown` | Industry View |
 | `mart.v_fulltime_parttime` | Full-time vs Part-time |
 
-### 5. Connect Power BI
+### 5. Build the Power BI report
 
-See [`powerbi/SETUP.md`](powerbi/SETUP.md) for the full step-by-step guide.
+The report is generated as a `.pbip` (Power BI Project) file — Power BI's text-based,
+version-controlled format. Power BI Desktop Nov 2022 or later is required.
 
-Short version:
+**5a. Set your server and database**
 
-1. Open Power BI Desktop
-2. For each file in `powerbi/queries/`, go to **Home > Transform Data > New Source > Blank Query > Advanced Editor** and paste the `.m` script (replace `<your-server>` and `<your-database>`)
-3. **Model view** — mark `DateTable[date]` as the date table; connect it to the date column in each fact query
-4. Add DAX measures from `powerbi/dax/measures.dax` into a blank `Measures` table
-5. Build the 4 report pages using the visual specs in `powerbi/SETUP.md`
-6. Export to PDF: **File > Export > Export to PDF**
+Edit the two constants at the top of `powerbi/build_report.py`:
+
+```python
+SERVER   = "<your-server>.database.windows.net"
+DATABASE = "<your-database>"
+```
+
+**5b. Generate the project files**
+
+```bash
+python powerbi/build_report.py
+```
+
+This writes five files:
+
+| File | Purpose |
+|---|---|
+| `powerbi/aus_job_dashboard.pbip` | Project entry point — open this in Power BI Desktop |
+| `powerbi/aus_job_dashboard.SemanticModel/model.bim` | Data model: 6 tables, 4 relationships, 15 DAX measures |
+| `powerbi/aus_job_dashboard.Report/report.json` | Report: 4 pages, 25 visuals |
+
+**5c. Open in Power BI Desktop**
+
+1. Double-click `powerbi/aus_job_dashboard.pbip`
+2. Sign in to Azure SQL when prompted
+3. Click **Home > Refresh** to load data
+4. Mark `DateTable` as the date table: right-click in Fields pane → **Mark as date table > Date**
+
+**5d. Export and publish**
+
+```
+File > Export > Export to PDF  →  save as powerbi/dashboard_export.pdf
+```
+
+Commit the PDF and link it on your portfolio.
 
 ---
 
@@ -132,9 +162,13 @@ aus_job_dashboard/
 │   ├── staging/            # 4 staging views
 │   └── mart/               # 4 mart views
 ├── powerbi/
-│   ├── SETUP.md            # Full Power BI setup guide
-│   ├── queries/            # Power Query M scripts (one per mart view + date table)
-│   └── dax/                # DAX measures for all 4 report pages
+│   ├── build_report.py     # Generates the .pbip project — run this
+│   ├── aus_job_dashboard.pbip             # Open in Power BI Desktop
+│   ├── aus_job_dashboard.SemanticModel/   # model.bim — tables, relationships, measures
+│   ├── aus_job_dashboard.Report/          # report.json — 4 pages, 25 visuals
+│   ├── SETUP.md            # Manual setup guide (alternative to build_report.py)
+│   ├── queries/            # Power Query M scripts
+│   └── dax/                # DAX measures reference
 ├── data/
 │   ├── raw/                # Downloaded ABS files (gitignored)
 │   └── processed/          # Cleaned CSVs (gitignored)
