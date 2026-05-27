@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "artifacts": [
+    {
+      "report": {
+        "path": "aus_job_dashboard.Report"
+      }
+    }
+  ],
+  "settings": {
+    "enableTmdlSave": false,
+    "enableAutoRecovery": false
+  }
+}

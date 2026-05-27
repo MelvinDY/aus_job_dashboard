@@ -1,0 +1,8 @@
+{
+  "version": "4.0",
+  "datasetReference": {
+    "byPath": {
+      "path": "../aus_job_dashboard.SemanticModel"
+    }
+  }
+}

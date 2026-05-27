@@ -1,0 +1,273 @@
+{
+  "id": "45c47109-c7d6-4cb7-a82f-57c7087fe716",
+  "resourcePackages": [],
+  "sections": [
+    {
+      "id": "8ecdbac6",
+      "name": "ReportSection1",
+      "displayName": "Overview",
+      "ordinal": 0,
+      "visualContainers": [
+        {
+          "x": 20,
+          "y": 12,
+          "z": 1000,
+          "width": 840,
+          "height": 44,
+          "config": "{\"name\":\"8f5f260a\",\"layouts\":[{\"id\":0,\"position\":{\"x\":20,\"y\":12,\"width\":840,\"height\":44,\"z\":1000,\"tabOrder\":1000}}],\"singleVisual\":{\"visualType\":\"textbox\",\"objects\":{\"general\":[{\"properties\":{\"paragraphs\":[{\"textRuns\":[{\"value\":\"Australian Labour Market — Overview\",\"textRunStyle\":{\"fontWeight\":\"bold\",\"fontSize\":\"18pt\",\"color\":{\"solid\":{\"color\":\"#1F2D3D\"}}}}],\"paragraphStyle\":{\"textAnchor\":\"Middle\"}}]}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 880,
+          "y": 12,
+          "z": 2000,
+          "width": 380,
+          "height": 44,
+          "config": "{\"name\":\"c04ba998\",\"layouts\":[{\"id\":0,\"position\":{\"x\":880,\"y\":12,\"width\":380,\"height\":44,\"z\":2000,\"tabOrder\":2000}}],\"singleVisual\":{\"visualType\":\"slicer\",\"projections\":{\"Field\":[{\"queryRef\":\"DateTable.Date\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"d0\",\"Entity\":\"DateTable\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d0\"}},\"Property\":\"Date\"},\"Name\":\"DateTable.Date\"}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 20,
+          "y": 72,
+          "z": 3000,
+          "width": 860,
+          "height": 290,
+          "config": "{\"name\":\"56947897\",\"layouts\":[{\"id\":0,\"position\":{\"x\":20,\"y\":72,\"width\":860,\"height\":290,\"z\":3000,\"tabOrder\":3000}}],\"singleVisual\":{\"visualType\":\"lineChart\",\"projections\":{\"Category\":[{\"queryRef\":\"DateTable.Date\",\"active\":true}],\"Y\":[{\"queryRef\":\"NationalOverview.unemployment_rate_pct\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"d0\",\"Entity\":\"DateTable\",\"Type\":0},{\"Name\":\"n1\",\"Entity\":\"NationalOverview\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d0\"}},\"Property\":\"Date\"},\"Name\":\"DateTable.Date\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"n1\"}},\"Property\":\"unemployment_rate_pct\"},\"Name\":\"NationalOverview.unemployment_rate_pct\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Unemployment Rate Trend (Seasonally Adjusted)'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 900,
+          "y": 72,
+          "z": 4000,
+          "width": 180,
+          "height": 120,
+          "config": "{\"name\":\"777c9299\",\"layouts\":[{\"id\":0,\"position\":{\"x\":900,\"y\":72,\"width\":180,\"height\":120,\"z\":4000,\"tabOrder\":4000}}],\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"_Measures.[Latest Unemployment Rate]\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"_0\",\"Entity\":\"_Measures\",\"Type\":0}],\"Select\":[{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"_0\"}},\"Property\":\"Latest Unemployment Rate\"},\"Name\":\"_Measures.[Latest Unemployment Rate]\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Unemployment Rate'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 1090,
+          "y": 72,
+          "z": 5000,
+          "width": 178,
+          "height": 120,
+          "config": "{\"name\":\"c784ed05\",\"layouts\":[{\"id\":0,\"position\":{\"x\":1090,\"y\":72,\"width\":178,\"height\":120,\"z\":5000,\"tabOrder\":5000}}],\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"_Measures.[Latest Employed Thousands]\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"_0\",\"Entity\":\"_Measures\",\"Type\":0}],\"Select\":[{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"_0\"}},\"Property\":\"Latest Employed Thousands\"},\"Name\":\"_Measures.[Latest Employed Thousands]\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Employed ('000)'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 900,
+          "y": 202,
+          "z": 6000,
+          "width": 180,
+          "height": 120,
+          "config": "{\"name\":\"c7c1c806\",\"layouts\":[{\"id\":0,\"position\":{\"x\":900,\"y\":202,\"width\":180,\"height\":120,\"z\":6000,\"tabOrder\":6000}}],\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"_Measures.[Latest Participation Rate]\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"_0\",\"Entity\":\"_Measures\",\"Type\":0}],\"Select\":[{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"_0\"}},\"Property\":\"Latest Participation Rate\"},\"Name\":\"_Measures.[Latest Participation Rate]\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Participation Rate'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 1090,
+          "y": 202,
+          "z": 7000,
+          "width": 178,
+          "height": 120,
+          "config": "{\"name\":\"8fb36925\",\"layouts\":[{\"id\":0,\"position\":{\"x\":1090,\"y\":202,\"width\":178,\"height\":120,\"z\":7000,\"tabOrder\":7000}}],\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"_Measures.[Latest Emp To Pop Ratio]\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"_0\",\"Entity\":\"_Measures\",\"Type\":0}],\"Select\":[{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"_0\"}},\"Property\":\"Latest Emp To Pop Ratio\"},\"Name\":\"_Measures.[Latest Emp To Pop Ratio]\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Emp-to-Pop Ratio'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 20,
+          "y": 378,
+          "z": 8000,
+          "width": 860,
+          "height": 310,
+          "config": "{\"name\":\"3167fa8a\",\"layouts\":[{\"id\":0,\"position\":{\"x\":20,\"y\":378,\"width\":860,\"height\":310,\"z\":8000,\"tabOrder\":8000}}],\"singleVisual\":{\"visualType\":\"lineChart\",\"projections\":{\"Category\":[{\"queryRef\":\"DateTable.Date\",\"active\":true}],\"Y\":[{\"queryRef\":\"NationalOverview.employed_thousands\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"d0\",\"Entity\":\"DateTable\",\"Type\":0},{\"Name\":\"n1\",\"Entity\":\"NationalOverview\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d0\"}},\"Property\":\"Date\"},\"Name\":\"DateTable.Date\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"n1\"}},\"Property\":\"employed_thousands\"},\"Name\":\"NationalOverview.employed_thousands\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Employed Persons ('000, Seasonally Adjusted)'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 900,
+          "y": 378,
+          "z": 9000,
+          "width": 180,
+          "height": 120,
+          "config": "{\"name\":\"6be44f78\",\"layouts\":[{\"id\":0,\"position\":{\"x\":900,\"y\":378,\"width\":180,\"height\":120,\"z\":9000,\"tabOrder\":9000}}],\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"_Measures.[Unemployment Rate MoM Change]\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"_0\",\"Entity\":\"_Measures\",\"Type\":0}],\"Select\":[{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"_0\"}},\"Property\":\"Unemployment Rate MoM Change\"},\"Name\":\"_Measures.[Unemployment Rate MoM Change]\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Unemp. Rate MoM Δ'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 1090,
+          "y": 378,
+          "z": 10000,
+          "width": 178,
+          "height": 120,
+          "config": "{\"name\":\"1f54611f\",\"layouts\":[{\"id\":0,\"position\":{\"x\":1090,\"y\":378,\"width\":178,\"height\":120,\"z\":10000,\"tabOrder\":10000}}],\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"_Measures.[Employed YoY Change Pct]\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"_0\",\"Entity\":\"_Measures\",\"Type\":0}],\"Select\":[{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"_0\"}},\"Property\":\"Employed YoY Change Pct\"},\"Name\":\"_Measures.[Employed YoY Change Pct]\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Employed YoY %'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        }
+      ],
+      "config": "{\"relationships\":[],\"objects\":{\"outspacePane\":[{\"properties\":{\"expanded\":{\"expr\":{\"Literal\":{\"Value\":\"false\"}}}}}],\"background\":[{\"properties\":{\"color\":{\"solid\":{\"color\":\"#F5F5F5\"}},\"transparency\":{\"expr\":{\"Literal\":{\"Value\":\"0\"}}}}}]}}",
+      "filters": "[]"
+    },
+    {
+      "id": "8813f2dd",
+      "name": "ReportSection2",
+      "displayName": "State Breakdown",
+      "ordinal": 1,
+      "visualContainers": [
+        {
+          "x": 20,
+          "y": 12,
+          "z": 11000,
+          "width": 1240,
+          "height": 44,
+          "config": "{\"name\":\"a1bcba95\",\"layouts\":[{\"id\":0,\"position\":{\"x\":20,\"y\":12,\"width\":1240,\"height\":44,\"z\":11000,\"tabOrder\":11000}}],\"singleVisual\":{\"visualType\":\"textbox\",\"objects\":{\"general\":[{\"properties\":{\"paragraphs\":[{\"textRuns\":[{\"value\":\"State Breakdown — Unemployment & Employment\",\"textRunStyle\":{\"fontWeight\":\"bold\",\"fontSize\":\"18pt\",\"color\":{\"solid\":{\"color\":\"#1F2D3D\"}}}}],\"paragraphStyle\":{\"textAnchor\":\"Middle\"}}]}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 20,
+          "y": 72,
+          "z": 12000,
+          "width": 600,
+          "height": 350,
+          "config": "{\"name\":\"320bc4b7\",\"layouts\":[{\"id\":0,\"position\":{\"x\":20,\"y\":72,\"width\":600,\"height\":350,\"z\":12000,\"tabOrder\":12000}}],\"singleVisual\":{\"visualType\":\"map\",\"projections\":{\"Location\":[{\"queryRef\":\"UnemploymentByState.region_name\",\"active\":true}],\"Size\":[{\"queryRef\":\"UnemploymentByState.unemployment_rate_pct\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"u0\",\"Entity\":\"UnemploymentByState\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"u0\"}},\"Property\":\"region_name\"},\"Name\":\"UnemploymentByState.region_name\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"u0\"}},\"Property\":\"unemployment_rate_pct\"},\"Name\":\"UnemploymentByState.unemployment_rate_pct\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Unemployment Rate by State (Latest Month)'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 640,
+          "y": 72,
+          "z": 13000,
+          "width": 620,
+          "height": 350,
+          "config": "{\"name\":\"bd5b7bf9\",\"layouts\":[{\"id\":0,\"position\":{\"x\":640,\"y\":72,\"width\":620,\"height\":350,\"z\":13000,\"tabOrder\":13000}}],\"singleVisual\":{\"visualType\":\"clusteredBarChart\",\"projections\":{\"Category\":[{\"queryRef\":\"UnemploymentByState.region_name\",\"active\":true}],\"Y\":[{\"queryRef\":\"UnemploymentByState.unemployment_rate_pct\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"u0\",\"Entity\":\"UnemploymentByState\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"u0\"}},\"Property\":\"region_name\"},\"Name\":\"UnemploymentByState.region_name\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"u0\"}},\"Property\":\"unemployment_rate_pct\"},\"Name\":\"UnemploymentByState.unemployment_rate_pct\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Unemployment Rate by State (Latest Month)'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 20,
+          "y": 440,
+          "z": 14000,
+          "width": 1240,
+          "height": 258,
+          "config": "{\"name\":\"5aa98eb7\",\"layouts\":[{\"id\":0,\"position\":{\"x\":20,\"y\":440,\"width\":1240,\"height\":258,\"z\":14000,\"tabOrder\":14000}}],\"singleVisual\":{\"visualType\":\"lineChart\",\"projections\":{\"Category\":[{\"queryRef\":\"DateTable.Date\",\"active\":true}],\"Y\":[{\"queryRef\":\"UnemploymentByState.unemployment_rate_pct\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"d0\",\"Entity\":\"DateTable\",\"Type\":0},{\"Name\":\"u1\",\"Entity\":\"UnemploymentByState\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d0\"}},\"Property\":\"Date\"},\"Name\":\"DateTable.Date\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"u1\"}},\"Property\":\"unemployment_rate_pct\"},\"Name\":\"UnemploymentByState.unemployment_rate_pct\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'State Unemployment Rate Trend'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        }
+      ],
+      "config": "{\"relationships\":[],\"objects\":{\"outspacePane\":[{\"properties\":{\"expanded\":{\"expr\":{\"Literal\":{\"Value\":\"false\"}}}}}],\"background\":[{\"properties\":{\"color\":{\"solid\":{\"color\":\"#F5F5F5\"}},\"transparency\":{\"expr\":{\"Literal\":{\"Value\":\"0\"}}}}}]}}",
+      "filters": "[]"
+    },
+    {
+      "id": "1db3233a",
+      "name": "ReportSection3",
+      "displayName": "Industry View",
+      "ordinal": 2,
+      "visualContainers": [
+        {
+          "x": 20,
+          "y": 12,
+          "z": 15000,
+          "width": 1240,
+          "height": 44,
+          "config": "{\"name\":\"06fac6c1\",\"layouts\":[{\"id\":0,\"position\":{\"x\":20,\"y\":12,\"width\":1240,\"height\":44,\"z\":15000,\"tabOrder\":15000}}],\"singleVisual\":{\"visualType\":\"textbox\",\"objects\":{\"general\":[{\"properties\":{\"paragraphs\":[{\"textRuns\":[{\"value\":\"Industry View — Sector Employment\",\"textRunStyle\":{\"fontWeight\":\"bold\",\"fontSize\":\"18pt\",\"color\":{\"solid\":{\"color\":\"#1F2D3D\"}}}}],\"paragraphStyle\":{\"textAnchor\":\"Middle\"}}]}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 20,
+          "y": 72,
+          "z": 16000,
+          "width": 560,
+          "height": 620,
+          "config": "{\"name\":\"b64120f1\",\"layouts\":[{\"id\":0,\"position\":{\"x\":20,\"y\":72,\"width\":560,\"height\":620,\"z\":16000,\"tabOrder\":16000}}],\"singleVisual\":{\"visualType\":\"clusteredBarChart\",\"projections\":{\"Category\":[{\"queryRef\":\"IndustryBreakdown.industry_name\",\"active\":true}],\"Y\":[{\"queryRef\":\"IndustryBreakdown.employed_thousands\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"i0\",\"Entity\":\"IndustryBreakdown\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"i0\"}},\"Property\":\"industry_name\"},\"Name\":\"IndustryBreakdown.industry_name\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"i0\"}},\"Property\":\"employed_thousands\"},\"Name\":\"IndustryBreakdown.employed_thousands\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Employed Persons by Industry — Latest Year ('000)'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 600,
+          "y": 72,
+          "z": 17000,
+          "width": 660,
+          "height": 310,
+          "config": "{\"name\":\"65934ae1\",\"layouts\":[{\"id\":0,\"position\":{\"x\":600,\"y\":72,\"width\":660,\"height\":310,\"z\":17000,\"tabOrder\":17000}}],\"singleVisual\":{\"visualType\":\"lineChart\",\"projections\":{\"Category\":[{\"queryRef\":\"DateTable.Date\",\"active\":true}],\"Y\":[{\"queryRef\":\"IndustryBreakdown.employed_thousands\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"d0\",\"Entity\":\"DateTable\",\"Type\":0},{\"Name\":\"i1\",\"Entity\":\"IndustryBreakdown\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d0\"}},\"Property\":\"Date\"},\"Name\":\"DateTable.Date\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"i1\"}},\"Property\":\"employed_thousands\"},\"Name\":\"IndustryBreakdown.employed_thousands\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Employment Trend — Focus Industries'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 600,
+          "y": 400,
+          "z": 18000,
+          "width": 660,
+          "height": 292,
+          "config": "{\"name\":\"e7dc061e\",\"layouts\":[{\"id\":0,\"position\":{\"x\":600,\"y\":400,\"width\":660,\"height\":292,\"z\":18000,\"tabOrder\":18000}}],\"singleVisual\":{\"visualType\":\"tableEx\",\"projections\":{\"Values\":[{\"queryRef\":\"IndustryBreakdown.industry_name\",\"active\":true},{\"queryRef\":\"IndustryBreakdown.employed_thousands\",\"active\":true},{\"queryRef\":\"IndustryBreakdown.employed_yoy_change_pct\",\"active\":true},{\"queryRef\":\"IndustryBreakdown.growth_category\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"i0\",\"Entity\":\"IndustryBreakdown\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"i0\"}},\"Property\":\"industry_name\"},\"Name\":\"IndustryBreakdown.industry_name\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"i0\"}},\"Property\":\"employed_thousands\"},\"Name\":\"IndustryBreakdown.employed_thousands\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"i0\"}},\"Property\":\"employed_yoy_change_pct\"},\"Name\":\"IndustryBreakdown.employed_yoy_change_pct\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"i0\"}},\"Property\":\"growth_category\"},\"Name\":\"IndustryBreakdown.growth_category\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Industry Detail'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        }
+      ],
+      "config": "{\"relationships\":[],\"objects\":{\"outspacePane\":[{\"properties\":{\"expanded\":{\"expr\":{\"Literal\":{\"Value\":\"false\"}}}}}],\"background\":[{\"properties\":{\"color\":{\"solid\":{\"color\":\"#F5F5F5\"}},\"transparency\":{\"expr\":{\"Literal\":{\"Value\":\"0\"}}}}}]}}",
+      "filters": "[]"
+    },
+    {
+      "id": "dd888e26",
+      "name": "ReportSection4",
+      "displayName": "Full-time vs Part-time",
+      "ordinal": 3,
+      "visualContainers": [
+        {
+          "x": 20,
+          "y": 12,
+          "z": 19000,
+          "width": 1240,
+          "height": 44,
+          "config": "{\"name\":\"c040be7a\",\"layouts\":[{\"id\":0,\"position\":{\"x\":20,\"y\":12,\"width\":1240,\"height\":44,\"z\":19000,\"tabOrder\":19000}}],\"singleVisual\":{\"visualType\":\"textbox\",\"objects\":{\"general\":[{\"properties\":{\"paragraphs\":[{\"textRuns\":[{\"value\":\"Full-time vs Part-time Employment\",\"textRunStyle\":{\"fontWeight\":\"bold\",\"fontSize\":\"18pt\",\"color\":{\"solid\":{\"color\":\"#1F2D3D\"}}}}],\"paragraphStyle\":{\"textAnchor\":\"Middle\"}}]}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 20,
+          "y": 72,
+          "z": 20000,
+          "width": 800,
+          "height": 300,
+          "config": "{\"name\":\"fdc86126\",\"layouts\":[{\"id\":0,\"position\":{\"x\":20,\"y\":72,\"width\":800,\"height\":300,\"z\":20000,\"tabOrder\":20000}}],\"singleVisual\":{\"visualType\":\"areaChart\",\"projections\":{\"Category\":[{\"queryRef\":\"DateTable.Date\",\"active\":true}],\"Y\":[{\"queryRef\":\"FulltimeParttime.employed_fulltime_thousands\",\"active\":true},{\"queryRef\":\"FulltimeParttime.employed_parttime_thousands\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"d0\",\"Entity\":\"DateTable\",\"Type\":0},{\"Name\":\"f1\",\"Entity\":\"FulltimeParttime\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d0\"}},\"Property\":\"Date\"},\"Name\":\"DateTable.Date\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"f1\"}},\"Property\":\"employed_fulltime_thousands\"},\"Name\":\"FulltimeParttime.employed_fulltime_thousands\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"f1\"}},\"Property\":\"employed_parttime_thousands\"},\"Name\":\"FulltimeParttime.employed_parttime_thousands\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Full-time vs Part-time Employed — Persons ('000)'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 840,
+          "y": 72,
+          "z": 21000,
+          "width": 200,
+          "height": 130,
+          "config": "{\"name\":\"b82af608\",\"layouts\":[{\"id\":0,\"position\":{\"x\":840,\"y\":72,\"width\":200,\"height\":130,\"z\":21000,\"tabOrder\":21000}}],\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"_Measures.[Latest FT Share Persons]\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"_0\",\"Entity\":\"_Measures\",\"Type\":0}],\"Select\":[{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"_0\"}},\"Property\":\"Latest FT Share Persons\"},\"Name\":\"_Measures.[Latest FT Share Persons]\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Full-time Share'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 1050,
+          "y": 72,
+          "z": 22000,
+          "width": 210,
+          "height": 130,
+          "config": "{\"name\":\"9166eccd\",\"layouts\":[{\"id\":0,\"position\":{\"x\":1050,\"y\":72,\"width\":210,\"height\":130,\"z\":22000,\"tabOrder\":22000}}],\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"_Measures.[Latest PT Share Persons]\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"_0\",\"Entity\":\"_Measures\",\"Type\":0}],\"Select\":[{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"_0\"}},\"Property\":\"Latest PT Share Persons\"},\"Name\":\"_Measures.[Latest PT Share Persons]\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Part-time Share'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 840,
+          "y": 212,
+          "z": 23000,
+          "width": 200,
+          "height": 130,
+          "config": "{\"name\":\"2974b112\",\"layouts\":[{\"id\":0,\"position\":{\"x\":840,\"y\":212,\"width\":200,\"height\":130,\"z\":23000,\"tabOrder\":23000}}],\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"_Measures.[FT Share YoY Change]\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"_0\",\"Entity\":\"_Measures\",\"Type\":0}],\"Select\":[{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"_0\"}},\"Property\":\"FT Share YoY Change\"},\"Name\":\"_Measures.[FT Share YoY Change]\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'FT Share YoY Δ'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 20,
+          "y": 390,
+          "z": 24000,
+          "width": 800,
+          "height": 298,
+          "config": "{\"name\":\"30b1f76a\",\"layouts\":[{\"id\":0,\"position\":{\"x\":20,\"y\":390,\"width\":800,\"height\":298,\"z\":24000,\"tabOrder\":24000}}],\"singleVisual\":{\"visualType\":\"lineChart\",\"projections\":{\"Category\":[{\"queryRef\":\"DateTable.Date\",\"active\":true}],\"Y\":[{\"queryRef\":\"FulltimeParttime.fulltime_share_pct\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"d0\",\"Entity\":\"DateTable\",\"Type\":0},{\"Name\":\"f1\",\"Entity\":\"FulltimeParttime\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d0\"}},\"Property\":\"Date\"},\"Name\":\"DateTable.Date\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"f1\"}},\"Property\":\"fulltime_share_pct\"},\"Name\":\"FulltimeParttime.fulltime_share_pct\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Full-time Share (%) by Sex Over Time'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 840,
+          "y": 352,
+          "z": 25000,
+          "width": 420,
+          "height": 336,
+          "config": "{\"name\":\"03f23b28\",\"layouts\":[{\"id\":0,\"position\":{\"x\":840,\"y\":352,\"width\":420,\"height\":336,\"z\":25000,\"tabOrder\":25000}}],\"singleVisual\":{\"visualType\":\"clusteredColumnChart\",\"projections\":{\"Category\":[{\"queryRef\":\"FulltimeParttime.sex_label\",\"active\":true}],\"Y\":[{\"queryRef\":\"FulltimeParttime.employed_total_thousands\",\"active\":true}],\"Series\":[{\"queryRef\":\"FulltimeParttime.sex_label\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"f0\",\"Entity\":\"FulltimeParttime\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"f0\"}},\"Property\":\"sex_label\"},\"Name\":\"FulltimeParttime.sex_label\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"f0\"}},\"Property\":\"employed_total_thousands\"},\"Name\":\"FulltimeParttime.employed_total_thousands\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"f0\"}},\"Property\":\"sex_label\"},\"Name\":\"FulltimeParttime.sex_label\"}]},\"visualContainerObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Employment by Sex (Latest Month)'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[]"
+        }
+      ],
+      "config": "{\"relationships\":[],\"objects\":{\"outspacePane\":[{\"properties\":{\"expanded\":{\"expr\":{\"Literal\":{\"Value\":\"false\"}}}}}],\"background\":[{\"properties\":{\"color\":{\"solid\":{\"color\":\"#F5F5F5\"}},\"transparency\":{\"expr\":{\"Literal\":{\"Value\":\"0\"}}}}}]}}",
+      "filters": "[]"
+    }
+  ],
+  "config": "{\"objects\":{},\"defaultDrillFilterOtherVisuals\":true}",
+  "filters": "[]"
+}
