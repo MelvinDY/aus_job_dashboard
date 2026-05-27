@@ -1,0 +1,24 @@
+# Environment & secrets
+.env
+*.env
+
+# Raw and processed data (large files, not for version control)
+data/raw/
+data/processed/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# Power BI
+*.pbix
+
+# OS
+.DS_Store
+Thumbs.db
