@@ -7,8 +7,5 @@
       }
     }
   ],
-  "settings": {
-    "enableTmdlSave": false,
-    "enableAutoRecovery": false
-  }
+  "settings": {}
 }
