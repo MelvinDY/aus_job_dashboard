@@ -24,8 +24,8 @@ import uuid
 from pathlib import Path
 
 # ── Configure before running ─────────────────────────────────────────────────
-SERVER   = "<your-server>.database.windows.net"
-DATABASE = "<your-database>"
+SERVER   = "melvind.database.windows.net"
+DATABASE = "aus_job_dashboard"
 # ─────────────────────────────────────────────────────────────────────────────
 
 BASE_DIR   = Path(__file__).resolve().parent

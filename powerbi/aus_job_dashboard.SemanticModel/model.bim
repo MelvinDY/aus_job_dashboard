@@ -272,7 +272,7 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = Sql.Database(\"<your-server>.database.windows.net\", \"<your-database>\", [Query = \"SELECT * FROM mart.v_national_overview ORDER BY date\"]),",
+                "    Source = Sql.Database(\"melvind.database.windows.net\", \"aus_job_dashboard\", [Query = \"SELECT * FROM mart.v_national_overview ORDER BY date\"]),",
                 "    #\"T\" = Table.TransformColumnTypes(Source, {{\"date\", type date}, {\"employed_thousands\", type number}, {\"unemployed_thousands\", type number}, {\"unemployment_rate_pct\", type number}, {\"participation_rate_pct\", type number}, {\"emp_to_pop_ratio_pct\", type number}, {\"unemployment_rate_mom_change_ppt\", type number}, {\"employed_mom_change_pct\", type number}, {\"unemployment_rate_yoy_change_ppt\", type number}, {\"employed_yoy_change_pct\", type number}, {\"is_latest_month\", Int64.Type}})",
                 "in",
                 "    #\"T\""
@@ -399,7 +399,7 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = Sql.Database(\"<your-server>.database.windows.net\", \"<your-database>\", [Query = \"SELECT * FROM mart.v_unemployment_by_state ORDER BY region_name, date\"]),",
+                "    Source = Sql.Database(\"melvind.database.windows.net\", \"aus_job_dashboard\", [Query = \"SELECT * FROM mart.v_unemployment_by_state ORDER BY region_name, date\"]),",
                 "    #\"T\" = Table.TransformColumnTypes(Source, {{\"date\", type date}, {\"region_code\", type text}, {\"region_name\", type text}, {\"employed_thousands\", type number}, {\"unemployment_rate_pct\", type number}, {\"unemployment_rate_mom_change_ppt\", type number}, {\"unemployment_rate_yoy_change_ppt\", type number}, {\"employed_yoy_change_pct\", type number}, {\"is_latest_month\", Int64.Type}})",
                 "in",
                 "    #\"T\""
@@ -536,7 +536,7 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = Sql.Database(\"<your-server>.database.windows.net\", \"<your-database>\", [Query = \"SELECT * FROM mart.v_industry_breakdown ORDER BY industry_name, date\"]),",
+                "    Source = Sql.Database(\"melvind.database.windows.net\", \"aus_job_dashboard\", [Query = \"SELECT * FROM mart.v_industry_breakdown ORDER BY industry_name, date\"]),",
                 "    #\"T\" = Table.TransformColumnTypes(Source, {{\"date\", type date}, {\"industry_code\", type text}, {\"industry_name\", type text}, {\"employed_thousands\", type number}, {\"employed_yoy_change_thousands\", type number}, {\"employed_yoy_change_pct\", type number}, {\"rank_by_employment\", Int64.Type}, {\"growth_category\", type text}, {\"is_focus_industry\", Int64.Type}, {\"is_latest_year\", Int64.Type}})",
                 "in",
                 "    #\"T\""
@@ -688,7 +688,7 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = Sql.Database(\"<your-server>.database.windows.net\", \"<your-database>\", [Query = \"SELECT * FROM mart.v_fulltime_parttime ORDER BY sex_label, date\"]),",
+                "    Source = Sql.Database(\"melvind.database.windows.net\", \"aus_job_dashboard\", [Query = \"SELECT * FROM mart.v_fulltime_parttime ORDER BY sex_label, date\"]),",
                 "    #\"T\" = Table.TransformColumnTypes(Source, {{\"date\", type date}, {\"sex_code\", type text}, {\"sex_label\", type text}, {\"employed_fulltime_thousands\", type number}, {\"employed_parttime_thousands\", type number}, {\"employed_total_thousands\", type number}, {\"fulltime_share_pct\", type number}, {\"parttime_share_pct\", type number}, {\"fulltime_share_yoy_change_ppt\", type number}, {\"employed_total_yoy_change_pct\", type number}, {\"is_latest_month\", Int64.Type}})",
                 "in",
                 "    #\"T\""
@@ -821,7 +821,7 @@
     ],
     "relationships": [
       {
-        "name": "afe57fb7-f9a8-414c-9d5b-e9ce2ec986b7",
+        "name": "4c418ea8-68dd-4d37-aeed-4d2b34b81ef3",
         "fromTable": "NationalOverview",
         "fromColumn": "date",
         "toTable": "DateTable",
@@ -829,7 +829,7 @@
         "crossFilteringBehavior": "oneDirection"
       },
       {
-        "name": "e3782930-10fa-4f71-94cd-f1e977bfd393",
+        "name": "a3ecff73-d3c3-4522-80df-f8b6709d8242",
         "fromTable": "UnemploymentByState",
         "fromColumn": "date",
         "toTable": "DateTable",
@@ -837,7 +837,7 @@
         "crossFilteringBehavior": "oneDirection"
       },
       {
-        "name": "374f056c-a27b-4e7b-9a34-9f957484368f",
+        "name": "69ed4449-beec-40a3-bdb4-e8bb4e8bb916",
         "fromTable": "FulltimeParttime",
         "fromColumn": "date",
         "toTable": "DateTable",
@@ -845,7 +845,7 @@
         "crossFilteringBehavior": "oneDirection"
       },
       {
-        "name": "803c70a4-6701-4525-97e9-caedd0dedf41",
+        "name": "489f5dae-706c-4e75-8d56-73cda857be8e",
         "fromTable": "IndustryBreakdown",
         "fromColumn": "date",
         "toTable": "DateTable",
