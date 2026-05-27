@@ -1,0 +1,168 @@
+// measures.dax
+// All DAX measures for the Australian Labour Market Analytics Dashboard.
+// Paste each measure into Power BI via: Modelling tab > New Measure
+// Table assignment is noted in each section header.
+
+// ── HOW TO ADD MEASURES ──────────────────────────────────────────────────
+// 1. Home > Enter Data — create a blank table called "Measures" (1 column, delete the row)
+// 2. Select the Measures table in the Fields pane
+// 3. Modelling > New Measure — paste each formula below
+
+
+// ════════════════════════════════════════════════════════════════════════
+// TABLE: Measures   (overview page KPIs)
+// ════════════════════════════════════════════════════════════════════════
+
+Latest Unemployment Rate =
+VAR LatestDate = MAX(NationalOverview[date])
+RETURN
+    CALCULATE(
+        MAX(NationalOverview[unemployment_rate_pct]),
+        NationalOverview[date] = LatestDate
+    )
+
+Latest Employed Thousands =
+VAR LatestDate = MAX(NationalOverview[date])
+RETURN
+    CALCULATE(
+        MAX(NationalOverview[employed_thousands]),
+        NationalOverview[date] = LatestDate
+    )
+
+Latest Participation Rate =
+VAR LatestDate = MAX(NationalOverview[date])
+RETURN
+    CALCULATE(
+        MAX(NationalOverview[participation_rate_pct]),
+        NationalOverview[date] = LatestDate
+    )
+
+Latest Emp To Pop Ratio =
+VAR LatestDate = MAX(NationalOverview[date])
+RETURN
+    CALCULATE(
+        MAX(NationalOverview[emp_to_pop_ratio_pct]),
+        NationalOverview[date] = LatestDate
+    )
+
+Unemployment Rate MoM Change =
+VAR LatestDate = MAX(NationalOverview[date])
+RETURN
+    CALCULATE(
+        MAX(NationalOverview[unemployment_rate_mom_change_ppt]),
+        NationalOverview[date] = LatestDate
+    )
+
+Unemployment Rate YoY Change =
+VAR LatestDate = MAX(NationalOverview[date])
+RETURN
+    CALCULATE(
+        MAX(NationalOverview[unemployment_rate_yoy_change_ppt]),
+        NationalOverview[date] = LatestDate
+    )
+
+Employed YoY Change Pct =
+VAR LatestDate = MAX(NationalOverview[date])
+RETURN
+    CALCULATE(
+        MAX(NationalOverview[employed_yoy_change_pct]),
+        NationalOverview[date] = LatestDate
+    )
+
+// Formatted strings for KPI card subtitles
+Unemployment Rate Subtitle =
+VAR Change = [Unemployment Rate MoM Change]
+VAR Arrow  = IF(Change > 0, "▲", IF(Change < 0, "▼", "–"))
+VAR Abs    = ABS(Change)
+RETURN Arrow & " " & FORMAT(Abs, "0.0") & " ppt vs last month"
+
+Employed Subtitle =
+VAR Change = [Employed YoY Change Pct]
+VAR Arrow  = IF(Change > 0, "▲", IF(Change < 0, "▼", "–"))
+VAR Abs    = ABS(Change)
+RETURN Arrow & " " & FORMAT(Abs, "0.0") & "% vs last year"
+
+
+// ════════════════════════════════════════════════════════════════════════
+// TABLE: Measures   (state breakdown page)
+// ════════════════════════════════════════════════════════════════════════
+
+Selected State Unemployment Rate =
+// Used in map tooltip and bar chart label.
+// Works with slicer on region_name.
+CALCULATE(
+    MAX(UnemploymentByState[unemployment_rate_pct]),
+    UnemploymentByState[is_latest_month] = 1
+)
+
+Selected State Employed Thousands =
+CALCULATE(
+    MAX(UnemploymentByState[employed_thousands]),
+    UnemploymentByState[is_latest_month] = 1
+)
+
+National Avg Unemployment Rate =
+// Benchmark line for state bar chart.
+VAR LatestDate = MAX(NationalOverview[date])
+RETURN
+    CALCULATE(
+        MAX(NationalOverview[unemployment_rate_pct]),
+        NationalOverview[date] = LatestDate
+    )
+
+
+// ════════════════════════════════════════════════════════════════════════
+// TABLE: Measures   (industry view page)
+// ════════════════════════════════════════════════════════════════════════
+
+Latest Industry Employed =
+// Employed persons in the most recent year for selected industry.
+CALCULATE(
+    MAX(IndustryBreakdown[employed_thousands]),
+    IndustryBreakdown[is_latest_year] = 1
+)
+
+Latest Industry YoY Change =
+CALCULATE(
+    MAX(IndustryBreakdown[employed_yoy_change_pct]),
+    IndustryBreakdown[is_latest_year] = 1
+)
+
+Industry YoY Change Label =
+// Colour-coded label for matrix/table visual.
+VAR Change = [Latest Industry YoY Change]
+VAR Arrow  = IF(Change > 0, "▲", IF(Change < 0, "▼", "–"))
+RETURN Arrow & " " & FORMAT(ABS(Change), "0.0") & "%"
+
+
+// ════════════════════════════════════════════════════════════════════════
+// TABLE: Measures   (full-time vs part-time page)
+// ════════════════════════════════════════════════════════════════════════
+
+Latest FT Share Persons =
+CALCULATE(
+    MAX(FulltimeParttime[fulltime_share_pct]),
+    FulltimeParttime[is_latest_month] = 1,
+    FulltimeParttime[sex_label] = "Persons"
+)
+
+Latest PT Share Persons =
+CALCULATE(
+    MAX(FulltimeParttime[parttime_share_pct]),
+    FulltimeParttime[is_latest_month] = 1,
+    FulltimeParttime[sex_label] = "Persons"
+)
+
+FT Share YoY Change =
+VAR LatestDate = MAX(FulltimeParttime[date])
+RETURN
+    CALCULATE(
+        MAX(FulltimeParttime[fulltime_share_yoy_change_ppt]),
+        FulltimeParttime[date] = LatestDate,
+        FulltimeParttime[sex_label] = "Persons"
+    )
+
+FT Share Subtitle =
+VAR Change = [FT Share YoY Change]
+VAR Arrow  = IF(Change > 0, "▲", IF(Change < 0, "▼", "–"))
+RETURN Arrow & " " & FORMAT(ABS(Change), "0.0") & " ppt vs last year"
