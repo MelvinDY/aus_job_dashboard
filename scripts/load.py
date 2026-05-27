@@ -176,8 +176,7 @@ def load_table(engine, df: pd.DataFrame, table: str) -> int:
         schema=schema,
         if_exists="append",
         index=False,
-        chunksize=1000,
-        method="multi",
+        chunksize=100,
     )
     return len(df)
 
