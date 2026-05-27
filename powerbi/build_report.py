@@ -678,7 +678,7 @@ def main():
     write_json(BASE_DIR / "aus_job_dashboard.pbip", {
         "version": "1.0",
         "artifacts": [{"report": {"path": "aus_job_dashboard.Report"}}],
-        "settings": {"enableTmdlSave": False, "enableAutoRecovery": False},
+        "settings": {},
     })
 
     # Semantic model
