@@ -59,6 +59,8 @@
         "columns": [
           {
             "name": "Date",
+            "type": "calculatedTableColumn",
+            "sourceColumn": "Date",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
@@ -72,6 +74,8 @@
           },
           {
             "name": "year",
+            "type": "calculatedTableColumn",
+            "sourceColumn": "year",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
@@ -84,6 +88,8 @@
           },
           {
             "name": "month_number",
+            "type": "calculatedTableColumn",
+            "sourceColumn": "month_number",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
@@ -96,6 +102,8 @@
           },
           {
             "name": "month_name",
+            "type": "calculatedTableColumn",
+            "sourceColumn": "month_name",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
@@ -107,6 +115,8 @@
           },
           {
             "name": "month_year",
+            "type": "calculatedTableColumn",
+            "sourceColumn": "month_year",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
@@ -118,6 +128,8 @@
           },
           {
             "name": "quarter",
+            "type": "calculatedTableColumn",
+            "sourceColumn": "quarter",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
@@ -129,6 +141,8 @@
           },
           {
             "name": "financial_year",
+            "type": "calculatedTableColumn",
+            "sourceColumn": "financial_year",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
@@ -140,6 +154,8 @@
           },
           {
             "name": "is_first_of_month",
+            "type": "calculatedTableColumn",
+            "sourceColumn": "is_first_of_month",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
@@ -164,10 +180,10 @@
                 "    \"month_number\",     MONTH([Date]),",
                 "    \"month_name\",       FORMAT([Date], \"MMM\"),",
                 "    \"month_year\",       FORMAT([Date], \"MMM yyyy\"),",
-                "    \"quarter\",          \"Q\" & FORMAT([Date], \"Q\"),",
+                "    \"quarter\",          \"Q\" & FORMAT(ROUNDUP(MONTH([Date]) / 3, 0), \"0\"),",
                 "    \"financial_year\",   IF(MONTH([Date])>=7,",
-                "                          \"FY\"&TEXT(YEAR([Date])+1,\"0\"),",
-                "                          \"FY\"&TEXT(YEAR([Date]),\"0\")),",
+                "                          \"FY\" & FORMAT(YEAR([Date])+1, \"0\"),",
+                "                          \"FY\" & FORMAT(YEAR([Date]), \"0\")),",
                 "    \"is_first_of_month\",IF(DAY([Date])=1, 1, 0)",
                 ")"
               ],

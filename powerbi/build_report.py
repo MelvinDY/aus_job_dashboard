@@ -186,10 +186,10 @@ def _make_model() -> dict:
                     '    "month_number",     MONTH([Date]),',
                     '    "month_name",       FORMAT([Date], "MMM"),',
                     '    "month_year",       FORMAT([Date], "MMM yyyy"),',
-                    '    "quarter",          "Q" & FORMAT([Date], "Q"),',
+                    '    "quarter",          "Q" & FORMAT(ROUNDUP(MONTH([Date]) / 3, 0), "0"),',
                     '    "financial_year",   IF(MONTH([Date])>=7,',
-                    '                          "FY"&TEXT(YEAR([Date])+1,"0"),',
-                    '                          "FY"&TEXT(YEAR([Date]),"0")),',
+                    '                          "FY" & FORMAT(YEAR([Date])+1, "0"),',
+                    '                          "FY" & FORMAT(YEAR([Date]), "0")),',
                     '    "is_first_of_month",IF(DAY([Date])=1, 1, 0)',
                     ")",
                 ],
@@ -205,6 +205,12 @@ def _make_model() -> dict:
             }
         ],
     }
+
+    # Calculated-table columns must declare their type and source column,
+    # otherwise Power BI rejects the model ("missing the SourceColumn property").
+    for _col in date_table["columns"]:
+        _col["type"] = "calculatedTableColumn"
+        _col["sourceColumn"] = _col["name"]
 
     # ── DAX measures ──────────────────────────────────────────────────────────
     measures = [
