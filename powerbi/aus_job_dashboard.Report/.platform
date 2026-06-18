@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "aus_job_dashboard"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "de4d78c0-ffe6-4422-ba19-18bc4f950036"
+  }
+}
