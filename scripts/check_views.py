@@ -5,6 +5,9 @@ from sqlalchemy import create_engine, text
 
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 conn_str = os.getenv("AZURE_SQL_CONN_STR")
+# Serverless Azure SQL auto-pauses; allow time for resume on first connect.
+if "timeout" not in conn_str.lower():
+    conn_str = conn_str.rstrip(";") + ";Connection Timeout=120"
 engine = create_engine(f"mssql+pyodbc:///?odbc_connect={conn_str}")
 
 with engine.connect() as conn:
