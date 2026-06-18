@@ -22,6 +22,7 @@ env/
 .pbi/localSettings.json
 .pbi/cache.abf
 **/.pbi/localSettings.json
+**/.pbi/cache.abf
 
 # OS
 .DS_Store

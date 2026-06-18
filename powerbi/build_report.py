@@ -58,7 +58,7 @@ def _col(name, dtype, source=None, fmt=None, hidden=False):
     return c
 
 
-def _m_table(name: str, sql: str, columns: list) -> dict:
+def _m_table(name: str, sql: str, columns: list, description: str = None) -> dict:
     """Build a table definition backed by an Azure SQL M query."""
     transforms = ", ".join(
         "{" + f'"{c["name"]}", {c["mtype"]}' + "}"
@@ -84,8 +84,10 @@ def _m_table(name: str, sql: str, columns: list) -> dict:
             col["formatString"] = c["fmt"]
         if c.get("hidden"):
             col["isHidden"] = True
+        if c.get("desc"):
+            col["description"] = c["desc"]
         cols.append(col)
-    return {
+    table = {
         "name": name,
         "columns": cols,
         "partitions": [{
@@ -94,13 +96,16 @@ def _m_table(name: str, sql: str, columns: list) -> dict:
             "source": {"type": "m", "expression": expression},
         }],
     }
+    if description:
+        table["description"] = description
+    return table
 
 
 def _make_model() -> dict:
     # ── Column specs ──────────────────────────────────────────────────────────
-    def c(name, dtype, mtype, fmt=None, hidden=False):
+    def c(name, dtype, mtype, fmt=None, hidden=False, desc=None):
         return {"name": name, "dataType": dtype, "mtype": mtype,
-                "fmt": fmt, "hidden": hidden}
+                "fmt": fmt, "hidden": hidden, "desc": desc}
 
     national_cols = [
         c("date",                          "dateTime", "type date",   "Short Date"),
@@ -117,10 +122,13 @@ def _make_model() -> dict:
     ]
     state_cols = [
         c("date",                          "dateTime", "type date",   "Short Date"),
-        c("region_code",                   "string",   "type text"),
-        c("region_name",                   "string",   "type text"),
-        c("employed_thousands",            "double",   "type number", "#,0.0"),
-        c("unemployment_rate_pct",         "double",   "type number", "0.00"),
+        c("region_code",                   "string",   "type text",   hidden=True),
+        c("region_name",                   "string",   "type text",
+          desc="State or territory name."),
+        c("employed_thousands",            "double",   "type number", "#,0.0",
+          desc="Employed persons in thousands, seasonally adjusted."),
+        c("unemployment_rate_pct",         "double",   "type number", "0.00",
+          desc="Unemployment rate (%), seasonally adjusted."),
         c("unemployment_rate_mom_change_ppt","double", "type number", "+0.000;-0.000"),
         c("unemployment_rate_yoy_change_ppt","double", "type number", "+0.000;-0.000"),
         c("employed_yoy_change_pct",       "double",   "type number", "+0.00;-0.00"),
@@ -128,20 +136,26 @@ def _make_model() -> dict:
     ]
     industry_cols = [
         c("date",                          "dateTime", "type date",   "Short Date"),
-        c("industry_code",                 "string",   "type text"),
-        c("industry_name",                 "string",   "type text"),
-        c("employed_thousands",            "double",   "type number", "#,0.0"),
+        c("industry_code",                 "string",   "type text",   hidden=True),
+        c("industry_name",                 "string",   "type text",
+          desc="ANZSIC industry division name."),
+        c("employed_thousands",            "double",   "type number", "#,0.0",
+          desc="Employed persons in thousands."),
         c("employed_yoy_change_thousands", "double",   "type number", "#,0.0"),
-        c("employed_yoy_change_pct",       "double",   "type number", "+0.00;-0.00"),
+        c("employed_yoy_change_pct",       "double",   "type number", "+0.00;-0.00",
+          desc="Year-on-year change in employed persons (%)."),
         c("rank_by_employment",            "int64",    "Int64.Type"),
-        c("growth_category",               "string",   "type text"),
+        c("growth_category",               "string",   "type text",
+          desc="Growing / shrinking classification based on YoY change."),
         c("is_focus_industry",             "int64",    "Int64.Type",  hidden=True),
         c("is_latest_year",                "int64",    "Int64.Type",  hidden=True),
     ]
     ftpt_cols = [
         c("date",                          "dateTime", "type date",   "Short Date"),
         c("sex_code",                      "string",   "type text",   hidden=True),
-        c("sex_label",                     "string",   "type text"),
+        c("sex_label",                     "string",   "type text",
+          desc="Persons, Male or Female. Persons = Male + Female, so filter to one "
+               "to avoid double-counting in totals."),
         c("employed_fulltime_thousands",   "double",   "type number", "#,0.0"),
         c("employed_parttime_thousands",   "double",   "type number", "#,0.0"),
         c("employed_total_thousands",      "double",   "type number", "#,0.0"),
@@ -152,9 +166,15 @@ def _make_model() -> dict:
         c("is_latest_month",               "int64",    "Int64.Type",  hidden=True),
     ]
 
-    # ── DateTable (calculated) ────────────────────────────────────────────────
+    # ── DateTable (Power Query / M) ───────────────────────────────────────────
+    # Built as an M table rather than a DAX calculated table: relationships that
+    # target a calculated-table column fail PBIP validation ("invalid column ID"),
+    # whereas M-table columns are real storage columns that bind cleanly — the
+    # same pattern the fact tables use.
     date_table = {
         "name": "DateTable",
+        "description": "Contiguous daily date dimension (1978→today) for time "
+                       "intelligence; marked as the model date table.",
         "columns": [
             {"name": "Date",             "dataType": "dateTime", "isKey": True,
              "formatString": "Short Date",
@@ -178,20 +198,23 @@ def _make_model() -> dict:
             "name": "DateTable",
             "mode": "import",
             "source": {
-                "type": "calculated",
+                "type": "m",
                 "expression": [
-                    "ADDCOLUMNS(",
-                    '    CALENDAR(DATE(1978,1,1), TODAY()),',
-                    '    "year",             YEAR([Date]),',
-                    '    "month_number",     MONTH([Date]),',
-                    '    "month_name",       FORMAT([Date], "MMM"),',
-                    '    "month_year",       FORMAT([Date], "MMM yyyy"),',
-                    '    "quarter",          "Q" & FORMAT(ROUNDUP(MONTH([Date]) / 3, 0), "0"),',
-                    '    "financial_year",   IF(MONTH([Date])>=7,',
-                    '                          "FY" & FORMAT(YEAR([Date])+1, "0"),',
-                    '                          "FY" & FORMAT(YEAR([Date]), "0")),',
-                    '    "is_first_of_month",IF(DAY([Date])=1, 1, 0)',
-                    ")",
+                    "let",
+                    "    Start = #date(1978, 1, 1),",
+                    "    End = Date.From(DateTime.LocalNow()),",
+                    "    Dates = List.Dates(Start, Duration.Days(End - Start) + 1, #duration(1, 0, 0, 0)),",
+                    '    Source = Table.FromList(Dates, Splitter.SplitByNothing(), {"Date"}),',
+                    '    Typed = Table.TransformColumnTypes(Source, {{"Date", type date}}),',
+                    '    A1 = Table.AddColumn(Typed, "year", each Date.Year([Date]), Int64.Type),',
+                    '    A2 = Table.AddColumn(A1, "month_number", each Date.Month([Date]), Int64.Type),',
+                    '    A3 = Table.AddColumn(A2, "month_name", each Date.ToText([Date], [Format="MMM", Culture="en-AU"]), type text),',
+                    '    A4 = Table.AddColumn(A3, "month_year", each Date.ToText([Date], [Format="MMM yyyy", Culture="en-AU"]), type text),',
+                    '    A5 = Table.AddColumn(A4, "quarter", each "Q" & Text.From(Date.QuarterOfYear([Date])), type text),',
+                    '    A6 = Table.AddColumn(A5, "financial_year", each if Date.Month([Date]) >= 7 then "FY" & Text.From(Date.Year([Date]) + 1) else "FY" & Text.From(Date.Year([Date])), type text),',
+                    '    A7 = Table.AddColumn(A6, "is_first_of_month", each if Date.Day([Date]) = 1 then 1 else 0, Int64.Type)',
+                    "in",
+                    "    A7",
                 ],
             },
         }],
@@ -206,10 +229,8 @@ def _make_model() -> dict:
         ],
     }
 
-    # Calculated-table columns must declare their type and source column,
-    # otherwise Power BI rejects the model ("missing the SourceColumn property").
+    # M-table columns map to a query column via sourceColumn (no calc-column type).
     for _col in date_table["columns"]:
-        _col["type"] = "calculatedTableColumn"
         _col["sourceColumn"] = _col["name"]
 
     # ── DAX measures ──────────────────────────────────────────────────────────
@@ -235,14 +256,17 @@ def _make_model() -> dict:
          "+0.00;-0.00", "Overview KPIs"),
         ("Unemployment Rate Subtitle",
          'VAR Ch=[Unemployment Rate MoM Change] VAR Ar=IF(Ch>0,"▲",IF(Ch<0,"▼","–")) RETURN Ar&" "&FORMAT(ABS(Ch),"0.0")&" ppt vs last month"',
-         None, "Overview KPIs"),
+         None, "Overview KPIs",
+         "Arrow + month-on-month change in percentage points, for the KPI card subtitle."),
         ("Employed Subtitle",
          'VAR Ch=[Employed YoY Change Pct] VAR Ar=IF(Ch>0,"▲",IF(Ch<0,"▼","–")) RETURN Ar&" "&FORMAT(ABS(Ch),"0.0")&"% vs last year"',
-         None, "Overview KPIs"),
+         None, "Overview KPIs",
+         "Arrow + year-on-year employment change (%), for the KPI card subtitle."),
         # State KPIs
         ("National Avg Unemployment Rate",
          'VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[unemployment_rate_pct]),NationalOverview[date]=D)',
-         "0.00", "State KPIs"),
+         "0.00", "State KPIs",
+         "National unemployment rate at the latest month (reference line for the state view)."),
         # Industry KPIs
         ("Latest Industry Employed",
          'CALCULATE(MAX(IndustryBreakdown[employed_thousands]),IndustryBreakdown[is_latest_year]=1)',
@@ -253,10 +277,12 @@ def _make_model() -> dict:
         # FT/PT KPIs
         ('Latest FT Share Persons',
          'CALCULATE(MAX(FulltimeParttime[fulltime_share_pct]),FulltimeParttime[is_latest_month]=1,FulltimeParttime[sex_label]="Persons")',
-         "0.00", "FT PT KPIs"),
+         "0.00", "FT PT KPIs",
+         "Full-time share of employment (%) for Persons at the latest month."),
         ('Latest PT Share Persons',
          'CALCULATE(MAX(FulltimeParttime[parttime_share_pct]),FulltimeParttime[is_latest_month]=1,FulltimeParttime[sex_label]="Persons")',
-         "0.00", "FT PT KPIs"),
+         "0.00", "FT PT KPIs",
+         "Part-time share of employment (%) for Persons at the latest month."),
         ('FT Share YoY Change',
          'VAR D=MAX(FulltimeParttime[date]) RETURN CALCULATE(MAX(FulltimeParttime[fulltime_share_yoy_change_ppt]),FulltimeParttime[date]=D,FulltimeParttime[sex_label]="Persons")',
          "+0.000;-0.000", "FT PT KPIs"),
@@ -266,10 +292,14 @@ def _make_model() -> dict:
     ]
 
     measure_defs = []
-    for name, expr, fmt, folder in measures:
+    for row in measures:
+        name, expr, fmt, folder = row[0], row[1], row[2], row[3]
+        desc = row[4] if len(row) > 4 else None
         m = {"name": name, "expression": expr, "displayFolder": folder}
         if fmt:
             m["formatString"] = fmt
+        if desc:
+            m["description"] = desc
         measure_defs.append(m)
 
     # Empty partition for _Measures table
@@ -314,16 +344,25 @@ def _make_model() -> dict:
                 date_table,
                 _m_table("NationalOverview",
                          "SELECT * FROM mart.v_national_overview ORDER BY date",
-                         national_cols),
+                         national_cols,
+                         description="National monthly labour-force headline series "
+                                     "(seasonally adjusted): employment, unemployment "
+                                     "rate, participation rate and MoM/YoY changes."),
                 _m_table("UnemploymentByState",
                          "SELECT * FROM mart.v_unemployment_by_state ORDER BY region_name, date",
-                         state_cols),
+                         state_cols,
+                         description="Monthly unemployment rate and employment by "
+                                     "state/territory."),
                 _m_table("IndustryBreakdown",
                          "SELECT * FROM mart.v_industry_breakdown ORDER BY industry_name, date",
-                         industry_cols),
+                         industry_cols,
+                         description="Employed persons by ANZSIC industry division with "
+                                     "year-on-year growth and growing/shrinking category."),
                 _m_table("FulltimeParttime",
                          "SELECT * FROM mart.v_fulltime_parttime ORDER BY sex_label, date",
-                         ftpt_cols),
+                         ftpt_cols,
+                         description="Full-time vs part-time employment split by sex "
+                                     "(Persons = Male + Female)."),
                 measures_table,
             ],
             "relationships": relationships,
@@ -350,8 +389,37 @@ def _next_z() -> int:
     return _z
 
 
+def _lit(v) -> str:
+    """A DAX literal as embedded in a report filter expression — integers become
+    long literals (e.g. 1L), everything else a quoted string."""
+    if isinstance(v, bool):
+        return "true" if v else "false"
+    if isinstance(v, int):
+        return f"{v}L"
+    return "'" + str(v).replace("'", "''") + "'"
+
+
+def _categorical_filter(table: str, col: str, values: list, *, exclude: bool = False) -> dict:
+    """Visual-level categorical filter: keep (or exclude) rows where col ∈ values."""
+    alias = "f"
+    column_ref = {"Column": {"Expression": {"SourceRef": {"Source": alias}}, "Property": col}}
+    in_cond = {"In": {"Expressions": [column_ref],
+                      "Values": [[{"Literal": {"Value": _lit(v)}}] for v in values]}}
+    condition = {"Not": {"Expression": in_cond}} if exclude else in_cond
+    return {
+        "name": str(uuid.uuid4()),
+        "expression": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": col}},
+        "filter": {
+            "Version": 2,
+            "From": [{"Name": alias, "Entity": table, "Type": 0}],
+            "Where": [{"Condition": condition}],
+        },
+        "type": "Categorical",
+    }
+
+
 def _visual_container(x, y, w, h, visual_type, projections, title=None,
-                       objects=None, extra_config=None):
+                       objects=None, extra_config=None, vfilters=None):
     """
     Build a report visual container dict.
     projections: list of (slot, table, column_or_measure, is_measure)
@@ -364,6 +432,11 @@ def _visual_container(x, y, w, h, visual_type, projections, title=None,
     select_list = []
     proj_map = {}
 
+    # Slots that aggregate a numeric value. A bare column here produces an
+    # invalid visual query, so columns in these slots are wrapped in an
+    # Aggregation (Average for rates/shares, Sum for counts).
+    agg_slots = {"Y", "Size"}
+
     for slot, table, field, is_measure in projections:
         alias = table[0].lower() + str(len(from_map))
         if table not in from_map:
@@ -373,11 +446,21 @@ def _visual_container(x, y, w, h, visual_type, projections, title=None,
             alias = from_map[table]
 
         src_ref = {"SourceRef": {"Source": alias}}
-        query_ref = f"{table}.[{field}]" if is_measure else f"{table}.{field}"
 
         if is_measure:
+            query_ref = f"{table}.[{field}]"
             sel = {"Measure": {"Expression": src_ref, "Property": field}, "Name": query_ref}
+        elif slot in agg_slots:
+            avg = any(k in field for k in ("rate", "pct", "ratio", "share", "ppt"))
+            func = 1 if avg else 0          # 1 = Average, 0 = Sum
+            fname = "Average" if avg else "Sum"
+            query_ref = f"{fname}({table}.{field})"
+            sel = {"Aggregation": {"Expression": {"Column": {"Expression": src_ref,
+                                                             "Property": field}},
+                                   "Function": func},
+                   "Name": query_ref}
         else:
+            query_ref = f"{table}.{field}"
             sel = {"Column": {"Expression": src_ref, "Property": field}, "Name": query_ref}
         select_list.append(sel)
 
@@ -419,7 +502,7 @@ def _visual_container(x, y, w, h, visual_type, projections, title=None,
         "x": x, "y": y, "z": z,
         "width": w, "height": h,
         "config": jdump(config),
-        "filters": "[]",
+        "filters": jdump(vfilters) if vfilters else "[]",
     }
 
 
@@ -462,16 +545,19 @@ def _card(x, y, w, h, measure, title=None):
         [("Values", "_Measures", measure, True)], title=title)
 
 
-def _line(x, y, w, h, cat_table, cat_col, y_specs, title=None):
+def _line(x, y, w, h, cat_table, cat_col, y_specs, series_table=None,
+          series_col=None, title=None, vfilters=None):
     """y_specs: list of (table, col, is_measure)"""
     proj = [("Category", cat_table, cat_col, False)]
     for tbl, col, is_m in y_specs:
         proj.append(("Y", tbl, col, is_m))
-    return _visual_container(x, y, w, h, "lineChart", proj, title=title)
+    if series_table:
+        proj.append(("Series", series_table, series_col, False))
+    return _visual_container(x, y, w, h, "lineChart", proj, title=title, vfilters=vfilters)
 
 
 def _bar(x, y, w, h, cat_table, cat_col, val_table, val_col, is_measure=False,
-         series_table=None, series_col=None, title=None, horizontal=False):
+         series_table=None, series_col=None, title=None, horizontal=False, vfilters=None):
     vtype = "clusteredBarChart" if horizontal else "clusteredColumnChart"
     proj = [
         ("Category", cat_table, cat_col, False),
@@ -479,16 +565,17 @@ def _bar(x, y, w, h, cat_table, cat_col, val_table, val_col, is_measure=False,
     ]
     if series_table:
         proj.append(("Series", series_table, series_col, False))
-    return _visual_container(x, y, w, h, vtype, proj, title=title)
+    return _visual_container(x, y, w, h, vtype, proj, title=title, vfilters=vfilters)
 
 
-def _area(x, y, w, h, cat_table, cat_col, y_specs, series_table=None, series_col=None, title=None):
+def _area(x, y, w, h, cat_table, cat_col, y_specs, series_table=None,
+          series_col=None, title=None, vfilters=None):
     proj = [("Category", cat_table, cat_col, False)]
     for tbl, col, is_m in y_specs:
         proj.append(("Y", tbl, col, is_m))
     if series_table:
         proj.append(("Series", series_table, series_col, False))
-    return _visual_container(x, y, w, h, "areaChart", proj, title=title)
+    return _visual_container(x, y, w, h, "areaChart", proj, title=title, vfilters=vfilters)
 
 
 def _map_visual(x, y, w, h, location_table, location_col, size_table, size_col,
@@ -582,10 +669,12 @@ def _page_state() -> dict:
              title="Unemployment Rate by State (Latest Month)",
              horizontal=True),
 
-        # Line chart: state unemployment trends over time
+        # Line chart: state unemployment trends over time — one line per state
+        # (series = region_name; without it all states average into a single line).
         _line(20, 440, 1240, 258,
               "DateTable", "Date",
               [("UnemploymentByState", "unemployment_rate_pct", False)],
+              series_table="UnemploymentByState", series_col="region_name",
               title="State Unemployment Rate Trend"),
     ]
     return _page("ReportSection2", "State Breakdown", visuals, 1)
@@ -625,32 +714,43 @@ def _page_ftpt() -> dict:
     visuals = [
         _textbox(20, 12, 1240, 44, "Full-time vs Part-time Employment", font_size="18"),
 
-        # Stacked area: FT + PT over time (Persons)
+        # Stacked area: FT + PT over time. Filter to Persons only — sex_label holds
+        # {Persons, Male, Female} where Persons = Male + Female, so summing all three
+        # double-counts the totals.
         _area(20, 72, 800, 300,
               "DateTable", "Date",
               [
                   ("FulltimeParttime", "employed_fulltime_thousands", False),
                   ("FulltimeParttime", "employed_parttime_thousands", False),
               ],
-              title="Full-time vs Part-time Employed — Persons ('000)"),
+              title="Full-time vs Part-time Employed — Persons ('000)",
+              vfilters=[_categorical_filter("FulltimeParttime", "sex_label", ["Persons"])]),
 
         # KPI cards
         _card(840, 72,  200, 130, "Latest FT Share Persons", title="Full-time Share"),
         _card(1050, 72, 210, 130, "Latest PT Share Persons", title="Part-time Share"),
         _card(840, 212, 200, 130, "FT Share YoY Change",     title="FT Share YoY Δ"),
 
-        # Line: FT share % by sex
+        # Line: FT share % by sex — one line per sex (series = sex_label); without it
+        # the share averages across all three labels into a single blended line.
         _line(20, 390, 800, 298,
               "DateTable", "Date",
               [("FulltimeParttime", "fulltime_share_pct", False)],
+              series_table="FulltimeParttime", series_col="sex_label",
               title="Full-time Share (%) by Sex Over Time"),
 
-        # Clustered bar: FT vs PT by sex (latest month)
+        # Clustered bar: FT vs PT split by sex, latest month only. Exclude the
+        # "Persons" total (= Male + Female) so the two bars are genuine sex splits,
+        # and restrict to the latest month so the totals aren't summed over history.
         _bar(840, 352, 420, 336,
              "FulltimeParttime", "sex_label",
              "FulltimeParttime", "employed_total_thousands",
              series_table="FulltimeParttime", series_col="sex_label",
-             title="Employment by Sex (Latest Month)"),
+             title="Employment by Sex (Latest Month)",
+             vfilters=[
+                 _categorical_filter("FulltimeParttime", "sex_label", ["Persons"], exclude=True),
+                 _categorical_filter("FulltimeParttime", "is_latest_month", [1]),
+             ]),
     ]
     return _page("ReportSection4", "Full-time vs Part-time", visuals, 3)
 
