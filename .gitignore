@@ -18,6 +18,10 @@ env/
 
 # Power BI
 *.pbix
+# Power BI project local/per-user files (not source of truth)
+.pbi/localSettings.json
+.pbi/cache.abf
+**/.pbi/localSettings.json
 
 # OS
 .DS_Store
