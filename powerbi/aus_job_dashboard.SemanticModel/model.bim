@@ -189,7 +189,7 @@
                 "value": "Automatic"
               }
             ],
-            "formatString": "0.00"
+            "formatString": "0.00\"%\""
           },
           {
             "name": "participation_rate_pct",
@@ -201,7 +201,7 @@
                 "value": "Automatic"
               }
             ],
-            "formatString": "0.00"
+            "formatString": "0.00\"%\""
           },
           {
             "name": "emp_to_pop_ratio_pct",
@@ -213,7 +213,7 @@
                 "value": "Automatic"
               }
             ],
-            "formatString": "0.00"
+            "formatString": "0.00\"%\""
           },
           {
             "name": "unemployment_rate_mom_change_ppt",
@@ -225,7 +225,7 @@
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.000;-0.000"
+            "formatString": "+0.00\" ppt\";-0.00\" ppt\""
           },
           {
             "name": "employed_mom_change_pct",
@@ -237,7 +237,7 @@
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.00;-0.00"
+            "formatString": "+0.00\"%\";-0.00\"%\""
           },
           {
             "name": "unemployment_rate_yoy_change_ppt",
@@ -249,7 +249,7 @@
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.000;-0.000"
+            "formatString": "+0.00\" ppt\";-0.00\" ppt\""
           },
           {
             "name": "employed_yoy_change_pct",
@@ -261,7 +261,7 @@
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.00;-0.00"
+            "formatString": "+0.00\"%\";-0.00\"%\""
           },
           {
             "name": "is_latest_month",
@@ -357,7 +357,7 @@
                 "value": "Automatic"
               }
             ],
-            "formatString": "0.00",
+            "formatString": "0.00\"%\"",
             "description": "Unemployment rate (%), seasonally adjusted."
           },
           {
@@ -370,7 +370,7 @@
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.000;-0.000"
+            "formatString": "+0.00\" ppt\";-0.00\" ppt\""
           },
           {
             "name": "unemployment_rate_yoy_change_ppt",
@@ -382,7 +382,7 @@
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.000;-0.000"
+            "formatString": "+0.00\" ppt\";-0.00\" ppt\""
           },
           {
             "name": "employed_yoy_change_pct",
@@ -394,7 +394,7 @@
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.00;-0.00"
+            "formatString": "+0.00\"%\";-0.00\"%\""
           },
           {
             "name": "is_latest_month",
@@ -501,7 +501,7 @@
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.00;-0.00",
+            "formatString": "+0.00\"%\";-0.00\"%\"",
             "description": "Year-on-year change in employed persons (%)."
           },
           {
@@ -655,7 +655,7 @@
                 "value": "Automatic"
               }
             ],
-            "formatString": "0.00"
+            "formatString": "0.00\"%\""
           },
           {
             "name": "parttime_share_pct",
@@ -667,7 +667,7 @@
                 "value": "Automatic"
               }
             ],
-            "formatString": "0.00"
+            "formatString": "0.00\"%\""
           },
           {
             "name": "fulltime_share_yoy_change_ppt",
@@ -679,7 +679,7 @@
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.000;-0.000"
+            "formatString": "+0.00\" ppt\";-0.00\" ppt\""
           },
           {
             "name": "employed_total_yoy_change_pct",
@@ -691,7 +691,7 @@
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.00;-0.00"
+            "formatString": "+0.00\"%\";-0.00\"%\""
           },
           {
             "name": "is_latest_month",
@@ -745,7 +745,7 @@
             "name": "Latest Unemployment Rate",
             "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[unemployment_rate_pct]),NationalOverview[date]=D)",
             "displayFolder": "Overview KPIs",
-            "formatString": "0.00"
+            "formatString": "0.00\"%\""
           },
           {
             "name": "Latest Employed Thousands",
@@ -757,25 +757,25 @@
             "name": "Latest Participation Rate",
             "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[participation_rate_pct]),NationalOverview[date]=D)",
             "displayFolder": "Overview KPIs",
-            "formatString": "0.00"
+            "formatString": "0.00\"%\""
           },
           {
             "name": "Latest Emp To Pop Ratio",
             "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[emp_to_pop_ratio_pct]),NationalOverview[date]=D)",
             "displayFolder": "Overview KPIs",
-            "formatString": "0.00"
+            "formatString": "0.00\"%\""
           },
           {
             "name": "Unemployment Rate MoM Change",
             "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[unemployment_rate_mom_change_ppt]),NationalOverview[date]=D)",
             "displayFolder": "Overview KPIs",
-            "formatString": "+0.000;-0.000"
+            "formatString": "+0.00\" ppt\";-0.00\" ppt\""
           },
           {
             "name": "Employed YoY Change Pct",
             "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[employed_yoy_change_pct]),NationalOverview[date]=D)",
             "displayFolder": "Overview KPIs",
-            "formatString": "+0.00;-0.00"
+            "formatString": "+0.00\"%\";-0.00\"%\""
           },
           {
             "name": "Unemployment Rate Subtitle",
@@ -793,7 +793,7 @@
             "name": "National Avg Unemployment Rate",
             "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[unemployment_rate_pct]),NationalOverview[date]=D)",
             "displayFolder": "State KPIs",
-            "formatString": "0.00",
+            "formatString": "0.00\"%\"",
             "description": "National unemployment rate at the latest month (reference line for the state view)."
           },
           {
@@ -806,27 +806,27 @@
             "name": "Latest Industry YoY Change",
             "expression": "CALCULATE(MAX(IndustryBreakdown[employed_yoy_change_pct]),IndustryBreakdown[is_latest_year]=1)",
             "displayFolder": "Industry KPIs",
-            "formatString": "+0.00;-0.00"
+            "formatString": "+0.00\"%\";-0.00\"%\""
           },
           {
             "name": "Latest FT Share Persons",
             "expression": "CALCULATE(MAX(FulltimeParttime[fulltime_share_pct]),FulltimeParttime[is_latest_month]=1,FulltimeParttime[sex_label]=\"Persons\")",
             "displayFolder": "FT PT KPIs",
-            "formatString": "0.00",
+            "formatString": "0.00\"%\"",
             "description": "Full-time share of employment (%) for Persons at the latest month."
           },
           {
             "name": "Latest PT Share Persons",
             "expression": "CALCULATE(MAX(FulltimeParttime[parttime_share_pct]),FulltimeParttime[is_latest_month]=1,FulltimeParttime[sex_label]=\"Persons\")",
             "displayFolder": "FT PT KPIs",
-            "formatString": "0.00",
+            "formatString": "0.00\"%\"",
             "description": "Part-time share of employment (%) for Persons at the latest month."
           },
           {
             "name": "FT Share YoY Change",
             "expression": "VAR D=MAX(FulltimeParttime[date]) RETURN CALCULATE(MAX(FulltimeParttime[fulltime_share_yoy_change_ppt]),FulltimeParttime[date]=D,FulltimeParttime[sex_label]=\"Persons\")",
             "displayFolder": "FT PT KPIs",
-            "formatString": "+0.000;-0.000"
+            "formatString": "+0.00\" ppt\";-0.00\" ppt\""
           },
           {
             "name": "FT Share Subtitle",
@@ -853,7 +853,7 @@
     ],
     "relationships": [
       {
-        "name": "6ab01af0-9824-447f-865f-3c3a97ba2cf2",
+        "name": "86499441-fea2-4416-9f45-791c0c26f854",
         "fromTable": "NationalOverview",
         "fromColumn": "date",
         "toTable": "DateTable",
@@ -861,7 +861,7 @@
         "crossFilteringBehavior": "oneDirection"
       },
       {
-        "name": "7a4c8785-bb84-464c-88ee-303fa09ed721",
+        "name": "4953cb5c-1b37-49f3-93b2-07107dd0013b",
         "fromTable": "UnemploymentByState",
         "fromColumn": "date",
         "toTable": "DateTable",
@@ -869,7 +869,7 @@
         "crossFilteringBehavior": "oneDirection"
       },
       {
-        "name": "dc943b9d-ab4e-4c6b-a654-0188cfb1ffbe",
+        "name": "16f100a5-cf25-4afd-a712-8351e1af6487",
         "fromTable": "FulltimeParttime",
         "fromColumn": "date",
         "toTable": "DateTable",
@@ -877,7 +877,7 @@
         "crossFilteringBehavior": "oneDirection"
       },
       {
-        "name": "47ec6957-f262-4218-908a-0a1f462701ab",
+        "name": "26577e80-f90a-45ae-81bc-a72bf73dfd45",
         "fromTable": "IndustryBreakdown",
         "fromColumn": "date",
         "toTable": "DateTable",
