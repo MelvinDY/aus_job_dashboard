@@ -86,6 +86,8 @@ def _m_table(name: str, sql: str, columns: list, description: str = None) -> dic
             col["isHidden"] = True
         if c.get("desc"):
             col["description"] = c["desc"]
+        if c.get("dcat"):
+            col["dataCategory"] = c["dcat"]
         cols.append(col)
     table = {
         "name": name,
@@ -103,9 +105,9 @@ def _m_table(name: str, sql: str, columns: list, description: str = None) -> dic
 
 def _make_model() -> dict:
     # ── Column specs ──────────────────────────────────────────────────────────
-    def c(name, dtype, mtype, fmt=None, hidden=False, desc=None):
+    def c(name, dtype, mtype, fmt=None, hidden=False, desc=None, dcat=None):
         return {"name": name, "dataType": dtype, "mtype": mtype,
-                "fmt": fmt, "hidden": hidden, "desc": desc}
+                "fmt": fmt, "hidden": hidden, "desc": desc, "dcat": dcat}
 
     national_cols = [
         c("date",                          "dateTime", "type date",   "Short Date"),
@@ -124,7 +126,7 @@ def _make_model() -> dict:
         c("date",                          "dateTime", "type date",   "Short Date"),
         c("region_code",                   "string",   "type text",   hidden=True),
         c("region_name",                   "string",   "type text",
-          desc="State or territory name."),
+          desc="State or territory name.", dcat="StateOrProvince"),
         c("employed_thousands",            "double",   "type number", "#,0.0",
           desc="Employed persons in thousands, seasonally adjusted."),
         c("unemployment_rate_pct",         "double",   "type number", "0.00",
@@ -418,6 +420,115 @@ def _categorical_filter(table: str, col: str, values: list, *, exclude: bool = F
     }
 
 
+# ── Visual styling ────────────────────────────────────────────────────────────
+# Formatting is applied per-visual via report.json: `objects` (data-level — axes,
+# legend, labels, colours) and `visualContainerObjects` (container chrome — title,
+# background, border, shadow). Defined once here so every page stays consistent.
+PRIMARY    = "#1F4E79"   # hero/accent (deep blue) — unemployment is the lead metric
+SECONDARY  = "#2E86AB"   # secondary series (e.g. part-time)
+TEXT       = "#1F2D3D"   # primary text
+MUTED      = "#5B6B7B"   # axis / secondary text
+CARD_BG    = "#FFFFFF"   # visual background
+BORDER     = "#E3E8EF"   # visual border
+GRID       = "#ECEFF4"   # gridlines
+SHADOW     = "#C7CED8"   # soft drop shadow
+PAGE_BG    = "#EEF2F7"   # page canvas
+FONT       = "Segoe UI"
+FONT_SEMI  = "Segoe UI Semibold"
+TITLE_SIZE = 12
+CARD_VALUE = 30
+
+
+def _pe(value: str) -> dict:
+    """Property expression wrapping a DAX literal (e.g. \"true\", \"12D\", \"'Top'\")."""
+    return {"expr": {"Literal": {"Value": value}}}
+
+
+def _color(hex_str: str) -> dict:
+    return {"solid": {"color": _pe(f"'{hex_str}'")}}
+
+
+def _bool(b: bool) -> dict:
+    return _pe("true" if b else "false")
+
+
+def _agg_ref(table: str, field: str) -> str:
+    """The queryRef a Y/Size-slot column gets in _visual_container (Average vs Sum)."""
+    avg = any(k in field for k in ("rate", "pct", "ratio", "share", "ppt"))
+    return f"{'Average' if avg else 'Sum'}({table}.{field})"
+
+
+def _container_chrome(title: str = None) -> dict:
+    vco = {
+        "background": [{"properties": {"show": _bool(True), "color": _color(CARD_BG),
+                                       "transparency": _pe("0D")}}],
+        "border": [{"properties": {"show": _bool(True), "color": _color(BORDER),
+                                   "radius": _pe("8D")}}],
+        "dropShadow": [{"properties": {"show": _bool(True), "color": _color(SHADOW),
+                                       "position": _pe("'Outer'"), "preset": _pe("'BottomRight'")}}],
+    }
+    if title:
+        vco["title"] = [{"properties": {
+            "show": _bool(True),
+            "text": {"expr": {"Literal": {"Value": f"'{title}'"}}},
+            "fontColor": _color(TEXT),
+            "fontSize": _pe(f"{TITLE_SIZE}D"),
+            "fontFamily": _pe(f"'{FONT_SEMI}'"),
+            "alignment": _pe("'left'"),
+            "titleWrap": _bool(False),
+        }}]
+    return vco
+
+
+def _chart_objects(accent=None, legend=False, data_labels=False,
+                   x_axis_title=False, y_axis_title=False, series_colors=None) -> dict:
+    o = {
+        "categoryAxis": [{"properties": {"show": _bool(True), "showAxisTitle": _bool(x_axis_title),
+                                         "labelColor": _color(MUTED), "fontSize": _pe("9D")}}],
+        "valueAxis": [{"properties": {"show": _bool(True), "showAxisTitle": _bool(y_axis_title),
+                                      "labelColor": _color(MUTED), "fontSize": _pe("9D"),
+                                      "gridlineColor": _color(GRID)}}],
+        "legend": [{"properties": {"show": _bool(legend), "position": _pe("'Top'"),
+                                   "showTitle": _bool(False), "labelColor": _color(MUTED),
+                                   "fontSize": _pe("9D")}}],
+        "labels": [{"properties": {"show": _bool(data_labels), "color": _color(TEXT),
+                                   "fontSize": _pe("9D"), "labelDisplayUnits": _pe("0D")}}],
+    }
+    dp = []
+    if accent:
+        dp.append({"properties": {"defaultColor": _color(accent), "fill": _color(accent)}})
+    for ref, hex_str in (series_colors or []):
+        dp.append({"selector": {"metadata": ref}, "properties": {"fill": _color(hex_str)}})
+    if dp:
+        o["dataPoint"] = dp
+    return o
+
+
+def _card_objects() -> dict:
+    return {
+        "labels": [{"properties": {"color": _color(PRIMARY), "fontSize": _pe(f"{CARD_VALUE}D"),
+                                   "fontFamily": _pe(f"'{FONT_SEMI}'"), "labelDisplayUnits": _pe("0D")}}],
+        "categoryLabels": [{"properties": {"show": _bool(True), "color": _color(MUTED),
+                                           "fontSize": _pe("10D"), "fontFamily": _pe(f"'{FONT}'")}}],
+    }
+
+
+def _map_objects(accent=PRIMARY) -> dict:
+    return {"dataPoint": [{"properties": {"defaultColor": _color(accent), "fill": _color(accent)}}]}
+
+
+def _table_objects() -> dict:
+    return {
+        "grid": [{"properties": {"gridVertical": _bool(True), "gridVerticalColor": _color(GRID),
+                                 "gridHorizontal": _bool(True), "gridHorizontalColor": _color(GRID),
+                                 "outlineColor": _color(GRID), "rowPadding": _pe("3D")}}],
+        "columnHeaders": [{"properties": {"fontColor": _color("#FFFFFF"), "backColor": _color(PRIMARY),
+                                          "fontFamily": _pe(f"'{FONT_SEMI}'"), "fontSize": _pe("10D")}}],
+        "values": [{"properties": {"fontColor": _color(TEXT), "fontSize": _pe("9D"),
+                                   "fontFamily": _pe(f"'{FONT}'")}}],
+    }
+
+
 def _visual_container(x, y, w, h, visual_type, projections, title=None,
                        objects=None, extra_config=None, vfilters=None):
     """
@@ -481,11 +592,7 @@ def _visual_container(x, y, w, h, visual_type, projections, title=None,
         "prototypeQuery": proto_query,
     }
 
-    if title:
-        single_visual.setdefault("visualContainerObjects", {})["title"] = [{
-            "properties": {"text": {"expr": {"Literal": {"Value": f"'{title}'"}}},
-                           "show": {"expr": {"Literal": {"Value": "true"}}}}
-        }]
+    single_visual["visualContainerObjects"] = _container_chrome(title)
     if objects:
         single_visual["objects"] = objects
     if extra_config:
@@ -525,8 +632,9 @@ def _textbox(x, y, w, h, text, font_size="18", bold=True):
                                 "value": text,
                                 "textRunStyle": {
                                     "fontWeight": weight,
+                                    "fontFamily": "Segoe UI Semibold",
                                     "fontSize": f"{font_size}pt",
-                                    "color": {"solid": {"color": "#1F2D3D"}},
+                                    "color": {"solid": {"color": "#1F4E79"}},
                                 },
                             }],
                             "paragraphStyle": {"textAnchor": "Middle"},
@@ -542,7 +650,7 @@ def _textbox(x, y, w, h, text, font_size="18", bold=True):
 
 def _card(x, y, w, h, measure, title=None):
     return _visual_container(x, y, w, h, "card",
-        [("Values", "_Measures", measure, True)], title=title)
+        [("Values", "_Measures", measure, True)], title=title, objects=_card_objects())
 
 
 def _line(x, y, w, h, cat_table, cat_col, y_specs, series_table=None,
@@ -553,7 +661,12 @@ def _line(x, y, w, h, cat_table, cat_col, y_specs, series_table=None,
         proj.append(("Y", tbl, col, is_m))
     if series_table:
         proj.append(("Series", series_table, series_col, False))
-    return _visual_container(x, y, w, h, "lineChart", proj, title=title, vfilters=vfilters)
+    # Single-series lines get the accent colour; category-split lines keep the
+    # categorical palette and show a top legend.
+    objs = _chart_objects(accent=None if series_table else PRIMARY,
+                          legend=bool(series_table), data_labels=False)
+    return _visual_container(x, y, w, h, "lineChart", proj, title=title,
+                             objects=objs, vfilters=vfilters)
 
 
 def _bar(x, y, w, h, cat_table, cat_col, val_table, val_col, is_measure=False,
@@ -565,7 +678,10 @@ def _bar(x, y, w, h, cat_table, cat_col, val_table, val_col, is_measure=False,
     ]
     if series_table:
         proj.append(("Series", series_table, series_col, False))
-    return _visual_container(x, y, w, h, vtype, proj, title=title, vfilters=vfilters)
+    objs = _chart_objects(accent=None if series_table else PRIMARY,
+                          legend=bool(series_table), data_labels=True)
+    return _visual_container(x, y, w, h, vtype, proj, title=title,
+                             objects=objs, vfilters=vfilters)
 
 
 def _area(x, y, w, h, cat_table, cat_col, y_specs, series_table=None,
@@ -575,22 +691,64 @@ def _area(x, y, w, h, cat_table, cat_col, y_specs, series_table=None,
         proj.append(("Y", tbl, col, is_m))
     if series_table:
         proj.append(("Series", series_table, series_col, False))
-    return _visual_container(x, y, w, h, "areaChart", proj, title=title, vfilters=vfilters)
+    # Colour the measure series explicitly (primary, secondary, …) for an on-brand look.
+    palette = [PRIMARY, SECONDARY, "#5DA271", "#E1A730"]
+    series_colors = [(_agg_ref(tbl, col), palette[i % len(palette)])
+                     for i, (tbl, col, is_m) in enumerate(y_specs) if not is_m]
+    objs = _chart_objects(legend=True, data_labels=False, series_colors=series_colors)
+    return _visual_container(x, y, w, h, "areaChart", proj, title=title,
+                             objects=objs, vfilters=vfilters)
 
 
 def _map_visual(x, y, w, h, location_table, location_col, size_table, size_col,
-                is_measure=False, title=None):
+                is_measure=False, title=None, vfilters=None):
     proj = [
         ("Location", location_table, location_col, False),
         ("Size",     size_table,     size_col,     is_measure),
     ]
-    return _visual_container(x, y, w, h, "map", proj, title=title)
+    return _visual_container(x, y, w, h, "map", proj, title=title,
+                             objects=_map_objects(), vfilters=vfilters)
 
 
-def _table_visual(x, y, w, h, columns, title=None):
+def _donut(x, y, w, h, cat_table, cat_col, val_table, val_col, is_measure=False,
+           title=None, vfilters=None):
+    """Donut chart — Legend = cat_col, Values = val_col (aggregated in the Y slot)."""
+    proj = [("Category", cat_table, cat_col, False), ("Y", val_table, val_col, is_measure)]
+    objs = {
+        "legend": [{"properties": {"show": _bool(True), "position": _pe("'Right'"),
+                                   "showTitle": _bool(False), "labelColor": _color(MUTED),
+                                   "fontSize": _pe("9D")}}],
+        "labels": [{"properties": {"show": _bool(True), "color": _color(TEXT), "fontSize": _pe("9D"),
+                                   "labelStyle": _pe("'Category, percent of total'")}}],
+        "dataPoint": [{"properties": {"defaultColor": _color(PRIMARY)}}],
+    }
+    return _visual_container(x, y, w, h, "donutChart", proj, title=title,
+                             objects=objs, vfilters=vfilters)
+
+
+def _page_navigator(x, y, w, h):
+    """Built-in Page Navigator — auto-renders a button per report page and handles
+    navigation; no data fields required."""
+    vis_name = str(uuid.uuid4())[:8]
+    z = _next_z()
+    single_visual = {
+        "visualType": "pageNavigator",
+        "prototypeQuery": {"Version": 2, "From": [], "Select": []},
+        "drillFilterOtherVisuals": True,
+    }
+    config = {"name": vis_name,
+              "layouts": [{"id": 0, "position": {"x": x, "y": y, "width": w, "height": h,
+                                                 "z": z, "tabOrder": z}}],
+              "singleVisual": single_visual}
+    return {"x": x, "y": y, "z": z, "width": w, "height": h,
+            "config": jdump(config), "filters": "[]"}
+
+
+def _table_visual(x, y, w, h, columns, title=None, vfilters=None):
     """columns: list of (table, col, is_measure)"""
     proj = [("Values", t, c, m) for t, c, m in columns]
-    return _visual_container(x, y, w, h, "tableEx", proj, title=title)
+    return _visual_container(x, y, w, h, "tableEx", proj, title=title,
+                             objects=_table_objects(), vfilters=vfilters)
 
 
 def _slicer(x, y, w, h, table, col, title=None):
@@ -606,12 +764,18 @@ def _page(name: str, display_name: str, visuals: list, ordinal: int) -> dict:
         "name": name,
         "displayName": display_name,
         "ordinal": ordinal,
+        # Visuals are laid out on a 1280×720 canvas. Pin the page size and force
+        # "Fit to Page" (displayOption 1) so the whole canvas scales to the window
+        # instead of rendering at actual size and clipping right-edge visuals.
+        "width": 1280,
+        "height": 720,
+        "displayOption": 1,
         "visualContainers": visuals,
         "config": jdump({
             "relationships": [],
             "objects": {
                 "outspacePane": [{"properties": {"expanded": {"expr": {"Literal": {"Value": "false"}}}}}],
-                "background":   [{"properties": {"color":    {"solid": {"color": "#F5F5F5"}},
+                "background":   [{"properties": {"color":    {"solid": {"color": PAGE_BG}},
                                                  "transparency": {"expr": {"Literal": {"Value": "0"}}}}}],
             }
         }),
@@ -622,7 +786,8 @@ def _page(name: str, display_name: str, visuals: list, ordinal: int) -> dict:
 def _page_overview() -> dict:
     # 1280 × 720 canvas
     visuals = [
-        _textbox(20, 12, 840, 44, "Australian Labour Market — Overview", font_size="18"),
+        _textbox(20, 12, 430, 44, "Australian Labour Market — Overview", font_size="18"),
+        _page_navigator(470, 14, 390, 40),
         _slicer(880, 12, 380, 44, "DateTable", "Date"),
 
         # Unemployment trend line chart
@@ -654,20 +819,25 @@ def _page_overview() -> dict:
 
 def _page_state() -> dict:
     visuals = [
-        _textbox(20, 12, 1240, 44, "State Breakdown — Unemployment & Employment", font_size="18"),
+        _textbox(20, 12, 700, 44, "State Breakdown — Unemployment & Employment", font_size="18"),
+        _page_navigator(740, 14, 520, 40),
 
-        # Map: unemployment rate bubble by state
+        # Map: unemployment rate bubble by state, latest month only (region_name is
+        # tagged dataCategory=StateOrProvince in the model so Bing can geocode it).
         _map_visual(20, 72, 600, 350,
                     "UnemploymentByState", "region_name",
                     "UnemploymentByState", "unemployment_rate_pct",
-                    title="Unemployment Rate by State (Latest Month)"),
+                    title="Unemployment Rate by State (Latest Month)",
+                    vfilters=[_categorical_filter("UnemploymentByState", "is_latest_month", [1])]),
 
-        # Bar chart: unemployment rate per state, latest month
+        # Bar chart: unemployment rate per state, latest month only (without the filter
+        # each state's rate is averaged over all history).
         _bar(640, 72, 620, 350,
              "UnemploymentByState", "region_name",
              "UnemploymentByState", "unemployment_rate_pct",
              title="Unemployment Rate by State (Latest Month)",
-             horizontal=True),
+             horizontal=True,
+             vfilters=[_categorical_filter("UnemploymentByState", "is_latest_month", [1])]),
 
         # Line chart: state unemployment trends over time — one line per state
         # (series = region_name; without it all states average into a single line).
@@ -682,22 +852,29 @@ def _page_state() -> dict:
 
 def _page_industry() -> dict:
     visuals = [
-        _textbox(20, 12, 1240, 44, "Industry View — Sector Employment", font_size="18"),
+        _textbox(20, 12, 700, 44, "Industry View — Sector Employment", font_size="18"),
+        _page_navigator(740, 14, 520, 40),
 
-        # Horizontal bar: employed persons by industry (latest year)
+        # Horizontal bar: employed persons by industry, latest year only — one bar
+        # per industry (without the filter, employed_thousands sums over every period).
         _bar(20, 72, 560, 620,
              "IndustryBreakdown", "industry_name",
              "IndustryBreakdown", "employed_thousands",
-             title="Employed Persons by Industry — Latest Year ('000)",
-             horizontal=True),
+             title="Employed Persons by Industry — 2022 ('000, annual)",
+             horizontal=True,
+             vfilters=[_categorical_filter("IndustryBreakdown", "is_latest_year", [1])]),
 
-        # Line chart: focus industries over time
+        # Line chart: focus industries over time — one line per focus industry
+        # (is_focus_industry=1 → Construction, Health Care, Info Media, Retail).
         _line(600, 72, 660, 310,
               "DateTable", "Date",
               [("IndustryBreakdown", "employed_thousands", False)],
-              title="Employment Trend — Focus Industries"),
+              series_table="IndustryBreakdown", series_col="industry_name",
+              title="Employment Trend — Focus Industries (annual, to 2022)",
+              vfilters=[_categorical_filter("IndustryBreakdown", "is_focus_industry", [1])]),
 
-        # Table: industry details
+        # Table: industry details, latest year only — one row per industry (without
+        # the filter the table lists every period as a separate row).
         _table_visual(600, 400, 660, 292,
                       [
                           ("IndustryBreakdown", "industry_name",           False),
@@ -705,14 +882,16 @@ def _page_industry() -> dict:
                           ("IndustryBreakdown", "employed_yoy_change_pct", False),
                           ("IndustryBreakdown", "growth_category",         False),
                       ],
-                      title="Industry Detail"),
+                      title="Industry Detail",
+                      vfilters=[_categorical_filter("IndustryBreakdown", "is_latest_year", [1])]),
     ]
     return _page("ReportSection3", "Industry View", visuals, 2)
 
 
 def _page_ftpt() -> dict:
     visuals = [
-        _textbox(20, 12, 1240, 44, "Full-time vs Part-time Employment", font_size="18"),
+        _textbox(20, 12, 700, 44, "Full-time vs Part-time Employment", font_size="18"),
+        _page_navigator(740, 14, 520, 40),
 
         # Stacked area: FT + PT over time. Filter to Persons only — sex_label holds
         # {Persons, Male, Female} where Persons = Male + Female, so summing all three
@@ -739,18 +918,16 @@ def _page_ftpt() -> dict:
               series_table="FulltimeParttime", series_col="sex_label",
               title="Full-time Share (%) by Sex Over Time"),
 
-        # Clustered bar: FT vs PT split by sex, latest month only. Exclude the
-        # "Persons" total (= Male + Female) so the two bars are genuine sex splits,
-        # and restrict to the latest month so the totals aren't summed over history.
-        _bar(840, 352, 420, 336,
-             "FulltimeParttime", "sex_label",
-             "FulltimeParttime", "employed_total_thousands",
-             series_table="FulltimeParttime", series_col="sex_label",
-             title="Employment by Sex (Latest Month)",
-             vfilters=[
-                 _categorical_filter("FulltimeParttime", "sex_label", ["Persons"], exclude=True),
-                 _categorical_filter("FulltimeParttime", "is_latest_month", [1]),
-             ]),
+        # Donut: total employment share by sex, latest month only. Exclude the
+        # "Persons" total (= Male + Female) so the two slices are genuine sex splits.
+        _donut(840, 352, 420, 336,
+               "FulltimeParttime", "sex_label",
+               "FulltimeParttime", "employed_total_thousands",
+               title="Employment by Sex (Latest Month)",
+               vfilters=[
+                   _categorical_filter("FulltimeParttime", "sex_label", ["Persons"], exclude=True),
+                   _categorical_filter("FulltimeParttime", "is_latest_month", [1]),
+               ]),
     ]
     return _page("ReportSection4", "Full-time vs Part-time", visuals, 3)
 
