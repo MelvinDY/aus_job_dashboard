@@ -24,6 +24,10 @@ ABS Data API  →  extract.py  →  transform.py  →  load.py  →  Azure SQL  
 | Industry View | Sector employment trend with growing/shrinking classification |
 | Full-time vs Part-time | Employment type split by gender over time |
 
+![Dashboard — Overview page](powerbi/dashboard_overview.png)
+
+> Full four-page export: **[powerbi/dashboard_export.pdf](powerbi/dashboard_export.pdf)**
+
 ---
 
 ## Prerequisites
@@ -140,11 +144,17 @@ This writes five files:
 
 **5d. Export and publish**
 
-```
-File > Export > Export to PDF  →  save as powerbi/dashboard_export.pdf
+From Power BI Desktop: `File > Export > Export to PDF`.
+
+Alternatively, regenerate the committed dashboard PDF and README screenshot
+straight from the mart views (no Desktop GUI needed):
+
+```bash
+python scripts/export_dashboard.py
 ```
 
-Commit the PDF and link it on your portfolio.
+This renders the same four pages from `mart.*` to `powerbi/dashboard_export.pdf`
+and `powerbi/dashboard_overview.png`. Commit them and link the PDF on your portfolio.
 
 ---
 
@@ -155,7 +165,10 @@ aus_job_dashboard/
 ├── scripts/
 │   ├── extract.py          # Download from ABS Data API
 │   ├── transform.py        # Clean and reshape with Pandas
-│   └── load.py             # Load into Azure SQL via SQLAlchemy
+│   ├── load.py             # Load into Azure SQL via SQLAlchemy
+│   ├── deploy_views.py     # Deploy all SQL views to Azure SQL
+│   ├── check_views.py      # Verify deployed views
+│   └── export_dashboard.py # Render the 4 dashboard pages to PDF + PNG
 ├── sql/
 │   ├── 00_schemas.sql      # Create staging + mart schemas
 │   ├── deploy_views.sql    # Run all views in order
@@ -166,6 +179,8 @@ aus_job_dashboard/
 │   ├── aus_job_dashboard.pbip             # Open in Power BI Desktop
 │   ├── aus_job_dashboard.SemanticModel/   # model.bim — tables, relationships, measures
 │   ├── aus_job_dashboard.Report/          # report.json — 4 pages, 25 visuals
+│   ├── dashboard_export.pdf  # Exported 4-page dashboard
+│   ├── dashboard_overview.png # Overview page (README screenshot)
 │   ├── SETUP.md            # Manual setup guide (alternative to build_report.py)
 │   ├── queries/            # Power Query M scripts
 │   └── dax/                # DAX measures reference
