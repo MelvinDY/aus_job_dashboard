@@ -145,6 +145,7 @@ AZURE_SQL_CONN_STR=Driver={ODBC Driver 18 for SQL Server};Server=...;Database=..
   1. DateTable DAX used `TEXT()` (Excel, not DAX) → replaced with `FORMAT()`; quarter via `ROUNDUP(MONTH/3)`.
   2. Calculated-table relationship endpoints failed PBIP validation ("invalid column ID") → **DateTable is now a Power Query (M) table**, not a DAX calculated table. Its columns are real storage columns; relationships bind cleanly.
   3. Charts were blank because value-slot columns were bare `Column` refs → now wrapped in `Aggregation` (Average for rate/pct/share/ppt, Sum for counts) in `_visual_container`.
+  4. `compatibilityLevel` was `1550`; Desktop's local AS engine had upgraded the workspace to `1600` and refuses to load a *lower* level ("CompatibilityLevel downgrade" error on open). Bumped to **1600** (strict superset — safe). Do not lower it again.
 
 ### PENDING (next session, in order)
 1. **Confirm charts render + semantic fixes look right.** Reopen `.pbip` (close Desktop WITHOUT saving first) and refresh. Verify: charts draw (aggregation fix), the state trend shows one line per state, the FT/PT area shows Persons only, the FT-share line splits by sex, and the "Employment by Sex" bar shows Male/Female for the latest month only.
