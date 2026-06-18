@@ -1,109 +1,162 @@
 {
-  "name": "SemanticModel",
-  "compatibilityLevel": 1550,
+  "compatibilityLevel": 1600,
   "model": {
+    "annotations": [
+      {
+        "name": "PBI_QueryOrder",
+        "value": "[\"DateTable\",\"NationalOverview\",\"UnemploymentByState\",\"IndustryBreakdown\",\"FulltimeParttime\",\"_Measures\"]"
+      },
+      {
+        "name": "PBI_ProTooling",
+        "value": "[\"DevMode\"]"
+      }
+    ],
     "culture": "en-AU",
-    "defaultPowerBIDataSourceVersion": "powerBI_V3",
     "dataAccessOptions": {
       "legacyRedirects": true,
       "returnErrorValuesAsNull": true
     },
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "relationships": [
+      {
+        "name": "0b99021e-2541-45a3-bea6-b543cfaa096e",
+        "fromColumn": "date",
+        "fromTable": "NationalOverview",
+        "toColumn": "Date",
+        "toTable": "DateTable"
+      },
+      {
+        "name": "cf9f7a90-a058-4dfd-972c-7f40e112cac4",
+        "fromColumn": "date",
+        "fromTable": "UnemploymentByState",
+        "toColumn": "Date",
+        "toTable": "DateTable"
+      },
+      {
+        "name": "86e584d4-19ec-4a47-b9a2-85c430a6034f",
+        "fromColumn": "date",
+        "fromTable": "FulltimeParttime",
+        "toColumn": "Date",
+        "toTable": "DateTable"
+      },
+      {
+        "name": "d6c923be-d1fa-4231-9102-a8418ae87d7e",
+        "fromColumn": "date",
+        "fromTable": "IndustryBreakdown",
+        "toColumn": "Date",
+        "toTable": "DateTable"
+      }
+    ],
     "tables": [
       {
         "name": "DateTable",
+        "annotations": [
+          {
+            "name": "__PBI_SemanticLinks",
+            "value": "[{\"LinkTarget\":{\"TableName\":\"DateTable\",\"ColumnName\":\"Date\"},\"LinkType\":\"GlobalCalendar\"}]"
+          }
+        ],
         "columns": [
           {
             "name": "Date",
-            "dataType": "dateTime",
-            "isKey": true,
-            "formatString": "Short Date",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
-            ]
+            ],
+            "dataType": "dateTime",
+            "formatString": "Short Date",
+            "isKey": true,
+            "lineageTag": "fdbf53a8-4568-4c1e-8ad9-57926f967b65"
           },
           {
             "name": "year",
-            "dataType": "int64",
-            "formatString": "0",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
-            ]
+            ],
+            "dataType": "int64",
+            "formatString": "0",
+            "lineageTag": "7f599e59-466d-4c8b-8bd9-a9786baa5199"
           },
           {
             "name": "month_number",
-            "dataType": "int64",
-            "isHidden": true,
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
-            ]
+            ],
+            "dataType": "int64",
+            "isHidden": true,
+            "lineageTag": "864d0a33-d6f0-44c9-8709-1a7ec3444433"
           },
           {
             "name": "month_name",
-            "dataType": "string",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
-            ]
+            ],
+            "dataType": "string",
+            "lineageTag": "34489f23-1bc0-40d7-bc36-04a1f08231da"
           },
           {
             "name": "month_year",
-            "dataType": "string",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
-            ]
+            ],
+            "dataType": "string",
+            "lineageTag": "e09b350b-5b19-4c6e-ad64-25e8d943162a"
           },
           {
             "name": "quarter",
-            "dataType": "string",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
-            ]
+            ],
+            "dataType": "string",
+            "lineageTag": "71e3dd4a-d915-4a47-b474-ec1a11a41633"
           },
           {
             "name": "financial_year",
-            "dataType": "string",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
-            ]
+            ],
+            "dataType": "string",
+            "lineageTag": "dc9de9c7-6c39-4c01-bfb5-df46a709c9af"
           },
           {
             "name": "is_first_of_month",
-            "dataType": "int64",
-            "isHidden": true,
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
-            ]
+            ],
+            "dataType": "int64",
+            "isHidden": true,
+            "lineageTag": "ec900526-3b45-4a10-b2cf-2c42fe99d5fb"
           }
         ],
+        "lineageTag": "00a16999-d4c4-41e9-ba2c-349cc5fa1150",
         "partitions": [
           {
             "name": "DateTable",
             "mode": "import",
             "source": {
-              "type": "calculated",
               "expression": [
                 "ADDCOLUMNS(",
                 "    CALENDAR(DATE(1978,1,1), TODAY()),",
@@ -117,14 +170,9 @@
                 "                          \"FY\"&TEXT(YEAR([Date]),\"0\")),",
                 "    \"is_first_of_month\",IF(DAY([Date])=1, 1, 0)",
                 ")"
-              ]
+              ],
+              "type": "calculated"
             }
-          }
-        ],
-        "annotations": [
-          {
-            "name": "__PBI_SemanticLinks",
-            "value": "[{\"LinkTarget\":{\"TableName\":\"DateTable\",\"ColumnName\":\"Date\"},\"LinkType\":\"GlobalCalendar\"}]"
           }
         ]
       },
@@ -133,150 +181,162 @@
         "columns": [
           {
             "name": "date",
-            "dataType": "dateTime",
-            "sourceColumn": "date",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "Short Date"
+            "dataType": "dateTime",
+            "formatString": "Short Date",
+            "lineageTag": "3aad1862-f8f7-4f0b-a0d4-d22e0bd90f34",
+            "sourceColumn": "date"
           },
           {
             "name": "employed_thousands",
-            "dataType": "double",
-            "sourceColumn": "employed_thousands",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "#,0.0"
+            "dataType": "double",
+            "formatString": "#,0.0",
+            "lineageTag": "2fdc71ca-2c9f-458c-abb9-a88f9cc4d11d",
+            "sourceColumn": "employed_thousands"
           },
           {
             "name": "unemployed_thousands",
-            "dataType": "double",
-            "sourceColumn": "unemployed_thousands",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "#,0.0"
+            "dataType": "double",
+            "formatString": "#,0.0",
+            "lineageTag": "40e54f0b-5721-4c68-b0dd-b81c3e9607bf",
+            "sourceColumn": "unemployed_thousands"
           },
           {
             "name": "unemployment_rate_pct",
-            "dataType": "double",
-            "sourceColumn": "unemployment_rate_pct",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "0.00"
+            "dataType": "double",
+            "formatString": "0.00",
+            "lineageTag": "deac0b49-643b-4f28-aeac-b231f7054fc3",
+            "sourceColumn": "unemployment_rate_pct"
           },
           {
             "name": "participation_rate_pct",
-            "dataType": "double",
-            "sourceColumn": "participation_rate_pct",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "0.00"
+            "dataType": "double",
+            "formatString": "0.00",
+            "lineageTag": "60987118-5210-4835-a469-e3bdb558b857",
+            "sourceColumn": "participation_rate_pct"
           },
           {
             "name": "emp_to_pop_ratio_pct",
-            "dataType": "double",
-            "sourceColumn": "emp_to_pop_ratio_pct",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "0.00"
+            "dataType": "double",
+            "formatString": "0.00",
+            "lineageTag": "9a9747dd-45a4-4274-a6d9-5ce4a9b22f36",
+            "sourceColumn": "emp_to_pop_ratio_pct"
           },
           {
             "name": "unemployment_rate_mom_change_ppt",
-            "dataType": "double",
-            "sourceColumn": "unemployment_rate_mom_change_ppt",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.000;-0.000"
+            "dataType": "double",
+            "formatString": "+0.000;-0.000",
+            "lineageTag": "3fa3152c-dead-4d3e-80f3-e2d4c7f0d80d",
+            "sourceColumn": "unemployment_rate_mom_change_ppt"
           },
           {
             "name": "employed_mom_change_pct",
-            "dataType": "double",
-            "sourceColumn": "employed_mom_change_pct",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.00;-0.00"
+            "dataType": "double",
+            "formatString": "+0.00;-0.00",
+            "lineageTag": "0a748461-09ba-4a75-94f4-83e398f07525",
+            "sourceColumn": "employed_mom_change_pct"
           },
           {
             "name": "unemployment_rate_yoy_change_ppt",
-            "dataType": "double",
-            "sourceColumn": "unemployment_rate_yoy_change_ppt",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.000;-0.000"
+            "dataType": "double",
+            "formatString": "+0.000;-0.000",
+            "lineageTag": "4bd8c9bc-ed52-4710-87c1-fb92ee2a653e",
+            "sourceColumn": "unemployment_rate_yoy_change_ppt"
           },
           {
             "name": "employed_yoy_change_pct",
-            "dataType": "double",
-            "sourceColumn": "employed_yoy_change_pct",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.00;-0.00"
+            "dataType": "double",
+            "formatString": "+0.00;-0.00",
+            "lineageTag": "be903a95-a02b-48e2-8527-774e7c8c332c",
+            "sourceColumn": "employed_yoy_change_pct"
           },
           {
             "name": "is_latest_month",
-            "dataType": "int64",
-            "sourceColumn": "is_latest_month",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "isHidden": true
+            "dataType": "int64",
+            "isHidden": true,
+            "lineageTag": "35731a5d-0cfb-4bb8-85f1-a267db0eb71f",
+            "sourceColumn": "is_latest_month"
           }
         ],
+        "lineageTag": "2d3374bf-b546-41ee-8051-1a75656b2b74",
         "partitions": [
           {
             "name": "Partition",
             "mode": "import",
             "source": {
-              "type": "m",
               "expression": [
                 "let",
                 "    Source = Sql.Database(\"melvind.database.windows.net\", \"aus_job_dashboard\", [Query = \"SELECT * FROM mart.v_national_overview ORDER BY date\"]),",
                 "    #\"T\" = Table.TransformColumnTypes(Source, {{\"date\", type date}, {\"employed_thousands\", type number}, {\"unemployed_thousands\", type number}, {\"unemployment_rate_pct\", type number}, {\"participation_rate_pct\", type number}, {\"emp_to_pop_ratio_pct\", type number}, {\"unemployment_rate_mom_change_ppt\", type number}, {\"employed_mom_change_pct\", type number}, {\"unemployment_rate_yoy_change_ppt\", type number}, {\"employed_yoy_change_pct\", type number}, {\"is_latest_month\", Int64.Type}})",
                 "in",
                 "    #\"T\""
-              ]
+              ],
+              "type": "m"
             }
           }
         ]
@@ -286,124 +346,134 @@
         "columns": [
           {
             "name": "date",
-            "dataType": "dateTime",
-            "sourceColumn": "date",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "Short Date"
+            "dataType": "dateTime",
+            "formatString": "Short Date",
+            "lineageTag": "e8fc5b25-72f7-4331-94b2-a854a2f60f0c",
+            "sourceColumn": "date"
           },
           {
             "name": "region_code",
-            "dataType": "string",
-            "sourceColumn": "region_code",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
-            ]
+            ],
+            "dataType": "string",
+            "lineageTag": "9c4031f2-53b8-44e5-9663-69e198b42f4c",
+            "sourceColumn": "region_code"
           },
           {
             "name": "region_name",
-            "dataType": "string",
-            "sourceColumn": "region_name",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
-            ]
+            ],
+            "dataType": "string",
+            "lineageTag": "665c3169-7e33-4af8-90e3-43dc9ce53865",
+            "sourceColumn": "region_name"
           },
           {
             "name": "employed_thousands",
-            "dataType": "double",
-            "sourceColumn": "employed_thousands",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "#,0.0"
+            "dataType": "double",
+            "formatString": "#,0.0",
+            "lineageTag": "c2513a58-8ec1-465e-9886-bf317cc924ea",
+            "sourceColumn": "employed_thousands"
           },
           {
             "name": "unemployment_rate_pct",
-            "dataType": "double",
-            "sourceColumn": "unemployment_rate_pct",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "0.00"
+            "dataType": "double",
+            "formatString": "0.00",
+            "lineageTag": "b74d77e7-3fb1-471a-81cf-d9982d640515",
+            "sourceColumn": "unemployment_rate_pct"
           },
           {
             "name": "unemployment_rate_mom_change_ppt",
-            "dataType": "double",
-            "sourceColumn": "unemployment_rate_mom_change_ppt",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.000;-0.000"
+            "dataType": "double",
+            "formatString": "+0.000;-0.000",
+            "lineageTag": "2918e52e-6864-4cfe-a838-bbbdf9a04eab",
+            "sourceColumn": "unemployment_rate_mom_change_ppt"
           },
           {
             "name": "unemployment_rate_yoy_change_ppt",
-            "dataType": "double",
-            "sourceColumn": "unemployment_rate_yoy_change_ppt",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.000;-0.000"
+            "dataType": "double",
+            "formatString": "+0.000;-0.000",
+            "lineageTag": "acbce12b-da7f-4ada-9096-b3d68caace4d",
+            "sourceColumn": "unemployment_rate_yoy_change_ppt"
           },
           {
             "name": "employed_yoy_change_pct",
-            "dataType": "double",
-            "sourceColumn": "employed_yoy_change_pct",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.00;-0.00"
+            "dataType": "double",
+            "formatString": "+0.00;-0.00",
+            "lineageTag": "a464218c-ff4f-42bf-b686-2701d472feee",
+            "sourceColumn": "employed_yoy_change_pct"
           },
           {
             "name": "is_latest_month",
-            "dataType": "int64",
-            "sourceColumn": "is_latest_month",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "isHidden": true
+            "dataType": "int64",
+            "isHidden": true,
+            "lineageTag": "652a16c4-e167-4c4a-a491-5566a594ecd8",
+            "sourceColumn": "is_latest_month"
           }
         ],
+        "lineageTag": "0d72ce78-91c5-4994-aabf-b6496c6ed264",
         "partitions": [
           {
             "name": "Partition",
             "mode": "import",
             "source": {
-              "type": "m",
               "expression": [
                 "let",
                 "    Source = Sql.Database(\"melvind.database.windows.net\", \"aus_job_dashboard\", [Query = \"SELECT * FROM mart.v_unemployment_by_state ORDER BY region_name, date\"]),",
                 "    #\"T\" = Table.TransformColumnTypes(Source, {{\"date\", type date}, {\"region_code\", type text}, {\"region_name\", type text}, {\"employed_thousands\", type number}, {\"unemployment_rate_pct\", type number}, {\"unemployment_rate_mom_change_ppt\", type number}, {\"unemployment_rate_yoy_change_ppt\", type number}, {\"employed_yoy_change_pct\", type number}, {\"is_latest_month\", Int64.Type}})",
                 "in",
                 "    #\"T\""
-              ]
+              ],
+              "type": "m"
             }
           }
         ]
@@ -413,134 +483,145 @@
         "columns": [
           {
             "name": "date",
-            "dataType": "dateTime",
-            "sourceColumn": "date",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "Short Date"
+            "dataType": "dateTime",
+            "formatString": "Short Date",
+            "lineageTag": "3544cc0a-bf33-42fd-81dc-280c70aa80ab",
+            "sourceColumn": "date"
           },
           {
             "name": "industry_code",
-            "dataType": "string",
-            "sourceColumn": "industry_code",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
-            ]
+            ],
+            "dataType": "string",
+            "lineageTag": "feeca86f-487f-438c-ae97-c9dfa4b6359d",
+            "sourceColumn": "industry_code"
           },
           {
             "name": "industry_name",
-            "dataType": "string",
-            "sourceColumn": "industry_name",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
-            ]
+            ],
+            "dataType": "string",
+            "lineageTag": "69fafa45-a626-4612-afa4-b7ceaddb897b",
+            "sourceColumn": "industry_name"
           },
           {
             "name": "employed_thousands",
-            "dataType": "double",
-            "sourceColumn": "employed_thousands",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "#,0.0"
+            "dataType": "double",
+            "formatString": "#,0.0",
+            "lineageTag": "141bc627-26c2-4588-ac09-812d06293147",
+            "sourceColumn": "employed_thousands"
           },
           {
             "name": "employed_yoy_change_thousands",
-            "dataType": "double",
-            "sourceColumn": "employed_yoy_change_thousands",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "#,0.0"
+            "dataType": "double",
+            "formatString": "#,0.0",
+            "lineageTag": "f8ea2238-62f1-4cc7-9d62-b6044b84cfea",
+            "sourceColumn": "employed_yoy_change_thousands"
           },
           {
             "name": "employed_yoy_change_pct",
-            "dataType": "double",
-            "sourceColumn": "employed_yoy_change_pct",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.00;-0.00"
+            "dataType": "double",
+            "formatString": "+0.00;-0.00",
+            "lineageTag": "aad15130-f9e3-47d1-a753-46a3f57ee548",
+            "sourceColumn": "employed_yoy_change_pct"
           },
           {
             "name": "rank_by_employment",
-            "dataType": "int64",
-            "sourceColumn": "rank_by_employment",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
-            ]
+            ],
+            "dataType": "int64",
+            "lineageTag": "5647011c-3b50-4def-9e34-4e977c6feb03",
+            "sourceColumn": "rank_by_employment"
           },
           {
             "name": "growth_category",
-            "dataType": "string",
-            "sourceColumn": "growth_category",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
-            ]
+            ],
+            "dataType": "string",
+            "lineageTag": "767e99a8-645f-4d36-8d80-c181ddec8567",
+            "sourceColumn": "growth_category"
           },
           {
             "name": "is_focus_industry",
-            "dataType": "int64",
-            "sourceColumn": "is_focus_industry",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "isHidden": true
+            "dataType": "int64",
+            "isHidden": true,
+            "lineageTag": "27490082-6b0b-4cda-858a-6e21e6b72ba7",
+            "sourceColumn": "is_focus_industry"
           },
           {
             "name": "is_latest_year",
-            "dataType": "int64",
-            "sourceColumn": "is_latest_year",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "isHidden": true
+            "dataType": "int64",
+            "isHidden": true,
+            "lineageTag": "be5c1c64-288b-4edf-b8df-a3c8a5e65509",
+            "sourceColumn": "is_latest_year"
           }
         ],
+        "lineageTag": "fd4cc7a7-04d2-454d-a48e-409e110d0126",
         "partitions": [
           {
             "name": "Partition",
             "mode": "import",
             "source": {
-              "type": "m",
               "expression": [
                 "let",
                 "    Source = Sql.Database(\"melvind.database.windows.net\", \"aus_job_dashboard\", [Query = \"SELECT * FROM mart.v_industry_breakdown ORDER BY industry_name, date\"]),",
                 "    #\"T\" = Table.TransformColumnTypes(Source, {{\"date\", type date}, {\"industry_code\", type text}, {\"industry_name\", type text}, {\"employed_thousands\", type number}, {\"employed_yoy_change_thousands\", type number}, {\"employed_yoy_change_pct\", type number}, {\"rank_by_employment\", Int64.Type}, {\"growth_category\", type text}, {\"is_focus_industry\", Int64.Type}, {\"is_latest_year\", Int64.Type}})",
                 "in",
                 "    #\"T\""
-              ]
+              ],
+              "type": "m"
             }
           }
         ]
@@ -550,256 +631,285 @@
         "columns": [
           {
             "name": "date",
-            "dataType": "dateTime",
-            "sourceColumn": "date",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "Short Date"
+            "dataType": "dateTime",
+            "formatString": "Short Date",
+            "lineageTag": "16eed78b-7aac-432b-8d5d-23862b632f81",
+            "sourceColumn": "date"
           },
           {
             "name": "sex_code",
-            "dataType": "string",
-            "sourceColumn": "sex_code",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "isHidden": true
+            "dataType": "string",
+            "isHidden": true,
+            "lineageTag": "a21443ec-b5f7-4aae-85ff-af0e0e1f0eb0",
+            "sourceColumn": "sex_code"
           },
           {
             "name": "sex_label",
-            "dataType": "string",
-            "sourceColumn": "sex_label",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
-            ]
+            ],
+            "dataType": "string",
+            "lineageTag": "28642972-cb7e-44f1-b58a-121e295e16cb",
+            "sourceColumn": "sex_label"
           },
           {
             "name": "employed_fulltime_thousands",
-            "dataType": "double",
-            "sourceColumn": "employed_fulltime_thousands",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "#,0.0"
+            "dataType": "double",
+            "formatString": "#,0.0",
+            "lineageTag": "83efc012-a7af-4d9e-be61-a4a2a9b4e805",
+            "sourceColumn": "employed_fulltime_thousands"
           },
           {
             "name": "employed_parttime_thousands",
-            "dataType": "double",
-            "sourceColumn": "employed_parttime_thousands",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "#,0.0"
+            "dataType": "double",
+            "formatString": "#,0.0",
+            "lineageTag": "e8be4d2d-ee48-4e2d-9c0c-1c7011a59247",
+            "sourceColumn": "employed_parttime_thousands"
           },
           {
             "name": "employed_total_thousands",
-            "dataType": "double",
-            "sourceColumn": "employed_total_thousands",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "#,0.0"
+            "dataType": "double",
+            "formatString": "#,0.0",
+            "lineageTag": "768e502c-4cb0-43cd-9cce-036620e3590f",
+            "sourceColumn": "employed_total_thousands"
           },
           {
             "name": "fulltime_share_pct",
-            "dataType": "double",
-            "sourceColumn": "fulltime_share_pct",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "0.00"
+            "dataType": "double",
+            "formatString": "0.00",
+            "lineageTag": "cdde1cf5-7d4d-44e8-ba6d-f425e4d241c7",
+            "sourceColumn": "fulltime_share_pct"
           },
           {
             "name": "parttime_share_pct",
-            "dataType": "double",
-            "sourceColumn": "parttime_share_pct",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "0.00"
+            "dataType": "double",
+            "formatString": "0.00",
+            "lineageTag": "aa0508de-108b-470e-b41c-923586e7ac73",
+            "sourceColumn": "parttime_share_pct"
           },
           {
             "name": "fulltime_share_yoy_change_ppt",
-            "dataType": "double",
-            "sourceColumn": "fulltime_share_yoy_change_ppt",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.000;-0.000"
+            "dataType": "double",
+            "formatString": "+0.000;-0.000",
+            "lineageTag": "3bf9f70f-cc57-4431-bab7-a576c5c8818d",
+            "sourceColumn": "fulltime_share_yoy_change_ppt"
           },
           {
             "name": "employed_total_yoy_change_pct",
-            "dataType": "double",
-            "sourceColumn": "employed_total_yoy_change_pct",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "formatString": "+0.00;-0.00"
+            "dataType": "double",
+            "formatString": "+0.00;-0.00",
+            "lineageTag": "24e904fb-0418-4d0e-8a33-bd1cd9032d56",
+            "sourceColumn": "employed_total_yoy_change_pct"
           },
           {
             "name": "is_latest_month",
-            "dataType": "int64",
-            "sourceColumn": "is_latest_month",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
             ],
-            "isHidden": true
+            "dataType": "int64",
+            "isHidden": true,
+            "lineageTag": "e616fb4d-12e5-47a8-a7de-9e3acfa37f9b",
+            "sourceColumn": "is_latest_month"
           }
         ],
+        "lineageTag": "45965059-26f1-41a2-a112-7c6a8771e25d",
         "partitions": [
           {
             "name": "Partition",
             "mode": "import",
             "source": {
-              "type": "m",
               "expression": [
                 "let",
                 "    Source = Sql.Database(\"melvind.database.windows.net\", \"aus_job_dashboard\", [Query = \"SELECT * FROM mart.v_fulltime_parttime ORDER BY sex_label, date\"]),",
                 "    #\"T\" = Table.TransformColumnTypes(Source, {{\"date\", type date}, {\"sex_code\", type text}, {\"sex_label\", type text}, {\"employed_fulltime_thousands\", type number}, {\"employed_parttime_thousands\", type number}, {\"employed_total_thousands\", type number}, {\"fulltime_share_pct\", type number}, {\"parttime_share_pct\", type number}, {\"fulltime_share_yoy_change_ppt\", type number}, {\"employed_total_yoy_change_pct\", type number}, {\"is_latest_month\", Int64.Type}})",
                 "in",
                 "    #\"T\""
-              ]
+              ],
+              "type": "m"
             }
           }
         ]
       },
       {
         "name": "_Measures",
-        "isHidden": true,
         "columns": [
           {
             "name": "Placeholder",
-            "dataType": "int64",
-            "isHidden": true,
             "annotations": [
               {
                 "name": "SummarizationSetBy",
                 "value": "Automatic"
               }
-            ]
+            ],
+            "dataType": "int64",
+            "isHidden": true,
+            "lineageTag": "b5f2beac-661e-41b1-b1ef-e31dad264046"
           }
         ],
+        "isHidden": true,
+        "lineageTag": "7f2292cb-0fb3-4770-a30c-6bad4bc1de0c",
         "measures": [
           {
             "name": "Latest Unemployment Rate",
-            "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[unemployment_rate_pct]),NationalOverview[date]=D)",
             "displayFolder": "Overview KPIs",
-            "formatString": "0.00"
+            "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[unemployment_rate_pct]),NationalOverview[date]=D)",
+            "formatString": "0.00",
+            "lineageTag": "dc8fe304-c0fa-4e6e-87e9-742d61236cab"
           },
           {
             "name": "Latest Employed Thousands",
-            "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[employed_thousands]),NationalOverview[date]=D)",
             "displayFolder": "Overview KPIs",
-            "formatString": "#,0.0"
+            "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[employed_thousands]),NationalOverview[date]=D)",
+            "formatString": "#,0.0",
+            "lineageTag": "20aa6d6f-2f34-4651-a33d-f65dc172fcea"
           },
           {
             "name": "Latest Participation Rate",
-            "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[participation_rate_pct]),NationalOverview[date]=D)",
             "displayFolder": "Overview KPIs",
-            "formatString": "0.00"
+            "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[participation_rate_pct]),NationalOverview[date]=D)",
+            "formatString": "0.00",
+            "lineageTag": "db95c8d7-0f9f-40e5-bf41-3314a2bb6107"
           },
           {
             "name": "Latest Emp To Pop Ratio",
-            "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[emp_to_pop_ratio_pct]),NationalOverview[date]=D)",
             "displayFolder": "Overview KPIs",
-            "formatString": "0.00"
+            "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[emp_to_pop_ratio_pct]),NationalOverview[date]=D)",
+            "formatString": "0.00",
+            "lineageTag": "86ec61b8-6e1c-4993-8f9e-9e66f9550946"
           },
           {
             "name": "Unemployment Rate MoM Change",
-            "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[unemployment_rate_mom_change_ppt]),NationalOverview[date]=D)",
             "displayFolder": "Overview KPIs",
-            "formatString": "+0.000;-0.000"
+            "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[unemployment_rate_mom_change_ppt]),NationalOverview[date]=D)",
+            "formatString": "+0.000;-0.000",
+            "lineageTag": "ecc6b77d-df75-44b4-bdd5-f79cbf158adc"
           },
           {
             "name": "Employed YoY Change Pct",
-            "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[employed_yoy_change_pct]),NationalOverview[date]=D)",
             "displayFolder": "Overview KPIs",
-            "formatString": "+0.00;-0.00"
+            "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[employed_yoy_change_pct]),NationalOverview[date]=D)",
+            "formatString": "+0.00;-0.00",
+            "lineageTag": "b2d6ffb5-9569-4bba-8921-e24394884e57"
           },
           {
             "name": "Unemployment Rate Subtitle",
+            "displayFolder": "Overview KPIs",
             "expression": "VAR Ch=[Unemployment Rate MoM Change] VAR Ar=IF(Ch>0,\"▲\",IF(Ch<0,\"▼\",\"–\")) RETURN Ar&\" \"&FORMAT(ABS(Ch),\"0.0\")&\" ppt vs last month\"",
-            "displayFolder": "Overview KPIs"
+            "lineageTag": "429fccf2-cf06-4034-9c87-1b4c75399f6c"
           },
           {
             "name": "Employed Subtitle",
+            "displayFolder": "Overview KPIs",
             "expression": "VAR Ch=[Employed YoY Change Pct] VAR Ar=IF(Ch>0,\"▲\",IF(Ch<0,\"▼\",\"–\")) RETURN Ar&\" \"&FORMAT(ABS(Ch),\"0.0\")&\"% vs last year\"",
-            "displayFolder": "Overview KPIs"
+            "lineageTag": "6cb06b7d-6293-4407-8a00-bd7d2d7d22fe"
           },
           {
             "name": "National Avg Unemployment Rate",
-            "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[unemployment_rate_pct]),NationalOverview[date]=D)",
             "displayFolder": "State KPIs",
-            "formatString": "0.00"
+            "expression": "VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[unemployment_rate_pct]),NationalOverview[date]=D)",
+            "formatString": "0.00",
+            "lineageTag": "b10ccfbd-5388-4b86-ac14-92e3b4aece51"
           },
           {
             "name": "Latest Industry Employed",
-            "expression": "CALCULATE(MAX(IndustryBreakdown[employed_thousands]),IndustryBreakdown[is_latest_year]=1)",
             "displayFolder": "Industry KPIs",
-            "formatString": "#,0.0"
+            "expression": "CALCULATE(MAX(IndustryBreakdown[employed_thousands]),IndustryBreakdown[is_latest_year]=1)",
+            "formatString": "#,0.0",
+            "lineageTag": "f136b8b1-230e-47a6-8585-987424c96405"
           },
           {
             "name": "Latest Industry YoY Change",
-            "expression": "CALCULATE(MAX(IndustryBreakdown[employed_yoy_change_pct]),IndustryBreakdown[is_latest_year]=1)",
             "displayFolder": "Industry KPIs",
-            "formatString": "+0.00;-0.00"
+            "expression": "CALCULATE(MAX(IndustryBreakdown[employed_yoy_change_pct]),IndustryBreakdown[is_latest_year]=1)",
+            "formatString": "+0.00;-0.00",
+            "lineageTag": "2f1179ad-a559-45ff-833d-a1ffdea2249d"
           },
           {
             "name": "Latest FT Share Persons",
-            "expression": "CALCULATE(MAX(FulltimeParttime[fulltime_share_pct]),FulltimeParttime[is_latest_month]=1,FulltimeParttime[sex_label]=\"Persons\")",
             "displayFolder": "FT PT KPIs",
-            "formatString": "0.00"
+            "expression": "CALCULATE(MAX(FulltimeParttime[fulltime_share_pct]),FulltimeParttime[is_latest_month]=1,FulltimeParttime[sex_label]=\"Persons\")",
+            "formatString": "0.00",
+            "lineageTag": "25b7a728-41b7-4f28-9f04-9497e95ab773"
           },
           {
             "name": "Latest PT Share Persons",
-            "expression": "CALCULATE(MAX(FulltimeParttime[parttime_share_pct]),FulltimeParttime[is_latest_month]=1,FulltimeParttime[sex_label]=\"Persons\")",
             "displayFolder": "FT PT KPIs",
-            "formatString": "0.00"
+            "expression": "CALCULATE(MAX(FulltimeParttime[parttime_share_pct]),FulltimeParttime[is_latest_month]=1,FulltimeParttime[sex_label]=\"Persons\")",
+            "formatString": "0.00",
+            "lineageTag": "b87fc9c2-1001-4e3d-a08d-50570f6ed8f6"
           },
           {
             "name": "FT Share YoY Change",
-            "expression": "VAR D=MAX(FulltimeParttime[date]) RETURN CALCULATE(MAX(FulltimeParttime[fulltime_share_yoy_change_ppt]),FulltimeParttime[date]=D,FulltimeParttime[sex_label]=\"Persons\")",
             "displayFolder": "FT PT KPIs",
-            "formatString": "+0.000;-0.000"
+            "expression": "VAR D=MAX(FulltimeParttime[date]) RETURN CALCULATE(MAX(FulltimeParttime[fulltime_share_yoy_change_ppt]),FulltimeParttime[date]=D,FulltimeParttime[sex_label]=\"Persons\")",
+            "formatString": "+0.000;-0.000",
+            "lineageTag": "768bc8a7-dc84-4e32-b1c2-8606a889a3e4"
           },
           {
             "name": "FT Share Subtitle",
+            "displayFolder": "FT PT KPIs",
             "expression": "VAR Ch=[FT Share YoY Change] VAR Ar=IF(Ch>0,\"▲\",IF(Ch<0,\"▼\",\"–\")) RETURN Ar&\" \"&FORMAT(ABS(Ch),\"0.0\")&\" ppt vs last year\"",
-            "displayFolder": "FT PT KPIs"
+            "lineageTag": "70b85e69-85a0-4e18-9cb0-0a85e4dce628"
           }
         ],
         "partitions": [
@@ -807,56 +917,16 @@
             "name": "_Measures",
             "mode": "import",
             "source": {
-              "type": "m",
               "expression": [
                 "let",
                 "    Source = Table.FromRows({}, type table [Placeholder = Int64.Type])",
                 "in",
                 "    Source"
-              ]
+              ],
+              "type": "m"
             }
           }
         ]
-      }
-    ],
-    "relationships": [
-      {
-        "name": "4c418ea8-68dd-4d37-aeed-4d2b34b81ef3",
-        "fromTable": "NationalOverview",
-        "fromColumn": "date",
-        "toTable": "DateTable",
-        "toColumn": "Date",
-        "crossFilteringBehavior": "oneDirection"
-      },
-      {
-        "name": "a3ecff73-d3c3-4522-80df-f8b6709d8242",
-        "fromTable": "UnemploymentByState",
-        "fromColumn": "date",
-        "toTable": "DateTable",
-        "toColumn": "Date",
-        "crossFilteringBehavior": "oneDirection"
-      },
-      {
-        "name": "69ed4449-beec-40a3-bdb4-e8bb4e8bb916",
-        "fromTable": "FulltimeParttime",
-        "fromColumn": "date",
-        "toTable": "DateTable",
-        "toColumn": "Date",
-        "crossFilteringBehavior": "oneDirection"
-      },
-      {
-        "name": "489f5dae-706c-4e75-8d56-73cda857be8e",
-        "fromTable": "IndustryBreakdown",
-        "fromColumn": "date",
-        "toTable": "DateTable",
-        "toColumn": "Date",
-        "crossFilteringBehavior": "oneDirection"
-      }
-    ],
-    "annotations": [
-      {
-        "name": "PBI_QueryOrder",
-        "value": "[\"DateTable\",\"NationalOverview\",\"UnemploymentByState\",\"IndustryBreakdown\",\"FulltimeParttime\",\"_Measures\"]"
       }
     ]
   }
