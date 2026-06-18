@@ -138,6 +138,7 @@ AZURE_SQL_CONN_STR=Driver={ODBC Driver 18 for SQL Server};Server=...;Database=..
 - Pushed to GitHub (`origin/master`).
 
 ### Power BI — SOURCE OF TRUTH
+- **This file (CLAUDE.md) governs the project** — spec, conventions, decisions, status, handoff. `build_report.py` only governs the generated `.pbip` files (`model.bim` / `report.json`); it is a build mechanism, not a competing authority. When they appear to disagree, CLAUDE.md wins and gets updated.
 - The `.pbip` is **generated** by `powerbi/build_report.py`. **Do NOT hand-edit `model.bim` / `report.json`** — edit `build_report.py` and regenerate: `py -3 powerbi/build_report.py`. (Hand-editing + Desktop re-saves previously corrupted the model into a state that wouldn't load.)
 - After regenerating, **close Power BI Desktop without saving** before reopening `aus_job_dashboard.pbip`, or Desktop overwrites the regenerated files.
 - Fixes already applied in `build_report.py`:
@@ -146,12 +147,18 @@ AZURE_SQL_CONN_STR=Driver={ODBC Driver 18 for SQL Server};Server=...;Database=..
   3. Charts were blank because value-slot columns were bare `Column` refs → now wrapped in `Aggregation` (Average for rate/pct/share/ppt, Sum for counts) in `_visual_container`.
 
 ### PENDING (next session, in order)
-1. **Confirm charts render.** Last user report: model loads + data OK + cards/text OK, but charts were broken; the aggregation fix (#3 above) is **uncommitted and untested by the user**. Ask them to reopen `.pbip` and confirm charts draw.
-2. **Two semantic fixes** (render fine but numbers need correcting):
-   - Full-time vs Part-time area/line: `FulltimeParttime.sex_label` ∈ {Persons, Male, Female} where Persons = Male+Female; summing all three double-counts. Add a visual filter `sex_label = "Persons"` (or split by sex).
-   - State trend line: currently averages all states into one line; split into one line per state via `region_name` series.
-3. **Model polish** (from the installed `powerbi-modeling` skill's best practices): hide technical columns (`region_code`, `sex_code`, `industry_code`, `is_latest_*` flags); add table/column/measure descriptions.
-4. **Commit + push** once charts are confirmed. Uncommitted now: `powerbi/build_report.py`, `model.bim`, `report.json`, `definition.pbism` (regenerated), and `.claude/skills/powerbi-modeling/` (the installed skill).
+1. **Confirm charts render + semantic fixes look right.** Reopen `.pbip` (close Desktop WITHOUT saving first) and refresh. Verify: charts draw (aggregation fix), the state trend shows one line per state, the FT/PT area shows Persons only, the FT-share line splits by sex, and the "Employment by Sex" bar shows Male/Female for the latest month only.
+2. **Commit + push** once confirmed. Uncommitted: `powerbi/build_report.py`, `model.bim`, `report.json`, `definition.pbism` (regenerated), and `.claude/skills/powerbi-modeling/` (the installed skill).
+3. **Data note:** `mart.v_unemployment_by_state` returns only **6** `region_name` values, not the 8 states/territories in the PRD (ACT/NT appear missing). Check the staging→mart filtering if all 8 are wanted on the State page.
+
+### DONE this session (2026-06-18, "All in build_report.py" — source of truth preserved, MCP validation-only)
+- **Two semantic fixes (report-level, in `_make_report()`):**
+  - FT/PT area chart now filtered to `sex_label = "Persons"` (was triple-counting Persons+Male+Female).
+  - State trend line now split by `region_name` series (was averaging all states into one line).
+  - Bonus: FT-share line split by sex; "Employment by Sex" bar now excludes the Persons total and is filtered to `is_latest_month = 1` (it had no latest-month filter, so it summed totals over all history).
+  - New report helpers: `_lit`, `_categorical_filter(table, col, values, exclude=)`, and `vfilters=` on `_visual_container`/`_line`/`_bar`/`_area`; `_line` now takes `series_table`/`series_col`.
+- **Model polish (in `_make_model()`):** hid `region_code` + `industry_code`; added table descriptions (all 5 data tables + DateTable), key column descriptions, and measure descriptions (subtitles, National Avg, Latest FT/PT Share). `c()` gained `desc=`, `_m_table` gained `description=`, measures tuples accept an optional 5th description element.
+- Regenerated via `py -3 powerbi/build_report.py`; `model.bim` + `report.json` validated as well-formed and fixes confirmed present.
 
 ### Tooling added this session
 - **Skill** `powerbi-modeling` installed at `.claude/skills/powerbi-modeling/` (reference docs for star schema, relationships, DAX, performance, RLS).

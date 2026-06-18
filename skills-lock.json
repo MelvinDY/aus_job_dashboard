@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "powerbi-modeling": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/powerbi-modeling/SKILL.md",
+      "computedHash": "b98ebe4d3876548b0a10c1c97216fdf4d50799243ffbb38158b367574bbf19f5"
+    }
+  }
+}

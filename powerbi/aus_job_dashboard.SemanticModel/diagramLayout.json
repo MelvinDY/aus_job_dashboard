@@ -10,10 +10,11 @@
       "nodes": [
         {
           "location": {
-            "x": 878.5415381292305,
-            "y": 336.18454793576132
+            "x": 992.308820824982,
+            "y": 310.90292955892767
           },
           "nodeIndex": "_Measures",
+          "nodeLineageTag": "86773388-1cc7-4cb9-9551-c13682a47af7",
           "size": {
             "height": 300,
             "width": 234
@@ -22,10 +23,11 @@
         },
         {
           "location": {
-            "x": 357.67782447125057,
-            "y": 300.19379057686649
+            "x": 379.79924055098007,
+            "y": 393.41975834144068
           },
           "nodeIndex": "DateTable",
+          "nodeLineageTag": "be558fd3-0019-4d4d-bb85-d49fe0513416",
           "size": {
             "height": 272,
             "width": 234
@@ -34,10 +36,11 @@
         },
         {
           "location": {
-            "x": 644.5415381292305,
-            "y": 300.31090660446534
+            "x": 726.70679785394,
+            "y": 380.89606518062271
           },
           "nodeIndex": "FulltimeParttime",
+          "nodeLineageTag": "f89ee6f7-d205-45b0-9615-73dc898329f0",
           "size": {
             "height": 300,
             "width": 234
@@ -46,10 +49,11 @@
         },
         {
           "location": {
-            "x": 584.01498951778422,
-            "y": -50
+            "x": 389.66254824587531,
+            "y": 0
           },
           "nodeIndex": "IndustryBreakdown",
+          "nodeLineageTag": "223245c0-de08-4651-97b5-6739d5103916",
           "size": {
             "height": 300,
             "width": 234
@@ -58,10 +62,11 @@
         },
         {
           "location": {
-            "x": 125.31273056593068,
-            "y": 622.36909587152263
+            "x": 58.948482326742266,
+            "y": 641.33030965414787
           },
           "nodeIndex": "NationalOverview",
+          "nodeLineageTag": "c02d038a-c897-45d1-b004-bc51e766f43c",
           "size": {
             "height": 300,
             "width": 234
@@ -82,7 +87,7 @@
         }
       ],
       "name": "All tables",
-      "zoomValue": 100,
+      "zoomValue": 63.28708772323408,
       "pinKeyFieldsToTop": false,
       "showExtraHeaderInfo": false,
       "hideKeyFieldsWhenCollapsed": false,
