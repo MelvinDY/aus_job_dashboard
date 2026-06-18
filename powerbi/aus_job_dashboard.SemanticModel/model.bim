@@ -1,6 +1,6 @@
 {
   "name": "SemanticModel",
-  "compatibilityLevel": 1550,
+  "compatibilityLevel": 1600,
   "model": {
     "culture": "en-AU",
     "defaultPowerBIDataSourceVersion": "powerBI_V3",
@@ -852,7 +852,7 @@
     ],
     "relationships": [
       {
-        "name": "7d5929ae-ff77-45be-b34c-5c1c617c5482",
+        "name": "bb79c564-da2b-4b5a-8481-8f3b11d96684",
         "fromTable": "NationalOverview",
         "fromColumn": "date",
         "toTable": "DateTable",
@@ -860,7 +860,7 @@
         "crossFilteringBehavior": "oneDirection"
       },
       {
-        "name": "239c7e57-eb7b-44bf-a792-980f9ed4dd9c",
+        "name": "df3d0bbd-7f53-4f94-b5e4-8b4c07683e03",
         "fromTable": "UnemploymentByState",
         "fromColumn": "date",
         "toTable": "DateTable",
@@ -868,7 +868,7 @@
         "crossFilteringBehavior": "oneDirection"
       },
       {
-        "name": "a185f930-ef37-47fc-aded-8ad668e3394d",
+        "name": "17c05cf3-8525-4add-92a4-bd80cdeccd25",
         "fromTable": "FulltimeParttime",
         "fromColumn": "date",
         "toTable": "DateTable",
@@ -876,7 +876,7 @@
         "crossFilteringBehavior": "oneDirection"
       },
       {
-        "name": "48700720-0bef-4de9-8e02-cd4b8a1bbc87",
+        "name": "65e3f6ab-19a3-4c25-a588-8615be3aa44e",
         "fromTable": "IndustryBreakdown",
         "fromColumn": "date",
         "toTable": "DateTable",

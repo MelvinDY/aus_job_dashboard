@@ -335,7 +335,7 @@ def _make_model() -> dict:
 
     return {
         "name": "SemanticModel",
-        "compatibilityLevel": 1550,
+        "compatibilityLevel": 1600,
         "model": {
             "culture": "en-AU",
             "defaultPowerBIDataSourceVersion": "powerBI_V3",
