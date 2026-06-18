@@ -113,13 +113,13 @@ def _make_model() -> dict:
         c("date",                          "dateTime", "type date",   "Short Date"),
         c("employed_thousands",            "double",   "type number", "#,0.0"),
         c("unemployed_thousands",          "double",   "type number", "#,0.0"),
-        c("unemployment_rate_pct",         "double",   "type number", "0.00"),
-        c("participation_rate_pct",        "double",   "type number", "0.00"),
-        c("emp_to_pop_ratio_pct",          "double",   "type number", "0.00"),
-        c("unemployment_rate_mom_change_ppt", "double","type number", "+0.000;-0.000"),
-        c("employed_mom_change_pct",       "double",   "type number", "+0.00;-0.00"),
-        c("unemployment_rate_yoy_change_ppt","double", "type number", "+0.000;-0.000"),
-        c("employed_yoy_change_pct",       "double",   "type number", "+0.00;-0.00"),
+        c("unemployment_rate_pct",         "double",   "type number", '0.00"%"'),
+        c("participation_rate_pct",        "double",   "type number", '0.00"%"'),
+        c("emp_to_pop_ratio_pct",          "double",   "type number", '0.00"%"'),
+        c("unemployment_rate_mom_change_ppt", "double","type number", '+0.00" ppt";-0.00" ppt"'),
+        c("employed_mom_change_pct",       "double",   "type number", '+0.00"%";-0.00"%"'),
+        c("unemployment_rate_yoy_change_ppt","double", "type number", '+0.00" ppt";-0.00" ppt"'),
+        c("employed_yoy_change_pct",       "double",   "type number", '+0.00"%";-0.00"%"'),
         c("is_latest_month",               "int64",    "Int64.Type",  hidden=True),
     ]
     state_cols = [
@@ -129,11 +129,11 @@ def _make_model() -> dict:
           desc="State or territory name.", dcat="StateOrProvince"),
         c("employed_thousands",            "double",   "type number", "#,0.0",
           desc="Employed persons in thousands, seasonally adjusted."),
-        c("unemployment_rate_pct",         "double",   "type number", "0.00",
+        c("unemployment_rate_pct",         "double",   "type number", '0.00"%"',
           desc="Unemployment rate (%), seasonally adjusted."),
-        c("unemployment_rate_mom_change_ppt","double", "type number", "+0.000;-0.000"),
-        c("unemployment_rate_yoy_change_ppt","double", "type number", "+0.000;-0.000"),
-        c("employed_yoy_change_pct",       "double",   "type number", "+0.00;-0.00"),
+        c("unemployment_rate_mom_change_ppt","double", "type number", '+0.00" ppt";-0.00" ppt"'),
+        c("unemployment_rate_yoy_change_ppt","double", "type number", '+0.00" ppt";-0.00" ppt"'),
+        c("employed_yoy_change_pct",       "double",   "type number", '+0.00"%";-0.00"%"'),
         c("is_latest_month",               "int64",    "Int64.Type",  hidden=True),
     ]
     industry_cols = [
@@ -144,7 +144,7 @@ def _make_model() -> dict:
         c("employed_thousands",            "double",   "type number", "#,0.0",
           desc="Employed persons in thousands."),
         c("employed_yoy_change_thousands", "double",   "type number", "#,0.0"),
-        c("employed_yoy_change_pct",       "double",   "type number", "+0.00;-0.00",
+        c("employed_yoy_change_pct",       "double",   "type number", '+0.00"%";-0.00"%"',
           desc="Year-on-year change in employed persons (%)."),
         c("rank_by_employment",            "int64",    "Int64.Type"),
         c("growth_category",               "string",   "type text",
@@ -161,10 +161,10 @@ def _make_model() -> dict:
         c("employed_fulltime_thousands",   "double",   "type number", "#,0.0"),
         c("employed_parttime_thousands",   "double",   "type number", "#,0.0"),
         c("employed_total_thousands",      "double",   "type number", "#,0.0"),
-        c("fulltime_share_pct",            "double",   "type number", "0.00"),
-        c("parttime_share_pct",            "double",   "type number", "0.00"),
-        c("fulltime_share_yoy_change_ppt", "double",   "type number", "+0.000;-0.000"),
-        c("employed_total_yoy_change_pct", "double",   "type number", "+0.00;-0.00"),
+        c("fulltime_share_pct",            "double",   "type number", '0.00"%"'),
+        c("parttime_share_pct",            "double",   "type number", '0.00"%"'),
+        c("fulltime_share_yoy_change_ppt", "double",   "type number", '+0.00" ppt";-0.00" ppt"'),
+        c("employed_total_yoy_change_pct", "double",   "type number", '+0.00"%";-0.00"%"'),
         c("is_latest_month",               "int64",    "Int64.Type",  hidden=True),
     ]
 
@@ -240,22 +240,22 @@ def _make_model() -> dict:
         # Overview KPIs
         ("Latest Unemployment Rate",
          'VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[unemployment_rate_pct]),NationalOverview[date]=D)',
-         "0.00", "Overview KPIs"),
+         '0.00"%"', "Overview KPIs"),
         ("Latest Employed Thousands",
          'VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[employed_thousands]),NationalOverview[date]=D)',
          "#,0.0", "Overview KPIs"),
         ("Latest Participation Rate",
          'VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[participation_rate_pct]),NationalOverview[date]=D)',
-         "0.00", "Overview KPIs"),
+         '0.00"%"', "Overview KPIs"),
         ("Latest Emp To Pop Ratio",
          'VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[emp_to_pop_ratio_pct]),NationalOverview[date]=D)',
-         "0.00", "Overview KPIs"),
+         '0.00"%"', "Overview KPIs"),
         ("Unemployment Rate MoM Change",
          'VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[unemployment_rate_mom_change_ppt]),NationalOverview[date]=D)',
-         "+0.000;-0.000", "Overview KPIs"),
+         '+0.00" ppt";-0.00" ppt"', "Overview KPIs"),
         ("Employed YoY Change Pct",
          'VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[employed_yoy_change_pct]),NationalOverview[date]=D)',
-         "+0.00;-0.00", "Overview KPIs"),
+         '+0.00"%";-0.00"%"', "Overview KPIs"),
         ("Unemployment Rate Subtitle",
          'VAR Ch=[Unemployment Rate MoM Change] VAR Ar=IF(Ch>0,"▲",IF(Ch<0,"▼","–")) RETURN Ar&" "&FORMAT(ABS(Ch),"0.0")&" ppt vs last month"',
          None, "Overview KPIs",
@@ -267,7 +267,7 @@ def _make_model() -> dict:
         # State KPIs
         ("National Avg Unemployment Rate",
          'VAR D=MAX(NationalOverview[date]) RETURN CALCULATE(MAX(NationalOverview[unemployment_rate_pct]),NationalOverview[date]=D)',
-         "0.00", "State KPIs",
+         '0.00"%"', "State KPIs",
          "National unemployment rate at the latest month (reference line for the state view)."),
         # Industry KPIs
         ("Latest Industry Employed",
@@ -275,19 +275,19 @@ def _make_model() -> dict:
          "#,0.0", "Industry KPIs"),
         ("Latest Industry YoY Change",
          'CALCULATE(MAX(IndustryBreakdown[employed_yoy_change_pct]),IndustryBreakdown[is_latest_year]=1)',
-         "+0.00;-0.00", "Industry KPIs"),
+         '+0.00"%";-0.00"%"', "Industry KPIs"),
         # FT/PT KPIs
         ('Latest FT Share Persons',
          'CALCULATE(MAX(FulltimeParttime[fulltime_share_pct]),FulltimeParttime[is_latest_month]=1,FulltimeParttime[sex_label]="Persons")',
-         "0.00", "FT PT KPIs",
+         '0.00"%"', "FT PT KPIs",
          "Full-time share of employment (%) for Persons at the latest month."),
         ('Latest PT Share Persons',
          'CALCULATE(MAX(FulltimeParttime[parttime_share_pct]),FulltimeParttime[is_latest_month]=1,FulltimeParttime[sex_label]="Persons")',
-         "0.00", "FT PT KPIs",
+         '0.00"%"', "FT PT KPIs",
          "Part-time share of employment (%) for Persons at the latest month."),
         ('FT Share YoY Change',
          'VAR D=MAX(FulltimeParttime[date]) RETURN CALCULATE(MAX(FulltimeParttime[fulltime_share_yoy_change_ppt]),FulltimeParttime[date]=D,FulltimeParttime[sex_label]="Persons")',
-         "+0.000;-0.000", "FT PT KPIs"),
+         '+0.00" ppt";-0.00" ppt"', "FT PT KPIs"),
         ('FT Share Subtitle',
          'VAR Ch=[FT Share YoY Change] VAR Ar=IF(Ch>0,"▲",IF(Ch<0,"▼","–")) RETURN Ar&" "&FORMAT(ABS(Ch),"0.0")&" ppt vs last year"',
          None, "FT PT KPIs"),
@@ -425,7 +425,17 @@ def _categorical_filter(table: str, col: str, values: list, *, exclude: bool = F
 # legend, labels, colours) and `visualContainerObjects` (container chrome — title,
 # background, border, shadow). Defined once here so every page stays consistent.
 PRIMARY    = "#1F4E79"   # hero/accent (deep blue) — unemployment is the lead metric
-SECONDARY  = "#2E86AB"   # secondary series (e.g. part-time)
+SECONDARY  = "#E1812C"   # secondary series (amber) — high contrast vs the blue
+# Distinct categorical palette for multi-category visuals (donut, split lines).
+CATEGORICAL = ["#1F4E79", "#E1812C", "#3F9C5B", "#B23A48", "#6A4C93",
+               "#2BB0C5", "#C9A227", "#7A8B99"]
+
+# Category value lists, used to assign a distinct palette colour per series.
+STATES = ["New South Wales", "Victoria", "Queensland", "Western Australia",
+          "South Australia", "Tasmania"]
+FOCUS_INDUSTRIES = ["Construction", "Health Care & Social Assistance",
+                    "Information Media & Telecommunications", "Retail Trade"]
+SEXES = ["Persons", "Male", "Female"]
 TEXT       = "#1F2D3D"   # primary text
 MUTED      = "#5B6B7B"   # axis / secondary text
 CARD_BG    = "#FFFFFF"   # visual background
@@ -480,8 +490,23 @@ def _container_chrome(title: str = None) -> dict:
     return vco
 
 
+def _cat_dp(table: str, col: str, values: list) -> list:
+    """dataPoint colour selectors keyed by category value (e.g. one colour per
+    state / industry / sex), assigned from the categorical palette in order."""
+    out = []
+    for i, v in enumerate(values):
+        out.append({
+            "selector": {"data": [{"scopeId": {"Comparison": {"ComparisonKind": 0,
+                "Left": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": col}},
+                "Right": {"Literal": {"Value": _lit(v)}}}}}]},
+            "properties": {"fill": _color(CATEGORICAL[i % len(CATEGORICAL)])},
+        })
+    return out
+
+
 def _chart_objects(accent=None, legend=False, data_labels=False,
-                   x_axis_title=False, y_axis_title=False, series_colors=None) -> dict:
+                   x_axis_title=False, y_axis_title=False, series_colors=None,
+                   cat_dp=None) -> dict:
     o = {
         "categoryAxis": [{"properties": {"show": _bool(True), "showAxisTitle": _bool(x_axis_title),
                                          "labelColor": _color(MUTED), "fontSize": _pe("9D")}}],
@@ -499,6 +524,7 @@ def _chart_objects(accent=None, legend=False, data_labels=False,
         dp.append({"properties": {"defaultColor": _color(accent), "fill": _color(accent)}})
     for ref, hex_str in (series_colors or []):
         dp.append({"selector": {"metadata": ref}, "properties": {"fill": _color(hex_str)}})
+    dp.extend(cat_dp or [])
     if dp:
         o["dataPoint"] = dp
     return o
@@ -508,8 +534,7 @@ def _card_objects() -> dict:
     return {
         "labels": [{"properties": {"color": _color(PRIMARY), "fontSize": _pe(f"{CARD_VALUE}D"),
                                    "fontFamily": _pe(f"'{FONT_SEMI}'"), "labelDisplayUnits": _pe("0D")}}],
-        "categoryLabels": [{"properties": {"show": _bool(True), "color": _color(MUTED),
-                                           "fontSize": _pe("10D"), "fontFamily": _pe(f"'{FONT}'")}}],
+        "categoryLabels": [{"properties": {"show": _bool(False)}}],
     }
 
 
@@ -530,10 +555,11 @@ def _table_objects() -> dict:
 
 
 def _visual_container(x, y, w, h, visual_type, projections, title=None,
-                       objects=None, extra_config=None, vfilters=None):
+                       objects=None, extra_config=None, vfilters=None, sort=None):
     """
     Build a report visual container dict.
     projections: list of (slot, table, column_or_measure, is_measure)
+    sort: optional (slot, "asc"|"desc") — order the query by that slot's value.
     """
     vis_name = str(uuid.uuid4())[:8]
     z = _next_z()
@@ -542,6 +568,7 @@ def _visual_container(x, y, w, h, visual_type, projections, title=None,
     from_list = []
     select_list = []
     proj_map = {}
+    slot_value_expr = {}   # slot -> value expression (for OrderBy)
 
     # Slots that aggregate a numeric value. A bare column here produces an
     # invalid visual query, so columns in these slots are wrapped in an
@@ -574,6 +601,7 @@ def _visual_container(x, y, w, h, visual_type, projections, title=None,
             query_ref = f"{table}.{field}"
             sel = {"Column": {"Expression": src_ref, "Property": field}, "Name": query_ref}
         select_list.append(sel)
+        slot_value_expr.setdefault(slot, {k: v for k, v in sel.items() if k != "Name"})
 
         proj_entry = {"queryRef": query_ref, "active": True}
         if slot not in proj_map:
@@ -585,6 +613,10 @@ def _visual_container(x, y, w, h, visual_type, projections, title=None,
         "From": from_list,
         "Select": select_list,
     }
+    if sort and sort[0] in slot_value_expr:
+        direction = 2 if sort[1] == "desc" else 1   # 2 = Descending, 1 = Ascending
+        proto_query["OrderBy"] = [{"Direction": direction,
+                                   "Expression": slot_value_expr[sort[0]]}]
 
     single_visual = {
         "visualType": visual_type,
@@ -592,7 +624,7 @@ def _visual_container(x, y, w, h, visual_type, projections, title=None,
         "prototypeQuery": proto_query,
     }
 
-    single_visual["visualContainerObjects"] = _container_chrome(title)
+    single_visual["vcObjects"] = _container_chrome(title)
     if objects:
         single_visual["objects"] = objects
     if extra_config:
@@ -654,23 +686,26 @@ def _card(x, y, w, h, measure, title=None):
 
 
 def _line(x, y, w, h, cat_table, cat_col, y_specs, series_table=None,
-          series_col=None, title=None, vfilters=None):
-    """y_specs: list of (table, col, is_measure)"""
+          series_col=None, title=None, vfilters=None, cat_values=None):
+    """y_specs: list of (table, col, is_measure). cat_values: the series values to
+    colour distinctly (one palette colour each), avoiding look-alike spaghetti lines."""
     proj = [("Category", cat_table, cat_col, False)]
     for tbl, col, is_m in y_specs:
         proj.append(("Y", tbl, col, is_m))
     if series_table:
         proj.append(("Series", series_table, series_col, False))
-    # Single-series lines get the accent colour; category-split lines keep the
-    # categorical palette and show a top legend.
+    # Single-series lines get the accent colour; split lines colour each series
+    # distinctly from the categorical palette and show a top legend.
+    cat_dp = _cat_dp(series_table, series_col, cat_values) if (series_table and cat_values) else None
     objs = _chart_objects(accent=None if series_table else PRIMARY,
-                          legend=bool(series_table), data_labels=False)
+                          legend=bool(series_table), data_labels=False, cat_dp=cat_dp)
     return _visual_container(x, y, w, h, "lineChart", proj, title=title,
                              objects=objs, vfilters=vfilters)
 
 
 def _bar(x, y, w, h, cat_table, cat_col, val_table, val_col, is_measure=False,
-         series_table=None, series_col=None, title=None, horizontal=False, vfilters=None):
+         series_table=None, series_col=None, title=None, horizontal=False, vfilters=None,
+         sort_by_value=True):
     vtype = "clusteredBarChart" if horizontal else "clusteredColumnChart"
     proj = [
         ("Category", cat_table, cat_col, False),
@@ -680,8 +715,10 @@ def _bar(x, y, w, h, cat_table, cat_col, val_table, val_col, is_measure=False,
         proj.append(("Series", series_table, series_col, False))
     objs = _chart_objects(accent=None if series_table else PRIMARY,
                           legend=bool(series_table), data_labels=True)
+    # Sort categories by value (largest first) so the ranking reads top-to-bottom.
+    sort = ("Y", "desc") if sort_by_value else None
     return _visual_container(x, y, w, h, vtype, proj, title=title,
-                             objects=objs, vfilters=vfilters)
+                             objects=objs, vfilters=vfilters, sort=sort)
 
 
 def _area(x, y, w, h, cat_table, cat_col, y_specs, series_table=None,
@@ -711,8 +748,9 @@ def _map_visual(x, y, w, h, location_table, location_col, size_table, size_col,
 
 
 def _donut(x, y, w, h, cat_table, cat_col, val_table, val_col, is_measure=False,
-           title=None, vfilters=None):
-    """Donut chart — Legend = cat_col, Values = val_col (aggregated in the Y slot)."""
+           title=None, vfilters=None, cat_values=None):
+    """Donut chart — Legend = cat_col, Values = val_col (aggregated in the Y slot).
+    cat_values get distinct palette colours so the slices are tellable apart."""
     proj = [("Category", cat_table, cat_col, False), ("Y", val_table, val_col, is_measure)]
     objs = {
         "legend": [{"properties": {"show": _bool(True), "position": _pe("'Right'"),
@@ -720,8 +758,9 @@ def _donut(x, y, w, h, cat_table, cat_col, val_table, val_col, is_measure=False,
                                    "fontSize": _pe("9D")}}],
         "labels": [{"properties": {"show": _bool(True), "color": _color(TEXT), "fontSize": _pe("9D"),
                                    "labelStyle": _pe("'Category, percent of total'")}}],
-        "dataPoint": [{"properties": {"defaultColor": _color(PRIMARY)}}],
     }
+    if cat_values:
+        objs["dataPoint"] = _cat_dp(cat_table, cat_col, cat_values)
     return _visual_container(x, y, w, h, "donutChart", proj, title=title,
                              objects=objs, vfilters=vfilters)
 
@@ -822,30 +861,31 @@ def _page_state() -> dict:
         _textbox(20, 12, 700, 44, "State Breakdown — Unemployment & Employment", font_size="18"),
         _page_navigator(740, 14, 520, 40),
 
-        # Map: unemployment rate bubble by state, latest month only (region_name is
-        # tagged dataCategory=StateOrProvince in the model so Bing can geocode it).
-        _map_visual(20, 72, 600, 350,
-                    "UnemploymentByState", "region_name",
-                    "UnemploymentByState", "unemployment_rate_pct",
-                    title="Unemployment Rate by State (Latest Month)",
-                    vfilters=[_categorical_filter("UnemploymentByState", "is_latest_month", [1])]),
-
-        # Bar chart: unemployment rate per state, latest month only (without the filter
-        # each state's rate is averaged over all history).
-        _bar(640, 72, 620, 350,
+        # Ranked bar: unemployment rate by state, latest month (sorted high→low).
+        # The bubble map was dropped — it rendered as a zoomed-out world map and read
+        # as "broken"; the ranked bars tell the state story cleanly and reliably.
+        _bar(20, 72, 610, 300,
              "UnemploymentByState", "region_name",
              "UnemploymentByState", "unemployment_rate_pct",
-             title="Unemployment Rate by State (Latest Month)",
+             title="Unemployment Rate by State — Latest Month (%)",
              horizontal=True,
              vfilters=[_categorical_filter("UnemploymentByState", "is_latest_month", [1])]),
 
-        # Line chart: state unemployment trends over time — one line per state
-        # (series = region_name; without it all states average into a single line).
-        _line(20, 440, 1240, 258,
+        # Ranked bar: employed persons by state, latest month.
+        _bar(650, 72, 610, 300,
+             "UnemploymentByState", "region_name",
+             "UnemploymentByState", "employed_thousands",
+             title="Employed Persons by State — Latest Month ('000)",
+             horizontal=True,
+             vfilters=[_categorical_filter("UnemploymentByState", "is_latest_month", [1])]),
+
+        # State unemployment trend — one distinctly-coloured line per state.
+        _line(20, 392, 1240, 300,
               "DateTable", "Date",
               [("UnemploymentByState", "unemployment_rate_pct", False)],
               series_table="UnemploymentByState", series_col="region_name",
-              title="State Unemployment Rate Trend"),
+              title="Unemployment Rate Trend by State (%)",
+              cat_values=STATES),
     ]
     return _page("ReportSection2", "State Breakdown", visuals, 1)
 
@@ -871,7 +911,8 @@ def _page_industry() -> dict:
               [("IndustryBreakdown", "employed_thousands", False)],
               series_table="IndustryBreakdown", series_col="industry_name",
               title="Employment Trend — Focus Industries (annual, to 2022)",
-              vfilters=[_categorical_filter("IndustryBreakdown", "is_focus_industry", [1])]),
+              vfilters=[_categorical_filter("IndustryBreakdown", "is_focus_industry", [1])],
+              cat_values=FOCUS_INDUSTRIES),
 
         # Table: industry details, latest year only — one row per industry (without
         # the filter the table lists every period as a separate row).
@@ -916,7 +957,8 @@ def _page_ftpt() -> dict:
               "DateTable", "Date",
               [("FulltimeParttime", "fulltime_share_pct", False)],
               series_table="FulltimeParttime", series_col="sex_label",
-              title="Full-time Share (%) by Sex Over Time"),
+              title="Full-time Share (%) by Sex Over Time",
+              cat_values=SEXES),
 
         # Donut: total employment share by sex, latest month only. Exclude the
         # "Persons" total (= Male + Female) so the two slices are genuine sex splits.
@@ -927,7 +969,8 @@ def _page_ftpt() -> dict:
                vfilters=[
                    _categorical_filter("FulltimeParttime", "sex_label", ["Persons"], exclude=True),
                    _categorical_filter("FulltimeParttime", "is_latest_month", [1]),
-               ]),
+               ],
+               cat_values=["Male", "Female"]),
     ]
     return _page("ReportSection4", "Full-time vs Part-time", visuals, 3)
 
