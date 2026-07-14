@@ -52,10 +52,19 @@ EXTRACTS = {
         "key": "M1+M2+M3.1+2+3.1599.20.AUS.M",
     },
     "state_summary": {
-        "description": "Employed persons + unemployment rate by state — SA, persons",
+        "description": "Employed persons + unemployment rate by state — Trend, persons",
         "dataflow": "LF",
-        # Employed total + Unemployment rate, persons, all states, SA
-        "key": "M3+M13.3.1599.20.1+2+3+4+5+6+7+8.M",
+        # Employed total + Unemployment rate, persons, all 8 states/territories.
+        #
+        # TSEST=30 (Trend), NOT 20 (Seasonally adjusted): the ABS does not publish
+        # a seasonally adjusted series for NT (7) or ACT (8) — those keys 404,
+        # because the territory samples are too small to seasonally adjust.
+        # Asking for SA across 1..8 silently returned only the 6 states that have
+        # it, which is how ACT and NT went missing from the dashboard.
+        # Trend exists for all 8, so every jurisdiction sits on ONE comparable
+        # basis — required, since this page ranks states against each other.
+        "key": "M3+M13.3.1599.30.1+2+3+4+5+6+7+8.M",
+        "expect": {"REGION": 8},
     },
     "national_trend": {
         "description": "National employed and unemployment rate — trend series",
@@ -128,6 +137,27 @@ def fetch_abs_csv(dataflow: str, key: str, description: str) -> pd.DataFrame:
     return df
 
 
+def validate(df: pd.DataFrame, name: str, expect: dict[str, int]) -> list[str]:
+    """
+    Assert that each dimension came back with the number of members we expect.
+
+    The ABS API does not error when you ask for dimension members that don't
+    exist — it just returns the ones that do. A key requesting all 8 states can
+    quietly come back with 6, and every downstream chart will render a
+    well-formed picture of an incomplete country. Row counts don't catch this;
+    only counting distinct members does.
+    """
+    problems = []
+    for col, want in expect.items():
+        got = df[col].nunique()
+        if got != want:
+            members = sorted(df[col].unique().tolist())
+            problems.append(
+                f"{name}: expected {want} distinct {col} values, got {got} -> {members}"
+            )
+    return problems
+
+
 def add_labels(df: pd.DataFrame) -> pd.DataFrame:
     """Add human-readable label columns next to dimension code columns."""
     if "MEASURE" in df.columns:
@@ -160,7 +190,7 @@ def main() -> None:
     print("=== ABS Labour Force Extract ===\n")
     RAW_DIR.mkdir(parents=True, exist_ok=True)
 
-    success, failed = 0, []
+    success, failed, incomplete = 0, [], []
 
     for name, cfg in EXTRACTS.items():
         print(f"[{name}]")
@@ -168,14 +198,24 @@ def main() -> None:
         if df.empty:
             failed.append(name)
         else:
+            problems = validate(df, name, cfg.get("expect", {}))
+            for p in problems:
+                print(f"  INCOMPLETE: {p}")
+            incomplete.extend(problems)
+
             df = add_labels(df)
             save_raw(df, name)
             success += 1
         print()
 
     print(f"=== Done: {success}/{len(EXTRACTS)} extracts successful ===")
+    if incomplete:
+        print("\nDIMENSION COMPLETENESS FAILURES:")
+        for p in incomplete:
+            print(f"  - {p}")
     if failed:
         print(f"Failed: {failed}")
+    if failed or incomplete:
         sys.exit(1)
 
 
