@@ -2,9 +2,18 @@
 .env
 *.env
 
-# Raw and processed data (large files, not for version control)
+# Raw ABS downloads — re-fetchable in one command, so not worth versioning.
+# excel/data/ is deliberately NOT ignored: those exports are the workbook's
+# refresh source, and committing them is what lets it open on a clean clone.
 data/raw/
 data/processed/
+
+# dbt build artifacts. target/ holds compiled SQL, the manifest and the docs
+# site; dbt_packages/ is restored by `dbt deps` and pinned by package-lock.yml.
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+logs/
 
 # Python
 __pycache__/
@@ -27,3 +36,6 @@ env/
 # OS
 .DS_Store
 Thumbs.db
+
+# Per-user dbt file (anonymous usage id), not project config
+dbt/.user.yml

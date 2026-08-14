@@ -1,0 +1,9 @@
+measure_code,measure_name,measure_unit,employment_type
+M1,Employed full-time,thousands of persons,Full-time
+M2,Employed part-time,thousands of persons,Part-time
+M3,Employed total,thousands of persons,Total
+M6,Unemployed,thousands of persons,Not applicable
+M9,Employed persons (jobs-based),thousands of persons,Total
+M12,Participation rate,percent,Not applicable
+M13,Unemployment rate,percent,Not applicable
+M16,Employment-to-population ratio,percent,Not applicable

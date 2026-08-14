@@ -1,0 +1,64 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: >
+      ABS Data API responses landed verbatim by scripts/load_raw.py. Nothing in
+      this schema is cleaned, typed or reshaped — that is the job of
+      stg_labour_force, so that every transformation is a tested model rather
+      than a pandas step nobody can inspect.
+
+    tables:
+      - name: lf_observations
+        description: >
+          Monthly Labour Force survey (dataflow LF), keyed
+          MEASURE.SEX.AGE.TSEST.REGION.FREQ. Four extracts land here and they
+          deliberately overlap: national_summary and national_fulltime_parttime
+          both request employed-total for Persons, seasonally adjusted,
+          Australia. The duplication is resolved in staging under test.
+        columns:
+          - name: source_extract
+            description: Which extract in extract.py produced the row.
+            tests: [not_null]
+          - name: measure
+            description: ABS MEASURE code.
+            tests: [not_null]
+          - name: sex
+            description: ABS SEX code.
+            tests: [not_null]
+          - name: tsest
+            description: ABS TSEST code — type of series estimate.
+            tests: [not_null]
+          - name: region
+            description: ABS REGION code.
+            tests: [not_null]
+          - name: time_period
+            description: ABS period string, YYYY-MM for this dataflow.
+            tests: [not_null]
+          - name: obs_value
+            description: The observation. Nullable — the ABS publishes gaps.
+
+      - name: labour_account_observations
+        description: >
+          Annual Labour Account (dataflow ABS_LABOUR_ACCT), keyed
+          MEASURE.ASGS_2016.LABOURACCT_IND.FREQ. This is the industry source,
+          and it is annual and lags the monthly survey badly — see the
+          `industry_data_vintage` note on v_industry_breakdown.
+        columns:
+          - name: source_extract
+            description: Which extract in extract.py produced the row.
+            tests: [not_null]
+          - name: measure
+            description: ABS MEASURE code.
+            tests: [not_null]
+          - name: labouracct_ind
+            description: >
+              Industry code. Mixes ANZSIC division letters with numeric
+              sub-division codes; staging keeps the divisions only.
+            tests: [not_null]
+          - name: time_period
+            description: ABS period string, YYYY for this dataflow.
+            tests: [not_null]
+          - name: obs_value
+            description: The observation. Nullable — the ABS publishes gaps.

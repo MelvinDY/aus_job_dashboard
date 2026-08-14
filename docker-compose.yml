@@ -1,0 +1,66 @@
+# docker-compose.yml — local warehouse for the Australian Labour Market pipeline.
+#
+# Replaces the Azure SQL instance that v1 ran on. SQL Server Developer edition is
+# free for non-production use, so the whole project runs at $0 with no cloud
+# account and no secrets to obtain.
+#
+#   docker compose up -d          start the warehouse (creates the database once)
+#   docker compose down           stop it, keep the data (named volume)
+#   docker compose down -v        stop it and delete the data
+#
+# The T-SQL dialect is deliberately the same one Azure SQL / Fabric speak, so the
+# dbt models here retarget to a cloud warehouse by changing a profile, not a model.
+
+services:
+  warehouse:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: aus_job_warehouse
+    environment:
+      ACCEPT_EULA: "Y"
+      # Developer edition: full SQL Server feature set, licensed for dev/test only.
+      MSSQL_PID: "Developer"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:-LocalDev_Passw0rd!}"
+      # Cap the engine's memory so the container behaves on a laptop (PRD risk log).
+      MSSQL_MEMORY_LIMIT_MB: "${MSSQL_MEMORY_LIMIT_MB:-2048}"
+    ports:
+      - "${MSSQL_PORT:-1433}:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    healthcheck:
+      # sqlcmd 18 defaults to encrypted connections; -C trusts the container's
+      # self-signed certificate, which is correct for a local-only warehouse.
+      test:
+        [
+          "CMD-SHELL",
+          '/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -C -Q "SELECT 1" || exit 1',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  # One-shot: seed the empty database the pipeline loads into, then exit.
+  # Runs on every `up` but is idempotent, so it is safe to leave in the stack.
+  warehouse-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: aus_job_warehouse_init
+    depends_on:
+      warehouse:
+        condition: service_healthy
+    environment:
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:-LocalDev_Passw0rd!}"
+      MSSQL_DATABASE: "${MSSQL_DATABASE:-aus_job_dashboard}"
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        /opt/mssql-tools18/bin/sqlcmd -S warehouse -U sa -P "$$MSSQL_SA_PASSWORD" -C -b -Q "
+          IF DB_ID('$$MSSQL_DATABASE') IS NULL
+              EXEC('CREATE DATABASE [$$MSSQL_DATABASE]');
+        "
+        echo "database $$MSSQL_DATABASE ready"
+    restart: "no"
+
+volumes:
+  mssql_data:
+    name: aus_job_dashboard_mssql_data

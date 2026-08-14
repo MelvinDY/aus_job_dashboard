@@ -1,0 +1,203 @@
+version: 2
+
+models:
+  # ───────────────────────────────────────────────────────────────────────────
+  - name: dim_date
+    description: >
+      Date dimension at month grain, generated as a contiguous spine across the
+      full span of the fact rather than selected from it — a dimension built
+      from observed dates has a hole wherever the data has one, and a missing
+      month then disappears from a trend line instead of showing as a gap.
+      Grain: (date_key).
+    columns:
+      - name: date_key
+        description: First day of the month. Primary key; joins to fct_labour_force.date_key.
+        tests: [unique, not_null]
+      - name: year
+        description: Calendar year.
+        tests: [not_null]
+      - name: month_number
+        description: Calendar month, 1-12.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                quote: false
+      - name: month_name
+        description: Three-letter month abbreviation, e.g. Jan.
+        tests: [not_null]
+      - name: month_year
+        description: Month and year for axis labels, e.g. "May 2026".
+        tests: [not_null]
+      - name: quarter
+        description: Calendar quarter as Q1-Q4.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["Q1", "Q2", "Q3", "Q4"]
+      - name: quarter_number
+        description: Calendar quarter as 1-4, for sorting.
+      - name: financial_year
+        description: >
+          Australian financial year, July to June, named for the year it ends
+          in — FY2026 runs July 2025 to June 2026.
+        tests: [not_null]
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - name: dim_series
+    description: >
+      One row per ABS statistical series, with the attributes that were
+      previously encoded in the series key and decoded by a Python dict: what is
+      measured, for whom, where, on what basis, and how often. This is the
+      dimension that makes the fact sliceable. Grain: (series_id).
+    columns:
+      - name: series_id
+        description: The ABS series key prefixed with its dataflow. Primary key.
+        tests: [unique, not_null]
+
+      - name: source_dataflow
+        description: LF (monthly survey) or ABS_LABOUR_ACCT (annual Labour Account).
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["LF", "ABS_LABOUR_ACCT"]
+
+      - name: measure_code
+        description: ABS MEASURE code.
+        tests: [not_null]
+      - name: measure_name
+        description: >
+          Human-readable measure name. Not null is a real test here: a null
+          means the ABS returned a measure code that is not in seed_measure,
+          i.e. the source added something the model does not understand.
+        tests: [not_null]
+      - name: measure_unit
+        description: "thousands of persons or percent. The reason never to sum across measures."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["thousands of persons", "percent"]
+      - name: employment_type
+        description: Full-time, Part-time, Total, or Not applicable.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Full-time", "Part-time", "Total", "Not applicable"]
+
+      - name: sex_code
+        description: ABS SEX code. Null for Labour Account series.
+      - name: sex_name
+        description: >
+          Male, Female, or Persons — where Persons is the TOTAL of the other
+          two, not a third category. "Not applicable" for series with no sex
+          dimension.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Male", "Female", "Persons", "Not applicable"]
+
+      - name: tsest_code
+        description: ABS TSEST code. Null for Labour Account series.
+      - name: adjustment_type
+        description: >
+          Original, Seasonally adjusted, or Trend. The attribute that makes the
+          NT/ACT coverage trap detectable instead of invisible — see
+          assert_no_mixed_adjustment_types.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Original", "Seasonally adjusted", "Trend", "Not applicable"]
+      - name: is_seasonally_adjusted
+        description: 1 only where adjustment_type is Seasonally adjusted.
+
+      - name: region_code
+        description: ABS REGION / ASGS code.
+        tests: [not_null]
+      - name: region_name
+        description: Full jurisdiction name.
+        tests: [not_null]
+      - name: geography_level
+        description: National, State or Territory.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["National", "State", "Territory", "Unknown"]
+
+      - name: industry_code
+        description: ANZSIC code. Null for Labour Force survey series.
+      - name: industry_name
+        description: >
+          Division name where the code is a known ANZSIC division; falls back to
+          the raw code for the Labour Account's sub-division series, which the
+          report does not use.
+      - name: is_industry_division
+        description: 1 for the 19 real ANZSIC divisions; 0 for TOTAL and sub-divisions.
+      - name: is_focus_industry
+        description: 1 for the four industries charted on the Industry page trend line.
+
+      - name: frequency_code
+        description: ABS FREQ code — M or A.
+        tests: [not_null]
+      - name: frequency
+        description: Monthly or Annual.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["Monthly", "Annual", "Unknown"]
+      - name: age_code
+        description: ABS AGE code. 1599 (15 and over) throughout.
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - name: fct_labour_force
+    description: >
+      The single fact table: one ABS observation of one series in one period.
+      Deliberately narrow — the measure is the value, and everything about what
+      the value means is an attribute of dim_series. The four wide tables v1
+      loaded were four different flattenings of these same rows.
+      Grain: (series_id, date_key).
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [series_id, date_key]
+
+    columns:
+      - name: series_period_key
+        description: >
+          Surrogate key over the declared grain, so grain uniqueness is a
+          testable property of the table and not a claim in a comment.
+        tests: [unique, not_null]
+
+      - name: series_id
+        description: Foreign key to dim_series.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_series')
+                field: series_id
+
+      - name: date_key
+        description: Foreign key to dim_date. First day of the observation period.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+
+      - name: obs_value
+        description: >
+          The observed value, as published by the ABS. Units vary by series —
+          check dim_series.measure_unit before aggregating anything.
+        tests: [not_null]
+
+      - name: source_extract
+        description: Degenerate dimension — which extract landed the row. Lineage, not analysis.
+        tests: [not_null]

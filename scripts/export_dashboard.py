@@ -1,15 +1,19 @@
-"""Render the four dashboard pages from the Azure SQL mart views to PDF + PNG.
+"""Render the four dashboard pages from the mart views to PDF + PNG.
 
 This is a programmatic export of the same four pages defined in the Power BI
 report (Overview, State Breakdown, Industry View, Full-time vs Part-time),
-pulling the identical mart views the .pbip consumes. It produces:
+pulling the identical dbt-built mart views the .pbip consumes. It produces:
 
     powerbi/dashboard_export.pdf   - 4-page dashboard (portfolio deliverable)
     powerbi/dashboard_overview.png - Overview page, for the README screenshot
 
-Run after the views are deployed:  python scripts/export_dashboard.py
+These are matplotlib renders, not screenshots of the Power BI report — they
+exist so the repo shows the numbers without needing Power BI Desktop installed.
+
+Run after the pipeline:  py -3 scripts/export_dashboard.py
 """
 import os
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -46,9 +50,12 @@ plt.rcParams.update({
 
 def get_engine():
     load_dotenv(ROOT / ".env")
-    conn_str = os.getenv("AZURE_SQL_CONN_STR")
-    if not conn_str:
-        raise SystemExit("AZURE_SQL_CONN_STR not set in .env")
+    # One definition of how to reach the warehouse, shared with the loader:
+    # local container by default, any SQL Server target via SQL_CONN_STR.
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from load_raw import build_conn_str
+
+    conn_str = build_conn_str()
     if "timeout" not in conn_str.lower():
         conn_str = conn_str.rstrip(";") + ";Connection Timeout=120"
     return create_engine(f"mssql+pyodbc:///?odbc_connect={conn_str}")

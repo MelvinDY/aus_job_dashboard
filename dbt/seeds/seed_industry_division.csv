@@ -1,0 +1,21 @@
+industry_code,industry_name,is_division,is_focus_industry
+A,"Agriculture, Forestry & Fishing",1,0
+B,Mining,1,0
+C,Manufacturing,1,0
+D,"Electricity, Gas, Water & Waste",1,0
+E,Construction,1,1
+F,Wholesale Trade,1,0
+G,Retail Trade,1,1
+H,Accommodation & Food Services,1,0
+I,"Transport, Postal & Warehousing",1,0
+J,Information Media & Telecommunications,1,1
+K,Financial & Insurance Services,1,0
+L,"Rental, Hiring & Real Estate",1,0
+M,"Professional, Scientific & Technical",1,0
+N,Administrative & Support Services,1,0
+O,Public Administration & Safety,1,0
+P,Education & Training,1,0
+Q,Health Care & Social Assistance,1,1
+R,Arts & Recreation Services,1,0
+S,Other Services,1,0
+TOTAL,All Industries,0,0
