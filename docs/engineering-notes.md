@@ -189,33 +189,97 @@ the test.
 
 ---
 
-## Status (updated 2026-08-14)
+## HANDOFF — next session starts here (written 2026-08-14)
 
-**PRD v2 is implemented end to end.** All four phases (P1 local warehouse, P2 dbt project,
-P3 rebind + regression, P4 Excel + README) are complete and verified:
+### Where the project stands
 
-- `docker compose up -d && py -3 run_pipeline.py` runs green from a cold start: live ABS
-  extract → 20,767 fact rows → **137/137 dbt nodes pass** (5 seeds, 3 tables, 5 views,
-  124 tests). Data current to **June 2026**, all 8 jurisdictions.
+**PRD v2 is implemented, verified, committed, merged and pushed.** `master` is at
+`6631219` (merge of `feat/v2-local-dbt-stack`) and is up to date with `origin/master`.
+Nothing is in flight. All four PRD phases are done:
+
+- `docker compose up -d && py -3 run_pipeline.py` runs green **from a destroyed volume**:
+  live ABS extract → 21,560 raw rows → **137/137 dbt nodes pass** (5 seeds, 3 tables,
+  5 views, 124 tests) → Excel export. Verified this way, not assumed.
+- Data current to **June 2026**, all 8 jurisdictions present.
 - Star schema: `dim_date` (581), `dim_series` (137), `fct_labour_force` (20,767).
-- **Regression vs v1: every displayed number identical.** Three marts match exactly; the
-  fourth differs on 2 of 494 rows by 0.01 because v1 divided an already-rounded numerator —
-  v1 was wrong, and neither row is displayed by any visual. Evidence in
+- **Regression vs v1: every displayed number is identical.** Three marts match cell for
+  cell; the fourth differs on 2 of 494 rows by 0.01 because v1 divided an already-rounded
+  numerator. v1 was wrong, and neither row is displayed by any visual. Full evidence in
   `docs/migration-v1-to-v2.md`.
-- Power BI rebound to the local warehouse; all 4 tables verified to bind to the dbt marts
-  with matching column lists.
-- Excel workbook generated with 3 Power Query sheets + PivotTable + slicer; Refresh All
-  verified working on a fresh open.
-- Retired (in git history): `sql/`, `transform.py`, `load.py`, `deploy_views.py`,
+- Excel workbook: 3 Power Query sheets + PivotTable + slicer, Refresh All verified on a
+  fresh open after a full warehouse rebuild.
+- Retired into git history: `sql/`, `transform.py`, `load.py`, `deploy_views.py`,
   `check_views.py`.
 
-### Possible next steps (none blocking)
+### The one thing NOT verified
 
-- Real Power BI Desktop screenshots for the portfolio — `powerbi/dashboard_overview.png` is
-  a matplotlib render, not the polished Desktop look. the toolchain cannot capture these; Melvin
-  takes them in Desktop.
-- Make the generated GUIDs in `build_report.py` deterministic to cut git diff noise.
-- The quarterly industry source (see data-quality rule 4) if the 2022 vintage ever becomes
-  unacceptable.
+**Nobody has opened the Power BI report since the rebind.** It needs a GUI, so this is
+the single open item. What *was* verified programmatically: all 4 model tables bind to the
+dbt marts with matching column lists, `model.bim`/`report.json` are valid JSON,
+compatibilityLevel is 1600, and the report still has 4 pages / 15 measures / 4 relationships.
+
+This one has to be done by hand:
+1. Open `powerbi/aus_job_dashboard.pbip` → **Home > Refresh All**.
+2. Auth prompt → **Database** auth, user `sa`, password `LocalDev_Passw0rd!`.
+3. If it complains about encryption, trust the container's self-signed certificate.
+4. Re-mark `DateTable` as the date table if Desktop lost it (right-click → Mark as date table → `Date`).
+
+If a visual is blank or a title reads like `employed_thousands by industry_name`, do NOT
+fix it in Desktop — that is a `build_report.py` bug. See report.json lessons 3 and 7 above.
+
+### Next steps, in the order I would do them
+
+1. **Real Power BI Desktop screenshots** (blocked on the refresh above).
+   `powerbi/dashboard_overview.png` is a matplotlib render standing in as the README hero
+   image since v1. Capture all four pages full-canvas → `powerbi/screenshots/`
+   (`pbi_overview.png`, `pbi_state.png`, `pbi_industry.png`, `pbi_ftpt.png`) and swap the
+   README image. Overview and State are the strongest hero shots. **This cannot be automated.**
+2. **Update the portfolio page** at melvindy.vercel.app/projects/data. It still describes
+   Azure SQL, which no longer exists. New stack line: `Python · dbt · SQL Server · Power BI
+   · Excel`. Numbers moved — data is current to June 2026 and the headline finding is now
+   **80.0% of employed men full-time vs 56.6% of women** (was ~80/57, so the story holds).
+   Source material: `README.md` and `docs/migration-v1-to-v2.md`. Note `PROJECT_NOTES.txt`
+   section 9's KEY NUMBERS are the April/May vintage — re-read from the mart before quoting.
+3. **CI on GitHub Actions** — my recommendation for the next real piece of work, and the
+   natural payoff of having written 124 tests. Everything is containerised and free now, so
+   a workflow can run the mssql service container and `dbt build` on push. Suggested split:
+   PRs build from a small committed raw fixture (fast, deterministic, no external
+   dependency); a weekly scheduled job runs the *live* extract, which turns `extract.py`'s
+   `expect: {"REGION": 8}` guard into an early-warning canary for ABS API drift — directly
+   covering the "ABS API shape has drifted" row in the PRD risk table. A "137 tests passing"
+   badge in the README is a strong signal for the technical-interviewer persona.
+4. Smaller, whenever they become annoying: deterministic GUIDs in `build_report.py` to cut
+   git diff noise; publish `dbt docs` to GitHub Pages; the quarterly industry source (see
+   data-quality rule 4) if the 2022 vintage ever becomes a sticking point.
+
+### Environment state as of session end
+
+- Docker container `aus_job_warehouse` was left **running and healthy**. Tomorrow it may be
+  stopped (Docker Desktop restart) — `docker compose up -d` brings it back with data intact.
+  The named volume `aus_job_dashboard_mssql_data` persists across `down`, and only
+  `down -v` destroys it.
+- **Docker Desktop must actually be started** before any `docker` command works — installed
+  is not the same as running. This cost time at the start of the last session.
+- `PROJECT_NOTES.txt` is **deliberately untracked**. It carries Azure billing figures and
+  portfolio-positioning notes that do not belong in a public repo a recruiter reads. It has
+  a v2 status banner prepended so it cannot mislead. Do not `git add` it without asking.
+- `origin/feat/v2-local-dbt-stack` still exists and is fully merged; safe to delete.
+- The `aus_job_dashboard_v1` regression database no longer exists — the volume was destroyed
+  during the clean-rebuild test. To re-run that comparison you would need to restore the
+  v1 `sql/` views and `transform.py`/`load.py` from git history (commit `90e8e15`).
+
+### Standing rules — do not undo these
+
+- **No tool attribution in commit messages.** Commits end on the last line of the body.
+  Melvin stated this explicitly; these are public portfolio repos under his own name.
+- **Do not re-provision Azure SQL.** The teardown was deliberate (PRD non-goal 1). A cloud
+  target stays documented and never required.
+- **Do not hand-edit `model.bim` / `report.json`.** Edit `build_report.py` and regenerate.
+- **Do not weaken a failing dbt test.** The two jurisdiction/adjustment tests encode bugs
+  that actually shipped; a failure means the data or the model is wrong.
+- **Do not move transformation logic back into Python.** Python calls the API and lands the
+  response; everything else is a dbt model.
+
+  open. If used, remember `build_report.py` is authoritative — they will diverge otherwise.
 
   open. If used, remember `build_report.py` is authoritative — they will diverge otherwise.
