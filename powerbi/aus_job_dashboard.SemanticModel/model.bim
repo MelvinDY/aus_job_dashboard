@@ -284,7 +284,7 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = Sql.Database(\"melvind.database.windows.net\", \"aus_job_dashboard\", [Query = \"SELECT * FROM mart.v_national_overview ORDER BY date\"]),",
+                "    Source = Sql.Database(\"localhost,1433\", \"aus_job_dashboard\", [Query = \"SELECT * FROM mart.v_national_overview ORDER BY date\"]),",
                 "    #\"T\" = Table.TransformColumnTypes(Source, {{\"date\", type date}, {\"employed_thousands\", type number}, {\"unemployed_thousands\", type number}, {\"unemployment_rate_pct\", type number}, {\"participation_rate_pct\", type number}, {\"emp_to_pop_ratio_pct\", type number}, {\"unemployment_rate_mom_change_ppt\", type number}, {\"employed_mom_change_pct\", type number}, {\"unemployment_rate_yoy_change_ppt\", type number}, {\"employed_yoy_change_pct\", type number}, {\"is_latest_month\", Int64.Type}})",
                 "in",
                 "    #\"T\""
@@ -417,7 +417,7 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = Sql.Database(\"melvind.database.windows.net\", \"aus_job_dashboard\", [Query = \"SELECT * FROM mart.v_unemployment_by_state ORDER BY region_name, date\"]),",
+                "    Source = Sql.Database(\"localhost,1433\", \"aus_job_dashboard\", [Query = \"SELECT * FROM mart.v_unemployment_by_state ORDER BY region_name, date\"]),",
                 "    #\"T\" = Table.TransformColumnTypes(Source, {{\"date\", type date}, {\"region_code\", type text}, {\"region_name\", type text}, {\"employed_thousands\", type number}, {\"unemployment_rate_pct\", type number}, {\"unemployment_rate_mom_change_ppt\", type number}, {\"unemployment_rate_yoy_change_ppt\", type number}, {\"employed_yoy_change_pct\", type number}, {\"is_latest_month\", Int64.Type}})",
                 "in",
                 "    #\"T\""
@@ -528,9 +528,9 @@
             "description": "Growing / shrinking classification based on YoY change."
           },
           {
-            "name": "is_focus_industry",
+            "name": "is_latest_year",
             "dataType": "int64",
-            "sourceColumn": "is_focus_industry",
+            "sourceColumn": "is_latest_year",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
@@ -540,9 +540,9 @@
             "isHidden": true
           },
           {
-            "name": "is_latest_year",
+            "name": "is_focus_industry",
             "dataType": "int64",
-            "sourceColumn": "is_latest_year",
+            "sourceColumn": "is_focus_industry",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
@@ -560,8 +560,8 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = Sql.Database(\"melvind.database.windows.net\", \"aus_job_dashboard\", [Query = \"SELECT * FROM mart.v_industry_breakdown ORDER BY industry_name, date\"]),",
-                "    #\"T\" = Table.TransformColumnTypes(Source, {{\"date\", type date}, {\"industry_code\", type text}, {\"industry_name\", type text}, {\"employed_thousands\", type number}, {\"employed_yoy_change_thousands\", type number}, {\"employed_yoy_change_pct\", type number}, {\"rank_by_employment\", Int64.Type}, {\"growth_category\", type text}, {\"is_focus_industry\", Int64.Type}, {\"is_latest_year\", Int64.Type}})",
+                "    Source = Sql.Database(\"localhost,1433\", \"aus_job_dashboard\", [Query = \"SELECT * FROM mart.v_industry_breakdown ORDER BY industry_name, date\"]),",
+                "    #\"T\" = Table.TransformColumnTypes(Source, {{\"date\", type date}, {\"industry_code\", type text}, {\"industry_name\", type text}, {\"employed_thousands\", type number}, {\"employed_yoy_change_thousands\", type number}, {\"employed_yoy_change_pct\", type number}, {\"rank_by_employment\", Int64.Type}, {\"growth_category\", type text}, {\"is_latest_year\", Int64.Type}, {\"is_focus_industry\", Int64.Type}})",
                 "in",
                 "    #\"T\""
               ]
@@ -714,7 +714,7 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = Sql.Database(\"melvind.database.windows.net\", \"aus_job_dashboard\", [Query = \"SELECT * FROM mart.v_fulltime_parttime ORDER BY sex_label, date\"]),",
+                "    Source = Sql.Database(\"localhost,1433\", \"aus_job_dashboard\", [Query = \"SELECT * FROM mart.v_fulltime_parttime ORDER BY sex_label, date\"]),",
                 "    #\"T\" = Table.TransformColumnTypes(Source, {{\"date\", type date}, {\"sex_code\", type text}, {\"sex_label\", type text}, {\"employed_fulltime_thousands\", type number}, {\"employed_parttime_thousands\", type number}, {\"employed_total_thousands\", type number}, {\"fulltime_share_pct\", type number}, {\"parttime_share_pct\", type number}, {\"fulltime_share_yoy_change_ppt\", type number}, {\"employed_total_yoy_change_pct\", type number}, {\"is_latest_month\", Int64.Type}})",
                 "in",
                 "    #\"T\""
@@ -853,7 +853,7 @@
     ],
     "relationships": [
       {
-        "name": "86499441-fea2-4416-9f45-791c0c26f854",
+        "name": "3cdba936-ec16-4c7a-b5d7-a4b3da22e6f3",
         "fromTable": "NationalOverview",
         "fromColumn": "date",
         "toTable": "DateTable",
@@ -861,7 +861,7 @@
         "crossFilteringBehavior": "oneDirection"
       },
       {
-        "name": "4953cb5c-1b37-49f3-93b2-07107dd0013b",
+        "name": "c7df7808-ed6c-4855-aeec-450de1f53c73",
         "fromTable": "UnemploymentByState",
         "fromColumn": "date",
         "toTable": "DateTable",
@@ -869,7 +869,7 @@
         "crossFilteringBehavior": "oneDirection"
       },
       {
-        "name": "16f100a5-cf25-4afd-a712-8351e1af6487",
+        "name": "cbf94e9e-20ea-46a5-828b-091e59a14a46",
         "fromTable": "FulltimeParttime",
         "fromColumn": "date",
         "toTable": "DateTable",
@@ -877,7 +877,7 @@
         "crossFilteringBehavior": "oneDirection"
       },
       {
-        "name": "26577e80-f90a-45ae-81bc-a72bf73dfd45",
+        "name": "97dcc52f-08f3-4baf-b7dc-79e1b94dfe8c",
         "fromTable": "IndustryBreakdown",
         "fromColumn": "date",
         "toTable": "DateTable",

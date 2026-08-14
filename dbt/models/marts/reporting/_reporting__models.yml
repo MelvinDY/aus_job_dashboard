@@ -1,0 +1,225 @@
+version: 2
+
+models:
+  # ───────────────────────────────────────────────────────────────────────────
+  - name: v_national_overview
+    description: >
+      Overview page. National headline series — Labour Force survey, Persons,
+      15+, seasonally adjusted, Australia — one row per month with month-on-month
+      and year-on-year context. Seasonally adjusted because that is the basis the
+      ABS headline rate is quoted on. Grain: (date).
+    columns:
+      - name: date
+        description: First day of the month.
+        tests: [unique, not_null]
+      - name: employed_thousands
+        description: Employed persons, thousands.
+        tests: [not_null]
+      - name: unemployed_thousands
+        description: Unemployed persons, thousands.
+      - name: unemployment_rate_pct
+        description: Unemployment rate, percent. Already scaled 0-100, not a fraction.
+        tests: [not_null]
+      - name: participation_rate_pct
+        description: Labour force participation rate, percent.
+      - name: emp_to_pop_ratio_pct
+        description: Employment-to-population ratio, percent.
+      - name: unemployment_rate_mom_change_ppt
+        description: Change in unemployment rate vs the previous month, percentage points.
+      - name: employed_mom_change_pct
+        description: Change in employed persons vs the previous month, percent.
+      - name: unemployment_rate_yoy_change_ppt
+        description: Change in unemployment rate vs the same month a year earlier, percentage points.
+      - name: employed_yoy_change_pct
+        description: Change in employed persons vs the same month a year earlier, percent.
+      - name: is_latest_month
+        description: 1 on the most recent month. Lets a KPI card show the latest value without a date filter.
+        tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - name: v_unemployment_by_state
+    description: >
+      State Breakdown page. Unemployment rate and employment per jurisdiction per
+      month, on the TREND basis. Trend rather than seasonally adjusted because
+      the ABS does not publish a seasonally adjusted series for NT or ACT, and
+      this page ranks jurisdictions against each other — which requires one
+      comparable basis for all eight. These figures therefore will not match the
+      seasonally adjusted rate quoted in the news. Grain: (date, region_code).
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [date, region_code]
+    columns:
+      - name: date
+        description: First day of the month.
+        tests: [not_null]
+      - name: region_code
+        description: ABS REGION code, 1-8.
+        tests: [not_null]
+      - name: region_name
+        description: >
+          Full jurisdiction name. accepted_values here catches an unexpected
+          member; assert_all_jurisdictions_present catches a missing one, which
+          is the failure that actually happened.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - New South Wales
+                  - Victoria
+                  - Queensland
+                  - South Australia
+                  - Western Australia
+                  - Tasmania
+                  - Northern Territory
+                  - Australian Capital Territory
+      - name: employed_thousands
+        description: Employed persons in the jurisdiction, thousands, trend.
+        tests: [not_null]
+      - name: unemployment_rate_pct
+        description: Unemployment rate, percent, trend.
+        tests: [not_null]
+      - name: unemployment_rate_mom_change_ppt
+        description: Change vs the previous month, percentage points.
+      - name: unemployment_rate_yoy_change_ppt
+        description: Change vs the same month a year earlier, percentage points.
+      - name: employed_yoy_change_pct
+        description: Employment change vs the same month a year earlier, percent.
+      - name: is_latest_month
+        description: 1 on the most recent month across all jurisdictions.
+        tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - name: v_fulltime_parttime
+    description: >
+      Full-time vs Part-time page, and the source of the project's headline
+      finding — about 80% of employed men work full-time against about 57% of
+      employed women. Seasonally adjusted, Australia, 15+, one row per sex per
+      month. Persons is the TOTAL of Male and Female, not a third category, so
+      every consumer must filter to one level or it double-counts.
+      Grain: (date, sex_code).
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [date, sex_code]
+    columns:
+      - name: date
+        description: First day of the month.
+        tests: [not_null]
+      - name: sex_code
+        description: ABS SEX code — 1 Male, 2 Female, 3 Persons.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["1", "2", "3"]
+      - name: sex_label
+        description: Male, Female or Persons. Persons = Male + Female.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Male", "Female", "Persons"]
+      - name: employed_fulltime_thousands
+        description: Employed full-time, thousands.
+        tests: [not_null]
+      - name: employed_parttime_thousands
+        description: Employed part-time, thousands.
+        tests: [not_null]
+      - name: employed_total_thousands
+        description: Employed total, thousands. Full-time + part-time.
+        tests: [not_null]
+      - name: fulltime_share_pct
+        description: Full-time as a percent of total employed, for this sex.
+        tests: [not_null]
+      - name: parttime_share_pct
+        description: Part-time as a percent of total employed, for this sex.
+        tests: [not_null]
+      - name: fulltime_share_yoy_change_ppt
+        description: Change in full-time share vs a year earlier, percentage points.
+      - name: employed_total_yoy_change_pct
+        description: Change in total employed vs a year earlier, percent.
+      - name: is_latest_month
+        description: 1 on the most recent month.
+        tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - name: v_industry_breakdown
+    description: >
+      Industry View page. Employed persons by ANZSIC division from the annual
+      Australian Labour Account.
+
+      VINTAGE: this page is annual and lags the other three by years. The Labour
+      Force survey carries no industry dimension, so industry can only come from
+      the Labour Account, which is annual and published late — confirmed against
+      the live ABS API, not assumed from a stale file. The figures are also
+      jobs-based Labour Account estimates, so they are not directly comparable
+      with the survey numbers elsewhere in the report. Every title on the page
+      states the vintage rather than letting it read as current.
+
+      Grain: (date, industry_code), where date is 1 January of the reference year.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [date, industry_code]
+    columns:
+      - name: date
+        description: 1 January of the reference year — annual data on a month-grain dimension.
+        tests: [not_null]
+      - name: industry_code
+        description: ANZSIC 2006 division letter. TOTAL and sub-divisions are excluded.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('seed_industry_division')
+                field: industry_code
+      - name: industry_name
+        description: ANZSIC division name.
+        tests: [not_null]
+      - name: employed_thousands
+        description: Employed persons, thousands, jobs-based Labour Account estimate.
+        tests: [not_null]
+      - name: employed_yoy_change_thousands
+        description: Change vs the previous year, thousands.
+      - name: employed_yoy_change_pct
+        description: Change vs the previous year, percent.
+      - name: rank_by_employment
+        description: >
+          Rank within the year by employment size, largest first. Ranked on the
+          unrounded value so presentation rounding cannot invent ties.
+        tests: [not_null]
+      - name: growth_category
+        description: Growing (>= +2%), Shrinking (<= -2%) or Stable, on the year-on-year change.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Growing", "Shrinking", "Stable"]
+      - name: is_latest_year
+        description: 1 on the most recent year available.
+        tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+      - name: is_focus_industry
+        description: 1 for the four industries charted as a trend line.
+        tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false

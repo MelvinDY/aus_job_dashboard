@@ -1,0 +1,109 @@
+version: 2
+
+models:
+  - name: stg_labour_force
+    description: >
+      Every ABS observation from both dataflows, typed, keyed by the ABS series
+      key and deduplicated. This is the port of v1's transform.py: it parses the
+      period, coerces the value and drops empty observations, and does no
+      reshaping or labelling. Grain: (series_id, period_date).
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [series_id, period_date]
+          config:
+            severity: error
+
+    columns:
+      - name: series_id
+        description: >
+          The ABS series key prefixed with its dataflow, e.g.
+          `LF.M13.3.1599.20.AUS.M`. The ABS's own identifier, not a hash, so any
+          row can be traced back to the API call that produced it.
+        tests: [not_null]
+
+      - name: period_date
+        description: >
+          First day of the observation period. Monthly periods land on the 1st
+          of the month, annual periods on 1 January, so both frequencies share
+          one date dimension.
+        tests: [not_null]
+
+      - name: source_dataflow
+        description: Which ABS dataflow the row came from.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["LF", "ABS_LABOUR_ACCT"]
+
+      - name: source_extract
+        description: Which extract in extract.py landed the row. Lineage only.
+        tests: [not_null]
+
+      - name: measure_code
+        description: ABS MEASURE code. Joins to seed_measure.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('seed_measure')
+                field: measure_code
+
+      - name: sex_code
+        description: ABS SEX code. Null for the Labour Account, which has no sex dimension.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["1", "2", "3"]
+              config:
+                where: "sex_code is not null"
+
+      - name: tsest_code
+        description: >
+          ABS TSEST code (type of series estimate). Null for the Labour Account,
+          which publishes no adjustment dimension.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["10", "20", "30"]
+              config:
+                where: "tsest_code is not null"
+
+      - name: region_code
+        description: ABS REGION / ASGS code. Joins to seed_region.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('seed_region')
+                field: region_code
+
+      - name: industry_code
+        description: >
+          ANZSIC code. Null for the Labour Force survey. For the Labour Account
+          this mixes division letters with sub-division codes; only divisions
+          reach the industry mart.
+
+      - name: frequency_code
+        description: ABS FREQ code — M monthly, A annual.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["M", "A"]
+
+      - name: obs_value
+        description: >
+          The observation, as published. Units differ by measure — thousands of
+          persons or a percentage — so never aggregate across measures.
+        tests: [not_null]
+
+      - name: source_period
+        description: The raw ABS TIME_PERIOD string, kept for traceability.
+      - name: age_code
+        description: ABS AGE code. 1599 is 15 years and over, the only one extracted.
+      - name: unit_measure
+        description: ABS UNIT_MEASURE — NUM or PCT.
+      - name: unit_mult
+        description: ABS UNIT_MULT — power-of-ten multiplier on the value.

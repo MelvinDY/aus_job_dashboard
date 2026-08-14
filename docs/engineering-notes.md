@@ -1,14 +1,20 @@
-# Australian Labour Market Analytics Dashboard — PRD for the local toolchain
+# Australian Labour Market Analytics — engineering notes
 
 ## Project Overview
 
 An end-to-end data analytics portfolio project for Melvin Darial Yogiana. It ingests real
-Australian Bureau of Statistics (ABS) Labour Force survey data, cleans and loads it into
-Azure SQL, transforms it with SQL views, and visualises it in Power BI. The pipeline mirrors
-the Azure SQL environment used professionally at Foresight Analytics.
+Australian Bureau of Statistics (ABS) Labour Force data, lands it in a local SQL Server
+warehouse, models it into a star schema with dbt, and delivers it as a Power BI report and
+an Excel workbook.
 
-**Goal:** Demonstrate the full analyst stack (ingest → transform → visualise) using real
-government data, suitable for linking on a data portfolio at melvindy.vercel.app/projects/data.
+**Goal:** Demonstrate the full analyst stack (ingest → model → visualise) on real government
+data, reproducibly and at zero cost, for melvindy.vercel.app/projects/data.
+
+**Governing documents.** `PRD.md` is the requirements spec (v2). This file governs *how the
+work is done* — conventions, decisions, status, handoff. `powerbi/build_report.py` governs
+the generated `.pbip` files only; it is a build mechanism, not a competing authority. When
+they appear to disagree, PRD.md defines the goal, docs/engineering-notes.md wins on execution, and this file
+gets updated.
 
 ---
 
@@ -16,13 +22,16 @@ government data, suitable for linking on a data portfolio at melvindy.vercel.app
 
 | Layer | Tool |
 |---|---|
-| Data source | ABS Labour Force CSV/Excel (abs.gov.au) — no API key required |
-| Ingestion & cleaning | Python 3, Pandas |
-| Database connector | pyodbc or SQLAlchemy |
-| Database | Azure SQL |
-| Transformation | SQL views (staging → mart pattern) |
-| Visualisation | Power BI Desktop |
+| Data source | ABS Data API (`data.api.abs.gov.au/rest`) — no API key |
+| Ingestion | Python 3, requests, pandas |
+| Warehouse | **SQL Server 2022 Developer edition in Docker** (free, local) |
+| Transformation | **dbt (`dbt-sqlserver`)** — staging → star schema → mart |
+| Visualisation | Power BI Desktop (`.pbip`, generated) + Excel / Power Query |
 | Version control | GitHub |
+
+**Cost: $0.** v1 ran on Azure SQL and that instance was decommissioned on purpose. Do not
+re-provision it. A cloud target stays *documented* (the `azure` target in `dbt/profiles.yml`,
+the commented block in `.env.example`) and never *required*.
 
 ---
 
@@ -30,145 +39,183 @@ government data, suitable for linking on a data portfolio at melvindy.vercel.app
 
 ```
 aus_job_dashboard/
-├── docs/engineering-notes.md               # This file — engineering notes
-├── README.md               # Public-facing docs for GitHub
-├── .gitignore
-├── data/
-│   ├── raw/                # Downloaded ABS files (never committed — gitignored)
-│   └── processed/          # Cleaned CSVs ready for upload (gitignored)
+├── PRD.md                  # v2 requirements
+├── docs/engineering-notes.md               # this file
+├── README.md               # public docs
+├── docker-compose.yml      # SQL Server Developer + seeded database
+├── run_pipeline.py         # one command, end to end
+├── data/raw/               # ABS responses (gitignored)
 ├── scripts/
-│   ├── extract.py          # Download ABS Labour Force data
-│   ├── transform.py        # Pandas cleaning: fix headers, reshape wide → long
-│   └── load.py             # Load processed data into Azure SQL via pyodbc/SQLAlchemy
-└── sql/
-    ├── staging/            # Raw-to-staging views
-    └── mart/               # Mart views consumed by Power BI
+│   ├── extract.py          # ABS Data API -> data/raw
+│   ├── load_raw.py         # data/raw -> schema `raw`, verbatim
+│   ├── export_mart.py      # mart -> excel/data/*.csv
+│   ├── build_workbook.py   # generates the Excel workbook (needs Excel + pywin32)
+│   └── export_dashboard.py # renders dashboard PDF + PNG from the mart
+├── dbt/
+│   ├── models/staging/     # stg_labour_force + sources
+│   ├── models/marts/core/  # dim_date, dim_series, fct_labour_force
+│   ├── models/marts/reporting/  # the four mart views
+│   ├── seeds/              # ABS code -> label mappings
+│   ├── tests/              # singular data-quality tests
+│   ├── macros/             # generate_schema_name
+│   └── profiles.yml        # local target (default) + documented azure target
+├── powerbi/                # build_report.py + generated .pbip
+├── excel/                  # workbook + committed mart export + README
+└── docs/migration-v1-to-v2.md
 ```
 
 ---
 
-## Pipeline Steps
+## Pipeline
 
-### Step 1 — Data Extraction (`scripts/extract.py`)
-- Download the monthly ABS Labour Force dataset (CSV/Excel) from abs.gov.au
-- Store raw files in `data/raw/` (gitignored)
-- Target tables: unemployment rate, employment by industry, full-time vs part-time, state breakdowns
+```
+ABS Data API → data/raw/*.csv → raw.* → stg_labour_force → dim_*/fct_* → mart.v_*
+                extract.py       load_raw.py  ────────── dbt ──────────
+                                                                        ├→ Power BI
+                                                                        └→ Excel
+```
 
-### Step 2 — Clean & Transform with Python (`scripts/transform.py`)
-- Fix messy ABS headers (multi-row headers, merged cells)
-- Reshape from wide format to long format (date | metric | value | state | industry)
-- Output cleaned CSVs to `data/processed/`
+**Python calls the API and lands the response. That is all it does.** Every transformation
+after that is a dbt model with tests and docs attached. Do not add cleaning, reshaping or
+derivation to a Python script — it belongs in a model where it can be tested.
 
-### Step 3 — Load to Azure SQL (`scripts/load.py`)
-- Use `pyodbc` or `SQLAlchemy` to connect to Azure SQL
-- Load processed DataFrames into staging tables
-- Connection string pulled from environment variable `AZURE_SQL_CONN_STR` — never hardcode credentials
-
-### Step 4 — SQL Views (`sql/staging/` and `sql/mart/`)
-- **Staging views:** clean column aliasing, data-type casting, deduplication
-- **Mart views (key metrics):**
-  - `mart_unemployment_by_state` — unemployment rate per state over time
-  - `mart_employment_growth_yoy` — YoY employment growth by industry
-  - `mart_industry_breakdown` — sector-level employed persons trend
-  - `mart_fulltime_parttime` — full-time vs part-time split by gender over time
-
-### Step 5 — Power BI (`/powerbi/`)
-- Connect Power BI Desktop to Azure SQL using native connector
-- Point queries at mart views only
-- Add a date table for time intelligence (MoM, YoY)
-- Build 4 report pages (see Dashboard Pages below)
-- Export final dashboard as PDF and commit to repo
+Run it: `docker compose up -d && py -3 run_pipeline.py`
+(`--skip-extract` to rebuild from disk, `--full-refresh` to rebuild seeds and tables.)
 
 ---
 
-## Dashboard Pages
+## Environment gotchas (read first)
 
-| Page | Content |
-|---|---|
-| Overview | National unemployment rate trend line, total employed persons KPI card, participation rate KPI card |
-| State Breakdown | Map visual + bar chart — NSW, VIC, QLD, WA, SA, TAS, ACT, NT |
-| Industry View | Sector employment trend — tech, healthcare, retail, construction (growing vs shrinking) |
-| Full-time vs Part-time | Employment type over time, split by gender |
-
----
-
-## Environment Variables
-
-Store these in a `.env` file (gitignored) and load with `python-dotenv`:
-
-```
-AZURE_SQL_CONN_STR=Driver={ODBC Driver 18 for SQL Server};Server=...;Database=...;Uid=...;Pwd=...
-```
+- **Python:** bare `python` is a Windows Store stub that fails. Use **`py -3`**.
+- **dbt:** `py -3 -m dbt` does **not** work (dbt is a package with no `__main__`). The
+  console script lives in `…\Python313\Scripts\dbt.exe`, which is not on PATH.
+  `run_pipeline.py` resolves it from `sys.executable`. Running dbt by hand:
+  `cd dbt && DBT_PROFILES_DIR=. …/Scripts/dbt.exe build`
+- **dbt profiles:** `profiles.yml` is checked into `dbt/`, not `~/.dbt/`. Set
+  `DBT_PROFILES_DIR` or run through `run_pipeline.py`.
+- **Docker:** the engine must actually be running, not just installed — start Docker Desktop
+  first. `docker compose up -d` seeds the database on every run and is idempotent.
+- **Git Bash mangles container paths.** `docker exec … /opt/mssql-tools18/bin/sqlcmd` gets
+  rewritten to a Windows path and fails. Prefix with `MSYS_NO_PATHCONV=1`, or connect from
+  Python instead.
+- **T-SQL reserved words** bite in CTE names: `national` is reserved (`NATIONAL CHARACTER`)
+  and produced a syntax error. `national_measures` is fine.
 
 ---
 
 ## Coding Conventions
 
-- Python: PEP 8, functions over scripts, no hardcoded credentials
-- SQL: lowercase keywords, snake_case identifiers, explicit column lists (no `SELECT *` in mart views)
-- Each script should be runnable standalone: `python scripts/extract.py`
-- Use `requirements.txt` to pin dependencies
+- Python: PEP 8, functions over scripts, no hardcoded credentials, each script runnable
+  standalone.
+- SQL/dbt: lowercase keywords, snake_case, explicit column lists in mart models. Every model
+  declares its grain in a header comment **and** enforces it with a uniqueness test.
+- Every model and every mart column carries a `description` in the schema YAML.
+- dbt generic tests use the 1.12 form: arguments nested under `arguments:`, `config:`
+  alongside it. The bare form is deprecated and warns.
+- Comments explain *why*, especially where the code encodes a data-quality trap.
 
 ---
 
-## Definition of Done
+## Data-quality rules that must not regress
 
-- [ ] ABS data downloaded and cleaned by Python scripts
-- [ ] Data loaded into Azure SQL staging tables
-- [ ] All 4 mart views written and tested
-- [ ] Power BI report connected to mart views with all 4 pages built
-- [ ] Dashboard exported as PDF in repo
-- [ ] README complete with setup instructions and screenshot
-- [ ] Repo pushed to GitHub and linked on portfolio site
+These are encoded as tests. If one fails, the data or the model is wrong — do not weaken
+the test.
+
+1. **All eight jurisdictions.** The ABS publishes no seasonally adjusted series for NT or
+   ACT; requesting all eight on that basis returns six with HTTP 200 and no warning. v1
+   shipped a map missing two territories. `assert_all_jurisdictions_present` catches the gap;
+   `extract.py`'s `expect: {"REGION": 8}` catches it earlier still.
+2. **One adjustment basis per comparison.** The obvious fix for (1) — back-filling NT/ACT
+   with Original estimates — is worse than the bug. The state page uses **Trend**, which
+   exists for all eight. `assert_no_mixed_adjustment_types` enforces it. Consequence to keep
+   labelled: state figures do not match the seasonally adjusted headline rate in the news.
+3. **Persons = Male + Female.** Not a third category. Anything aggregating all three
+   double-counts; v1's area chart did.
+4. **Industry data is annual and lags by years.** The monthly LF dataflow has no industry
+   dimension, so industry comes from `ABS_LABOUR_ACCT` (annual, published late) — confirmed
+   against the live API, so re-running `extract.py` will not help. Titles state the vintage.
+   Options if it ever needs to be current: a quarterly Labour Force Detailed "employed by
+   industry" release (needs a CSV download and a new model — not exposed as a simple Data-API
+   dataflow), or leave it labelled. Census 2021 is point-in-time, not a series.
 
 ---
 
-## Current Status & How to Continue (updated 2026-06-18)
+## Power BI — SOURCE OF TRUTH
 
-### Environment gotchas (read first)
-- **Python:** the bare `python` command is a Windows Store stub that fails. Use **`py -3`** (real interpreter at `…\Programs\Python\Python313\python.exe`).
-- **Azure SQL is serverless and auto-pauses** after ~1h idle. First connection can take 60s+ to resume. `scripts/deploy_views.py` and `scripts/check_views.py` append `Connection Timeout=120` to handle this. To wake/verify the DB: `py -3 scripts/check_views.py`.
-- **Server / DB:** `melvind.database.windows.net` / `aus_job_dashboard`. Credentials in `.env` (gitignored) work; firewall allows this machine.
+- The `.pbip` is **generated** by `powerbi/build_report.py`. **Do NOT hand-edit
+  `model.bim` / `report.json`** — edit `build_report.py` and regenerate:
+  `py -3 powerbi/build_report.py`. (Hand-editing plus a Desktop re-save previously corrupted
+  the model into a state that would not load.)
+- After regenerating, **close Power BI Desktop without saving** before reopening the
+  `.pbip`, or Desktop overwrites the generated files.
+- The model binds to `localhost,1433` / `aus_job_dashboard` by default; override with
+  `PBI_SERVER` / `PBI_DATABASE`. It reads `mart.v_*` and nothing else, so it does not care
+  which warehouse built them.
+- Power BI keeps its **own daily `DateTable`** (Power Query) rather than importing
+  `core.dim_date`. Deliberate: DAX time intelligence needs a contiguous *daily* table, while
+  `dim_date` is month grain because that is the ABS publication grain. Do not "fix" this by
+  repointing it without checking the measures.
 
-### What's done
-- Pipeline (extract → transform → load) run; `data/raw` + `data/processed` populated.
-- Azure SQL loaded: 5 staging tables (~7,448 rows). 8 views deployed (4 staging + 4 mart); all 4 mart views execute and return rows (verified live).
-- `scripts/deploy_views.py` / `check_views.py` deploy & verify views.
-- `scripts/export_dashboard.py` renders the 4 dashboard pages from the **mart views** to `powerbi/dashboard_export.pdf` + `powerbi/dashboard_overview.png` (matplotlib; needs DB awake). README embeds the screenshot + links the PDF.
-- Pushed to GitHub (`origin/master`).
+### Hard-won report.json lessons (each cost real debugging time)
 
-### Power BI — SOURCE OF TRUTH
-- **This file (docs/engineering-notes.md) governs the project** — spec, conventions, decisions, status, handoff. `build_report.py` only governs the generated `.pbip` files (`model.bim` / `report.json`); it is a build mechanism, not a competing authority. When they appear to disagree, docs/engineering-notes.md wins and gets updated.
-- The `.pbip` is **generated** by `powerbi/build_report.py`. **Do NOT hand-edit `model.bim` / `report.json`** — edit `build_report.py` and regenerate: `py -3 powerbi/build_report.py`. (Hand-editing + Desktop re-saves previously corrupted the model into a state that wouldn't load.)
-- After regenerating, **close Power BI Desktop without saving** before reopening `aus_job_dashboard.pbip`, or Desktop overwrites the regenerated files.
-- Fixes already applied in `build_report.py`:
-  1. DateTable DAX used `TEXT()` (Excel, not DAX) → replaced with `FORMAT()`; quarter via `ROUNDUP(MONTH/3)`.
-  2. Calculated-table relationship endpoints failed PBIP validation ("invalid column ID") → **DateTable is now a Power Query (M) table**, not a DAX calculated table. Its columns are real storage columns; relationships bind cleanly.
-  3. Charts were blank because value-slot columns were bare `Column` refs → now wrapped in `Aggregation` (Average for rate/pct/share/ppt, Sum for counts) in `_visual_container`.
-  4. `compatibilityLevel` was `1550`; Desktop's local AS engine had upgraded the workspace to `1600` and refuses to load a *lower* level ("CompatibilityLevel downgrade" error on open). Bumped to **1600** (strict superset — safe). Do not lower it again.
-  5. Right-edge visuals were clipped (every page rendered at actual size, wider than the window). Each page (`_page`) now sets `width: 1280, height: 720, displayOption: 1` (Fit to Page) so the canvas scales to the viewport.
-  7. **Visual styling layer** (light theme, deep-blue `#1F4E79` accent, Segoe UI). A styling block in `build_report.py` (`_container_chrome`, `_chart_objects`, `_card_objects`, `_map_objects`, `_table_objects` + `_pe`/`_color`/`_bool` helpers) applies per-visual `objects` (axes/legend/labels/colours) and `visualContainerObjects` (title, white bg, light border, soft shadow). Single-series charts use the accent colour; area series coloured via measure selectors; multi-series category-split lines keep the categorical palette. Page canvas `#EEF2F7`, page titles deep blue. Edit the palette/font constants at the top of the styling block to retheme.
-  6. Per-period fact tables were not collapsed to one row per entity. Added visual-level filters: Industry bar + table → `is_latest_year=1` (one row/bar per industry, latest-year magnitude, not summed over all 494 rows); Industry focus-trend line → `is_focus_industry=1` split by `industry_name` (4 lines); State map + bar → `is_latest_month=1` (latest rate per state, not averaged over history). Tagged `region_name` `dataCategory=StateOrProvince` so the Bing map geocodes. FT/PT "Employment by Sex" bar dropped its redundant `series=sex_label` (same field as axis collapsed it to one bar).
-  8. **Page-navigation buttons** added to every page header via the built-in `pageNavigator` visual (`_page_navigator`); page titles shrunk to make room. **Gender split is now a donut** (`_donut`, `donutChart`) on the FT/PT page, replacing the column chart (same filters: exclude Persons + `is_latest_month=1`).
-  9. Industry titles relabelled to "**2022 / annual**" to stop the stale data reading as current (see investigation below).
-  10. **Stakeholder-feedback polish pass.** ⚠️ **KEY BUG:** container-level formatting (title, background, border, shadow) must go under **`vcObjects`**, NOT `visualContainerObjects` — the latter is silently ignored in this report.json format, so all custom chart titles fell back to auto names ("employed_thousands by industry_name") and the card chrome never applied. Fixed in `_visual_container`. Also in this pass: **units in format strings** (`0.00"%"`, `+0.00"%"`, `+0.00" ppt"` — ppt standardised to 2 decimals); **bars sorted by value desc** (`OrderBy` in prototypeQuery via `_bar(sort_by_value=True)`); **distinct categorical colours** per series via `_cat_dp` (state/industry/sex lines + donut — `STATES`/`FOCUS_INDUSTRIES`/`SEXES` constants); area FT/PT now blue vs **amber** (`SECONDARY` recoloured for contrast); card category-label (truncated measure-name subtitle) hidden since the `vcObjects` title now labels it; **State page map dropped** (rendered as a zoomed-out world map = looked broken) and replaced with two ranked bars (rate + employed) over the per-state trend.
+1. DateTable DAX used `TEXT()` (Excel, not DAX) → use `FORMAT()`; quarter via `ROUNDUP(MONTH/3)`.
+2. Calculated-table relationship endpoints fail PBIP validation ("invalid column ID") →
+   DateTable is a **Power Query (M) table**, so its columns are real storage columns.
+3. A value-slot column must be wrapped in an **`Aggregation`** (Average for rate/pct/share/ppt,
+   Sum for counts) or the visual renders blank.
+4. `compatibilityLevel` must be **1600**. Desktop upgraded the workspace and refuses to load a
+   lower level. Never lower it.
+5. Each page sets `width: 1280, height: 720, displayOption: 1` (Fit to Page), or right-edge
+   visuals clip.
+6. Per-period fact tables need visual-level filters to collapse to one row per entity:
+   industry bar/table → `is_latest_year=1`; industry trend → `is_focus_industry=1`; state
+   bars → `is_latest_month=1`.
+7. **`vcObjects`, NOT `visualContainerObjects`** — container formatting (title, background,
+   border, shadow) under the latter is **silently ignored**, so every custom title fell back
+   to an auto name like "employed_thousands by industry_name". In report.json a wrong
+   property name fails quietly. This is the single most important lesson here.
+8. `labelDisplayUnits`: **0 = Auto** (abbreviated 14,737 → "14.7K"), **1 = None**. Card value
+   font 24, not 30 (30 truncated "+0.21 ppt").
+9. Units live in format strings: `0.00"%"`, `+0.00" ppt"`. ABS values are already ×100, so
+   append a literal `%` rather than using a percent format, which would multiply again.
+10. Per-visual field renames = `columnProperties` keyed by queryRef with a `displayName`.
+    Sort by value = an `OrderBy` in the visual's prototypeQuery (Direction 2 = descending).
+11. Custom theme (`AusLabourTheme.json`) in `StaticResources/RegisteredResources/`, wired via
+    `resourcePackages` + `config.themeCollection.customTheme`. Its `dataColors` drives
+    categorical palettes theme-wide. No `baseTheme` referenced (avoids a version-specific name).
+12. The built-in **map visual was dropped** — it rendered as a zoomed-out world map and read
+    as broken. Two ranked bars tell the state story better. Page navigation uses the built-in
+    `pageNavigator` visual.
 
-### PENDING (next session, in order)
-1. **Confirm charts render + semantic fixes look right.** Reopen `.pbip` (close Desktop WITHOUT saving first) and refresh. Verify: charts draw (aggregation fix), the state trend shows one line per state, the FT/PT area shows Persons only, the FT-share line splits by sex, and the "Employment by Sex" bar shows Male/Female for the latest month only.
-3. **Data note:** `mart.v_unemployment_by_state` returns only **6** `region_name` values, not the 8 states/territories in the PRD (ACT/NT appear missing). Check the staging→mart filtering if all 8 are wanted on the State page.
+---
 
-### INVESTIGATION — stale industry data (root-caused 2026-06-18)
-- **Symptom:** Industry View ends **Jan 2022** while National/State/FT-PT are current to **Apr 2026**.
-- **Root cause:** `scripts/extract.py` sources industry from the **`ABS_LABOUR_ACCT`** dataflow (Australian Labour Account — *annual*, measure `M9`), not the monthly `LF` survey. Querying the ABS API **live** (`/data/ABS_LABOUR_ACCT/M9.AUS..A/all`) returns max period **2022** — so it's stale **at the source**, NOT on disk. **Re-running `extract.py` will NOT help.** `transform.py` applies no date cap; the ceiling is purely the dataflow.
-- **Options to make it current:** (a) keep the annual Labour Account and just label the vintage (done — titles now say "2022 / annual"); (b) switch to a quarterly **Labour Force Detailed "employed by industry"** source — far more current but not cleanly exposed as a simple Data-API dataflow (the monthly `LF` flow has no industry dimension; API search surfaced only Census + Labour Account industry flows), so it likely needs a CSV download from the detailed LF release + a new transform. (c) Census 2021 industry = point-in-time only, not a time series.
+## Status (updated 2026-08-14)
 
-### DONE this session (2026-06-18, "All in build_report.py" — source of truth preserved, MCP validation-only)
-- **Two semantic fixes (report-level, in `_make_report()`):**
-  - FT/PT area chart now filtered to `sex_label = "Persons"` (was triple-counting Persons+Male+Female).
-  - State trend line now split by `region_name` series (was averaging all states into one line).
-  - Bonus: FT-share line split by sex; "Employment by Sex" bar now excludes the Persons total and is filtered to `is_latest_month = 1` (it had no latest-month filter, so it summed totals over all history).
-  - New report helpers: `_lit`, `_categorical_filter(table, col, values, exclude=)`, and `vfilters=` on `_visual_container`/`_line`/`_bar`/`_area`; `_line` now takes `series_table`/`series_col`.
-- **Model polish (in `_make_model()`):** hid `region_code` + `industry_code`; added table descriptions (all 5 data tables + DateTable), key column descriptions, and measure descriptions (subtitles, National Avg, Latest FT/PT Share). `c()` gained `desc=`, `_m_table` gained `description=`, measures tuples accept an optional 5th description element.
-- Regenerated via `py -3 powerbi/build_report.py`; `model.bim` + `report.json` validated as well-formed and fixes confirmed present.
+**PRD v2 is implemented end to end.** All four phases (P1 local warehouse, P2 dbt project,
+P3 rebind + regression, P4 Excel + README) are complete and verified:
 
-### Tooling added this session
+- `docker compose up -d && py -3 run_pipeline.py` runs green from a cold start: live ABS
+  extract → 20,767 fact rows → **137/137 dbt nodes pass** (5 seeds, 3 tables, 5 views,
+  124 tests). Data current to **June 2026**, all 8 jurisdictions.
+- Star schema: `dim_date` (581), `dim_series` (137), `fct_labour_force` (20,767).
+- **Regression vs v1: every displayed number identical.** Three marts match exactly; the
+  fourth differs on 2 of 494 rows by 0.01 because v1 divided an already-rounded numerator —
+  v1 was wrong, and neither row is displayed by any visual. Evidence in
+  `docs/migration-v1-to-v2.md`.
+- Power BI rebound to the local warehouse; all 4 tables verified to bind to the dbt marts
+  with matching column lists.
+- Excel workbook generated with 3 Power Query sheets + PivotTable + slicer; Refresh All
+  verified working on a fresh open.
+- Retired (in git history): `sql/`, `transform.py`, `load.py`, `deploy_views.py`,
+  `check_views.py`.
+
+### Possible next steps (none blocking)
+
+- Real Power BI Desktop screenshots for the portfolio — `powerbi/dashboard_overview.png` is
+  a matplotlib render, not the polished Desktop look. the toolchain cannot capture these; Melvin
+  takes them in Desktop.
+- Make the generated GUIDs in `build_report.py` deterministic to cut git diff noise.
+- The quarterly industry source (see data-quality rule 4) if the 2022 vintage ever becomes
+  unacceptable.
+
+  open. If used, remember `build_report.py` is authoritative — they will diverge otherwise.

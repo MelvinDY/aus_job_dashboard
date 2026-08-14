@@ -1,0 +1,44 @@
+# Checked into the repo on purpose: the default target is a local container with
+# a development password that is meant to be public, so a clean clone runs with
+# no secrets to obtain. Point dbt at this directory with DBT_PROFILES_DIR, which
+# run_pipeline.py does for you.
+
+aus_job_dashboard:
+  target: local
+
+  outputs:
+    # ── Default: SQL Server Developer edition in Docker (docker compose up -d) ──
+    local:
+      type: sqlserver
+      driver: "ODBC Driver 18 for SQL Server"
+      server: "{{ env_var('MSSQL_HOST', 'localhost') }}"
+      port: "{{ env_var('MSSQL_PORT', '1433') | int }}"
+      database: "{{ env_var('MSSQL_DATABASE', 'aus_job_dashboard') }}"
+      schema: dbo
+      user: sa
+      password: "{{ env_var('MSSQL_SA_PASSWORD', 'LocalDev_Passw0rd!') }}"
+      encrypt: true
+      # The container presents a self-signed certificate. Correct to trust for a
+      # local-only warehouse; the azure target below does not do this.
+      trust_cert: true
+      threads: 4
+
+    # ── Alternative target: Azure SQL / Fabric (documented, not provisioned) ────
+    # v2 does not require any cloud account. This target exists to show that the
+    # models are portable: same T-SQL dialect, so retargeting is a profile
+    # change rather than a rewrite. Needs the AZURE_SQL_* variables set.
+    #   dbt build --target azure
+    azure:
+      type: sqlserver
+      driver: "ODBC Driver 18 for SQL Server"
+      server: "{{ env_var('AZURE_SQL_SERVER', '') }}"
+      port: 1433
+      database: "{{ env_var('AZURE_SQL_DATABASE', '') }}"
+      schema: dbo
+      user: "{{ env_var('AZURE_SQL_USER', '') }}"
+      password: "{{ env_var('AZURE_SQL_PASSWORD', '') }}"
+      encrypt: true
+      trust_cert: false
+      # Serverless Azure SQL auto-pauses; the first connection has to wake it.
+      login_timeout: 120
+      threads: 4

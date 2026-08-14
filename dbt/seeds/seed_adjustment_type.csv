@@ -1,0 +1,4 @@
+tsest_code,adjustment_type,is_seasonally_adjusted
+10,Original,0
+20,Seasonally adjusted,1
+30,Trend,0
