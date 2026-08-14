@@ -1,0 +1,10 @@
+region_code,region_name,geography_level
+AUS,Australia,National
+1,New South Wales,State
+2,Victoria,State
+3,Queensland,State
+4,South Australia,State
+5,Western Australia,State
+6,Tasmania,State
+7,Northern Territory,Territory
+8,Australian Capital Territory,Territory

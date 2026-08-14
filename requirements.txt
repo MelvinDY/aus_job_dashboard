@@ -1,7 +1,18 @@
+# Pipeline
+requests
 pandas
-openpyxl
+python-dotenv
+
+# Warehouse connectivity (needs ODBC Driver 18 for SQL Server installed)
 pyodbc
 sqlalchemy
-python-dotenv
-requests
+
+# Transformation layer. dbt-sqlserver pulls in dbt-core.
+dbt-sqlserver
+
+# Dashboard PDF/PNG render
 matplotlib
+
+# Excel workbook generation (scripts/build_workbook.py) — Windows + Excel only.
+# Not needed to run the pipeline or to open the committed workbook.
+pywin32; sys_platform == "win32"

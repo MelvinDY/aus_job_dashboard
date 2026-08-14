@@ -1,0 +1,20 @@
+{
+  "name": "AusLabourTheme",
+  "dataColors": [
+    "#1F4E79",
+    "#E1812C",
+    "#3F9C5B",
+    "#B23A48",
+    "#6A4C93",
+    "#2BB0C5",
+    "#C9A227",
+    "#7A8B99"
+  ],
+  "foreground": "#1F2D3D",
+  "foregroundNeutralSecondary": "#5B6B7B",
+  "background": "#FFFFFF",
+  "tableAccent": "#1F4E79",
+  "good": "#3F9C5B",
+  "bad": "#B23A48",
+  "neutral": "#5B6B7B"
+}

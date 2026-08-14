@@ -1,0 +1,101 @@
+version: 2
+
+seeds:
+  - name: seed_measure
+    description: >
+      ABS measure codes for both dataflows, with the unit each measure is
+      expressed in and the employment type it represents. `employment_type` is
+      what lets the full-time / part-time split be a dimension attribute rather
+      than a hardcoded CASE in four different places.
+    columns:
+      - name: measure_code
+        description: ABS MEASURE code (M1, M3, M13, ...). Primary key.
+        tests: [unique, not_null]
+      - name: measure_name
+        description: Human-readable measure name.
+        tests: [not_null]
+      - name: measure_unit
+        description: "Unit the observation is expressed in: thousands of persons or percent."
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["thousands of persons", "percent"]
+      - name: employment_type
+        description: Full-time, Part-time, Total, or Not applicable for non-employment measures.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["Full-time", "Part-time", "Total", "Not applicable"]
+
+  - name: seed_region
+    description: >
+      ABS REGION codes. The territories matter here: NT and ACT are the two
+      jurisdictions the ABS does not seasonally adjust, which is the coverage
+      gap that silently cost v1 two states.
+    columns:
+      - name: region_code
+        description: ABS REGION code — AUS for national, 1-8 for states and territories.
+        tests: [unique, not_null]
+      - name: region_name
+        description: Full jurisdiction name as shown in the report.
+        tests: [unique, not_null]
+      - name: geography_level
+        description: National, State or Territory.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["National", "State", "Territory"]
+
+  - name: seed_sex
+    description: ABS SEX codes. Persons is the total, not a third category — it equals Male + Female.
+    columns:
+      - name: sex_code
+        description: ABS SEX code (1, 2, 3). Primary key.
+        tests: [unique, not_null]
+      - name: sex_name
+        description: Male, Female or Persons.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Male", "Female", "Persons"]
+
+  - name: seed_adjustment_type
+    description: >
+      ABS TSEST (type of series estimate) codes. Carried all the way into
+      dim_series because comparing a seasonally adjusted series against a trend
+      series produces a chart that looks fine and is wrong.
+    columns:
+      - name: tsest_code
+        description: ABS TSEST code (10, 20, 30). Primary key.
+        tests: [unique, not_null]
+      - name: adjustment_type
+        description: Original, Seasonally adjusted, or Trend.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Original", "Seasonally adjusted", "Trend"]
+      - name: is_seasonally_adjusted
+        description: 1 only for TSEST 20.
+
+  - name: seed_industry_division
+    description: >
+      ANZSIC 2006 industry divisions. `is_division` separates the 19 real
+      divisions from the TOTAL rollup, and `is_focus_industry` marks the four
+      industries the Industry page charts as a trend — both previously hardcoded
+      in SQL and Python respectively.
+    columns:
+      - name: industry_code
+        description: ANZSIC division letter, or TOTAL for the all-industries rollup.
+        tests: [unique, not_null]
+      - name: industry_name
+        description: Division name as shown in the report.
+        tests: [unique, not_null]
+      - name: is_division
+        description: 1 for a real ANZSIC division, 0 for the TOTAL rollup.
+      - name: is_focus_industry
+        description: >
+          1 for the four industries on the Industry page trend line —
+          Construction, Retail Trade, Information Media & Telecommunications,
+          and Health Care & Social Assistance.

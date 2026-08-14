@@ -4,8 +4,8 @@
 
 let
     Source = Sql.Database(
-        "<your-server>.database.windows.net",
-        "<your-database>",
+        "localhost,1433",
+        "aus_job_dashboard",
         [Query = "SELECT * FROM mart.v_national_overview ORDER BY date"]
     ),
     #"Changed Types" = Table.TransformColumnTypes(Source, {

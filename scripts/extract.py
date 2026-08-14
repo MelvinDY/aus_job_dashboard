@@ -81,33 +81,12 @@ EXTRACTS = {
     },
 }
 
-# ── Region labels for readability in downstream steps ───────────────────────
-REGION_LABELS = {
-    "AUS": "Australia",
-    "1": "New South Wales",
-    "2": "Victoria",
-    "3": "Queensland",
-    "4": "South Australia",
-    "5": "Western Australia",
-    "6": "Tasmania",
-    "7": "Northern Territory",
-    "8": "Australian Capital Territory",
-}
-
-# ── Measure labels ───────────────────────────────────────────────────────────
-MEASURE_LABELS = {
-    "M1": "Employed full-time ('000)",
-    "M2": "Employed part-time ('000)",
-    "M3": "Employed total ('000)",
-    "M6": "Unemployed ('000)",
-    "M9": "Employed persons ('000)",
-    "M12": "Participation rate (%)",
-    "M13": "Unemployment rate (%)",
-    "M16": "Employment-to-population ratio (%)",
-}
-
-SEX_LABELS = {"1": "Male", "2": "Female", "3": "Persons"}
-TSEST_LABELS = {"10": "Original", "20": "Seasonally adjusted", "30": "Trend"}
+# Dimension codes are NOT decoded here. The raw layer stays a faithful copy of
+# the ABS response, and every code -> label mapping lives in a dbt seed feeding
+# dim_series, where it is version-controlled and covered by accepted_values
+# tests. (v1 decoded labels at this step and got them silently wrong: the maps
+# were keyed by string while the CSV parsed the codes as integers, so every
+# SEX_LABEL came out as "3" rather than "Persons".)
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -158,23 +137,6 @@ def validate(df: pd.DataFrame, name: str, expect: dict[str, int]) -> list[str]:
     return problems
 
 
-def add_labels(df: pd.DataFrame) -> pd.DataFrame:
-    """Add human-readable label columns next to dimension code columns."""
-    if "MEASURE" in df.columns:
-        df.insert(df.columns.get_loc("MEASURE") + 1, "MEASURE_LABEL",
-                  df["MEASURE"].map(MEASURE_LABELS).fillna(df["MEASURE"]))
-    if "REGION" in df.columns:
-        df.insert(df.columns.get_loc("REGION") + 1, "REGION_LABEL",
-                  df["REGION"].map(REGION_LABELS).fillna(df["REGION"]))
-    if "SEX" in df.columns:
-        df.insert(df.columns.get_loc("SEX") + 1, "SEX_LABEL",
-                  df["SEX"].map(SEX_LABELS).fillna(df["SEX"]))
-    if "TSEST" in df.columns:
-        df.insert(df.columns.get_loc("TSEST") + 1, "TSEST_LABEL",
-                  df["TSEST"].map(TSEST_LABELS).fillna(df["TSEST"]))
-    return df
-
-
 def save_raw(df: pd.DataFrame, name: str) -> None:
     RAW_DIR.mkdir(parents=True, exist_ok=True)
     out = RAW_DIR / f"{name}.csv"
@@ -203,7 +165,6 @@ def main() -> None:
                 print(f"  INCOMPLETE: {p}")
             incomplete.extend(problems)
 
-            df = add_labels(df)
             save_raw(df, name)
             success += 1
         print()
