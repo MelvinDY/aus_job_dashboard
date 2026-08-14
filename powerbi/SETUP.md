@@ -1,22 +1,33 @@
 # Power BI Setup Guide
 
+> **You almost certainly do not need this file.** The report is generated:
+> `py -3 powerbi/build_report.py` writes the whole model and report, and
+> `build_report.py` is the source of truth for everything in the dashboard.
+> This guide is the manual fallback — how to rebuild the same thing by hand in
+> Power BI Desktop if you ever need to.
+
 ## Prerequisites
 - Power BI Desktop installed (free from microsoft.com/en-us/power-bi)
-- Azure SQL loaded — run `load.py` and `deploy_views.sql` first
-- Your Azure SQL server name and database name
+- The warehouse built — `docker compose up -d && py -3 run_pipeline.py`
 
 ---
 
-## Step 1 — Connect to Azure SQL (4 queries)
+## Step 1 — Connect to the warehouse (4 queries)
 
 For each query below:
 
-1. Open Power BI Desktop → **Home > Get Data > Azure > Azure SQL Database**
-2. Server: `<your-server>.database.windows.net`
-3. Database: `<your-database>`
+1. Open Power BI Desktop → **Home > Get Data > SQL Server database**
+2. Server: `localhost,1433`
+3. Database: `aus_job_dashboard`
 4. Data Connectivity mode: **Import**
 5. Click **Advanced options** → paste the SQL from the relevant `.m` file
-6. Sign in with your Azure credentials when prompted
+6. Choose **Database** authentication — user `sa`, password `LocalDev_Passw0rd!`
+   (the local container's development credential, published in `.env.example`)
+7. If prompted about encryption, allow the self-signed certificate — the
+   warehouse is local-only
+
+To point at a cloud warehouse instead, use its server and database name here;
+the four mart views have the same names and columns wherever they are built.
 
 Alternatively, use the Power Query M scripts directly:
 

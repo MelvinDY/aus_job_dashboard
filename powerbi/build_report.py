@@ -12,20 +12,27 @@ OUTPUT FILES:
   powerbi/aus_job_dashboard.Report/report.json
 
 BEFORE RUNNING:
-  1. Complete the full pipeline: extract → transform → load → deploy_views.sql
-  2. Set SERVER and DATABASE below to your Azure SQL values
-  3. Run: python powerbi/build_report.py
-  4. Open powerbi/aus_job_dashboard.pbip in Power BI Desktop
-  5. Sign in to Azure SQL when prompted, then click Refresh
+  1. Build the warehouse: docker compose up -d && py -3 run_pipeline.py
+  2. Run: py -3 powerbi/build_report.py
+  3. Open powerbi/aus_job_dashboard.pbip in Power BI Desktop, then Refresh
+
+The model reads the dbt-built views in the `mart` schema and nothing else, so
+the report does not care whether that schema was produced by the local
+container, Azure SQL or Fabric — only where to find it.
 """
 
 import json
+import os
 import uuid
 from pathlib import Path
 
-# ── Configure before running ─────────────────────────────────────────────────
-SERVER   = "melvind.database.windows.net"
-DATABASE = "aus_job_dashboard"
+# ── Warehouse the report binds to ────────────────────────────────────────────
+# Defaults to the local SQL Server container, so a clean clone opens the report
+# against a warehouse it can actually build. v1 pointed at Azure SQL; that
+# instance was decommissioned deliberately, and the environment variables below
+# are how you point this at a cloud warehouse instead without editing the file.
+SERVER   = os.getenv("PBI_SERVER",   "localhost,1433")
+DATABASE = os.getenv("PBI_DATABASE", "aus_job_dashboard")
 # ─────────────────────────────────────────────────────────────────────────────
 
 BASE_DIR   = Path(__file__).resolve().parent
@@ -149,8 +156,12 @@ def _make_model() -> dict:
         c("rank_by_employment",            "int64",    "Int64.Type"),
         c("growth_category",               "string",   "type text",
           desc="Growing / shrinking classification based on YoY change."),
-        c("is_focus_industry",             "int64",    "Int64.Type",  hidden=True),
+        # Declared in the order mart.v_industry_breakdown emits them. Power Query
+        # binds these by name, not position, so the order is cosmetic — but a
+        # column list that silently disagrees with its source is the kind of
+        # thing that makes the next mismatch hard to see.
         c("is_latest_year",                "int64",    "Int64.Type",  hidden=True),
+        c("is_focus_industry",             "int64",    "Int64.Type",  hidden=True),
     ]
     ftpt_cols = [
         c("date",                          "dateTime", "type date",   "Short Date"),
@@ -436,6 +447,25 @@ STATES = ["New South Wales", "Victoria", "Queensland", "Western Australia",
 FOCUS_INDUSTRIES = ["Construction", "Health Care & Social Assistance",
                     "Information Media & Telecommunications", "Retail Trade"]
 SEXES = ["Persons", "Male", "Female"]
+
+THEME_NAME = "AusLabourTheme"   # custom report theme — drives the categorical palette
+
+
+def _theme_dict() -> dict:
+    """Power BI report theme. `dataColors` sets the default categorical palette so
+    every multi-series visual (donut, split lines) draws distinct, on-brand colours
+    without relying on per-visual selectors."""
+    return {
+        "name": THEME_NAME,
+        "dataColors": CATEGORICAL,
+        "foreground": TEXT,
+        "foregroundNeutralSecondary": MUTED,
+        "background": CARD_BG,
+        "tableAccent": PRIMARY,
+        "good": "#3F9C5B",
+        "bad": "#B23A48",
+        "neutral": MUTED,
+    }
 TEXT       = "#1F2D3D"   # primary text
 MUTED      = "#5B6B7B"   # axis / secondary text
 CARD_BG    = "#FFFFFF"   # visual background
@@ -446,7 +476,7 @@ PAGE_BG    = "#EEF2F7"   # page canvas
 FONT       = "Segoe UI"
 FONT_SEMI  = "Segoe UI Semibold"
 TITLE_SIZE = 12
-CARD_VALUE = 30
+CARD_VALUE = 24   # value font; 30 truncated longer values like "+0.21 ppt"
 
 
 def _pe(value: str) -> dict:
@@ -532,8 +562,9 @@ def _chart_objects(accent=None, legend=False, data_labels=False,
 
 def _card_objects() -> dict:
     return {
+        # labelDisplayUnits 1 = None (0 is Auto, which abbreviated 14,737 to "14.7K").
         "labels": [{"properties": {"color": _color(PRIMARY), "fontSize": _pe(f"{CARD_VALUE}D"),
-                                   "fontFamily": _pe(f"'{FONT_SEMI}'"), "labelDisplayUnits": _pe("0D")}}],
+                                   "fontFamily": _pe(f"'{FONT_SEMI}'"), "labelDisplayUnits": _pe("1D")}}],
         "categoryLabels": [{"properties": {"show": _bool(False)}}],
     }
 
@@ -555,11 +586,14 @@ def _table_objects() -> dict:
 
 
 def _visual_container(x, y, w, h, visual_type, projections, title=None,
-                       objects=None, extra_config=None, vfilters=None, sort=None):
+                       objects=None, extra_config=None, vfilters=None, sort=None,
+                       renames=None):
     """
     Build a report visual container dict.
     projections: list of (slot, table, column_or_measure, is_measure)
     sort: optional (slot, "asc"|"desc") — order the query by that slot's value.
+    renames: optional {queryRef: friendly name} — per-visual field display names
+             (fixes raw column names leaking into legends / table headers).
     """
     vis_name = str(uuid.uuid4())[:8]
     z = _next_z()
@@ -627,6 +661,8 @@ def _visual_container(x, y, w, h, visual_type, projections, title=None,
     single_visual["vcObjects"] = _container_chrome(title)
     if objects:
         single_visual["objects"] = objects
+    if renames:
+        single_visual["columnProperties"] = {qr: {"displayName": dn} for qr, dn in renames.items()}
     if extra_config:
         single_visual.update(extra_config)
 
@@ -722,7 +758,8 @@ def _bar(x, y, w, h, cat_table, cat_col, val_table, val_col, is_measure=False,
 
 
 def _area(x, y, w, h, cat_table, cat_col, y_specs, series_table=None,
-          series_col=None, title=None, vfilters=None):
+          series_col=None, title=None, vfilters=None, value_names=None):
+    """value_names: optional list of friendly legend labels aligned to y_specs."""
     proj = [("Category", cat_table, cat_col, False)]
     for tbl, col, is_m in y_specs:
         proj.append(("Y", tbl, col, is_m))
@@ -732,9 +769,13 @@ def _area(x, y, w, h, cat_table, cat_col, y_specs, series_table=None,
     palette = [PRIMARY, SECONDARY, "#5DA271", "#E1A730"]
     series_colors = [(_agg_ref(tbl, col), palette[i % len(palette)])
                      for i, (tbl, col, is_m) in enumerate(y_specs) if not is_m]
+    renames = None
+    if value_names:
+        renames = {_agg_ref(tbl, col): value_names[i]
+                   for i, (tbl, col, is_m) in enumerate(y_specs) if not is_m and i < len(value_names)}
     objs = _chart_objects(legend=True, data_labels=False, series_colors=series_colors)
     return _visual_container(x, y, w, h, "areaChart", proj, title=title,
-                             objects=objs, vfilters=vfilters)
+                             objects=objs, vfilters=vfilters, renames=renames)
 
 
 def _map_visual(x, y, w, h, location_table, location_col, size_table, size_col,
@@ -783,11 +824,15 @@ def _page_navigator(x, y, w, h):
             "config": jdump(config), "filters": "[]"}
 
 
-def _table_visual(x, y, w, h, columns, title=None, vfilters=None):
-    """columns: list of (table, col, is_measure)"""
+def _table_visual(x, y, w, h, columns, title=None, vfilters=None, renames=None):
+    """columns: list of (table, col, is_measure). renames: {col: friendly header}."""
     proj = [("Values", t, c, m) for t, c, m in columns]
+    qr_renames = None
+    if renames:
+        qr_renames = {(f"{t}.[{c}]" if m else f"{t}.{c}"): renames[c]
+                      for t, c, m in columns if c in renames}
     return _visual_container(x, y, w, h, "tableEx", proj, title=title,
-                             objects=_table_objects(), vfilters=vfilters)
+                             objects=_table_objects(), vfilters=vfilters, renames=qr_renames)
 
 
 def _slicer(x, y, w, h, table, col, title=None):
@@ -897,7 +942,8 @@ def _page_industry() -> dict:
 
         # Horizontal bar: employed persons by industry, latest year only — one bar
         # per industry (without the filter, employed_thousands sums over every period).
-        _bar(20, 72, 560, 620,
+        # Widened to 700px so long ANZSIC division names aren't truncated.
+        _bar(20, 72, 700, 620,
              "IndustryBreakdown", "industry_name",
              "IndustryBreakdown", "employed_thousands",
              title="Employed Persons by Industry — 2022 ('000, annual)",
@@ -906,7 +952,7 @@ def _page_industry() -> dict:
 
         # Line chart: focus industries over time — one line per focus industry
         # (is_focus_industry=1 → Construction, Health Care, Info Media, Retail).
-        _line(600, 72, 660, 310,
+        _line(740, 72, 520, 310,
               "DateTable", "Date",
               [("IndustryBreakdown", "employed_thousands", False)],
               series_table="IndustryBreakdown", series_col="industry_name",
@@ -916,7 +962,7 @@ def _page_industry() -> dict:
 
         # Table: industry details, latest year only — one row per industry (without
         # the filter the table lists every period as a separate row).
-        _table_visual(600, 400, 660, 292,
+        _table_visual(740, 400, 520, 292,
                       [
                           ("IndustryBreakdown", "industry_name",           False),
                           ("IndustryBreakdown", "employed_thousands",      False),
@@ -924,7 +970,9 @@ def _page_industry() -> dict:
                           ("IndustryBreakdown", "growth_category",         False),
                       ],
                       title="Industry Detail",
-                      vfilters=[_categorical_filter("IndustryBreakdown", "is_latest_year", [1])]),
+                      vfilters=[_categorical_filter("IndustryBreakdown", "is_latest_year", [1])],
+                      renames={"industry_name": "Industry", "employed_thousands": "Employed ('000)",
+                               "employed_yoy_change_pct": "YoY change", "growth_category": "Growth"}),
     ]
     return _page("ReportSection3", "Industry View", visuals, 2)
 
@@ -944,7 +992,8 @@ def _page_ftpt() -> dict:
                   ("FulltimeParttime", "employed_parttime_thousands", False),
               ],
               title="Full-time vs Part-time Employed — Persons ('000)",
-              vfilters=[_categorical_filter("FulltimeParttime", "sex_label", ["Persons"])]),
+              vfilters=[_categorical_filter("FulltimeParttime", "sex_label", ["Persons"])],
+              value_names=["Full-time", "Part-time"]),
 
         # KPI cards
         _card(840, 72,  200, 130, "Latest FT Share Persons", title="Full-time Share"),
@@ -978,7 +1027,14 @@ def _page_ftpt() -> dict:
 def _make_report() -> dict:
     return {
         "id": str(uuid.uuid4()),
-        "resourcePackages": [],
+        "resourcePackages": [
+            {"resourcePackage": {
+                "name": "RegisteredResources",
+                "type": 1,
+                "items": [{"name": THEME_NAME, "path": f"{THEME_NAME}.json", "type": 202}],
+                "disabled": False,
+            }}
+        ],
         "sections": [
             _page_overview(),
             _page_state(),
@@ -988,6 +1044,7 @@ def _make_report() -> dict:
         "config": jdump({
             "objects": {},
             "defaultDrillFilterOtherVisuals": True,
+            "themeCollection": {"customTheme": {"name": THEME_NAME, "type": 1}},
         }),
         "filters": "[]",
     }
@@ -1018,11 +1075,17 @@ def main():
     })
     write_json(REPORT_DIR / "report.json", _make_report())
 
+    # Custom theme (registered resource referenced by report.json)
+    write_json(REPORT_DIR / "StaticResources" / "RegisteredResources" / f"{THEME_NAME}.json",
+               _theme_dict())
+
+    print(f"\nBound to: {SERVER} / {DATABASE}  (schema: mart)")
     print("\nDone. Next steps:")
-    print("  1. Edit SERVER and DATABASE at the top of this script")
-    print("  2. Re-run: python powerbi/build_report.py")
-    print("  3. Open: powerbi/aus_job_dashboard.pbip in Power BI Desktop")
-    print("  4. Sign in to Azure SQL, then click Refresh All")
+    print("  1. Make sure the warehouse is built: py -3 run_pipeline.py")
+    print("  2. Open: powerbi/aus_job_dashboard.pbip in Power BI Desktop")
+    print("  3. Click Refresh All")
+    print("\n  Close Desktop WITHOUT saving before regenerating — saving from")
+    print("  Desktop overwrites these generated files.")
 
 
 if __name__ == "__main__":

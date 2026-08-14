@@ -1,0 +1,80 @@
+name: aus_job_dashboard
+version: "2.0.0"
+config-version: 2
+
+profile: aus_job_dashboard
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+flags:
+  # Both are dbt-sqlserver behaviour changes slated to become the defaults.
+  # Opted in now so the project is not relying on behaviour that is going away.
+  #   - real BEGIN/COMMIT, so a failed statement rolls back the ones before it
+  #     rather than leaving a half-built model behind
+  #   - SQL Server-native string type mappings
+  dbt_sqlserver_use_dbt_transactions: true
+  dbt_sqlserver_use_native_string_types: true
+
+models:
+  aus_job_dashboard:
+    # Staging is where the ABS response becomes typed, deduplicated, long-format
+    # observations. One model, one grain: (series_id, period_date).
+    staging:
+      +schema: staging
+      +materialized: view
+
+    marts:
+      # The star schema. Dimensions and the fact are physical tables — they are
+      # what everything downstream joins against, and they are small.
+      core:
+        +schema: core
+        +materialized: table
+
+      # The reporting layer Power BI and Excel actually read. Views, because
+      # they are thin projections over the star and the dataset is ~21k rows;
+      # the `v_` prefix stays honest that way. These reproduce v1's mart
+      # contract column-for-column so the report rebinds without edits.
+      reporting:
+        +schema: mart
+        +materialized: view
+
+seeds:
+  aus_job_dashboard:
+    +schema: seed
+    # The ABS publishes dimension codes, not labels. Every code -> label mapping
+    # lives here as version-controlled data rather than a dict in a Python file,
+    # which is what lets accepted_values tests police it.
+    #
+    # Every text column is typed explicitly. Left to itself the adapter sizes a
+    # seed column to fit the values currently in the CSV, so editing a label to
+    # something longer fails the next load with a truncation error instead of
+    # widening the column.
+    seed_sex:
+      +column_types:
+        sex_code: varchar(10)
+        sex_name: varchar(50)
+    seed_region:
+      +column_types:
+        region_code: varchar(10)
+        region_name: varchar(100)
+        geography_level: varchar(20)
+    seed_adjustment_type:
+      +column_types:
+        tsest_code: varchar(10)
+        adjustment_type: varchar(50)
+    seed_measure:
+      +column_types:
+        measure_code: varchar(10)
+        measure_name: varchar(100)
+        measure_unit: varchar(50)
+        employment_type: varchar(50)
+    seed_industry_division:
+      +column_types:
+        industry_code: varchar(20)
+        industry_name: varchar(100)
