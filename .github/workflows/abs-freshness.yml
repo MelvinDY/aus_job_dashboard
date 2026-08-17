@@ -1,0 +1,129 @@
+name: ABS freshness
+
+# Runs the pipeline against the LIVE ABS Data API on a schedule.
+#
+# This is the canary, not the build. Its job is to fail when the ABS changes
+# something, because that failure is the notification — the alternative is
+# finding out months later that a dataflow moved, which is roughly how the v1
+# industry data went stale without anyone noticing.
+#
+# extract.py already asserts dimension completeness (`expect: {"REGION": 8}`),
+# so a run failing here most likely means one of:
+#   - a dataflow, key or dimension member changed shape
+#   - the ABS stopped publishing a series the report depends on
+#   - a jurisdiction dropped out of a series again (the NT/ACT trap)
+#
+# Pull requests deliberately do NOT do this — see ci.yml.
+
+on:
+  schedule:
+    # Mondays, 21:00 UTC — Tuesday morning in Sydney.
+    - cron: "0 21 * * 1"
+  workflow_dispatch:
+
+jobs:
+  freshness:
+    name: Build from the live ABS API
+    runs-on: ubuntu-latest
+
+    services:
+      warehouse:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_PID: Developer
+          MSSQL_SA_PASSWORD: LocalDev_Passw0rd!
+        ports:
+          - 1433:1433
+
+    env:
+      MSSQL_HOST: localhost
+      MSSQL_PORT: "1433"
+      MSSQL_DATABASE: aus_job_dashboard
+      MSSQL_SA_PASSWORD: LocalDev_Passw0rd!
+      DBT_PROFILES_DIR: ${{ github.workspace }}/dbt
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install ODBC Driver 18
+        run: |
+          set -euo pipefail
+          curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+            | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc > /dev/null
+          # Track the runner's Ubuntu release rather than pinning one, so this
+          # keeps working when the ubuntu-latest image moves.
+          curl -fsSL "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list" \
+            | sudo tee /etc/apt/sources.list.d/mssql-release.list > /dev/null
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Wait for the warehouse and seed the database
+        run: python scripts/init_warehouse.py --timeout 180
+
+      # Not `run_pipeline.py`, so that a failure names the stage it happened in:
+      # an extract failure is an ABS problem, a dbt failure is ours.
+      - name: Extract from the live ABS Data API
+        run: python scripts/extract.py
+
+      - name: Load into schema `raw`
+        run: python scripts/load_raw.py
+
+      - name: dbt deps
+        working-directory: dbt
+        run: dbt deps
+
+      - name: dbt build
+        working-directory: dbt
+        run: dbt build
+
+      - name: Verify the mart contract
+        run: python scripts/check_mart_contract.py
+
+      - name: Report the data vintage
+        run: |
+          python - <<'PY'
+          import os
+          import pandas as pd
+          from sqlalchemy import create_engine
+          import sys
+          sys.path.insert(0, "scripts")
+          from load_raw import build_conn_str
+
+          e = create_engine(f"mssql+pyodbc:///?odbc_connect={build_conn_str()}")
+          national = pd.read_sql(
+              "SELECT MAX(date) AS latest FROM mart.v_national_overview", e).latest[0]
+          industry = pd.read_sql(
+              "SELECT MAX(date) AS latest FROM mart.v_industry_breakdown", e).latest[0]
+          states = pd.read_sql(
+              "SELECT COUNT(DISTINCT region_name) AS n FROM mart.v_unemployment_by_state "
+              "WHERE is_latest_month = 1", e).n[0]
+
+          summary = (
+              f"| Series | Latest |\n|---|---|\n"
+              f"| Monthly Labour Force | {national} |\n"
+              f"| Annual Labour Account (industry) | {industry} |\n"
+              f"| Jurisdictions in latest month | {states} of 8 |\n"
+          )
+          print(summary)
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as fh:
+              fh.write("## ABS data vintage\n\n" + summary)
+          PY
+
+      - name: Upload the fresh extract
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: abs-raw-extract
+          path: data/raw/*.csv
+          retention-days: 14
