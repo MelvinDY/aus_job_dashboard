@@ -199,7 +199,7 @@ disappearing from a series again.
 
 ### Power BI — four pages, generated as code
 
-![Dashboard — Overview page](powerbi/dashboard_overview.png)
+![Dashboard — Overview page](powerbi/screenshots/pbi_overview.png)
 
 | Page | Content |
 |---|---|
@@ -233,9 +233,13 @@ Desktop overwrites the generated files.
 > If no prompt appears, clear the saved credential under **File → Options and
 > settings → Data source settings → Global permissions**.
 
-> Four-page export: **[powerbi/dashboard_export.pdf](powerbi/dashboard_export.pdf)**.
-> `scripts/export_dashboard.py` regenerates that PDF and the screenshot above
-> straight from the mart, no Desktop GUI needed.
+> **[Four-page PDF, exported from the report itself](powerbi/screenshots/aus_job_dashboard_powerbi.pdf)**
+> — and the page captures live in [`powerbi/screenshots/`](powerbi/screenshots).
+>
+> There is also a *generated* fallback, `powerbi/dashboard_export.pdf`, which
+> `scripts/export_dashboard.py` renders straight from the mart with matplotlib.
+> It exists so the repo shows the numbers without Power BI Desktop installed;
+> the real export above is the one to look at.
 
 ### Excel — Power Query workbook
 
