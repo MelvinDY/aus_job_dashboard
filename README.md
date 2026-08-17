@@ -1,5 +1,8 @@
 # Australian Labour Market Analytics
 
+[![dbt build](https://github.com/MelvinDY/aus_job_dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/MelvinDY/aus_job_dashboard/actions/workflows/ci.yml)
+[![ABS freshness](https://github.com/MelvinDY/aus_job_dashboard/actions/workflows/abs-freshness.yml/badge.svg)](https://github.com/MelvinDY/aus_job_dashboard/actions/workflows/abs-freshness.yml)
+
 End-to-end analytics on real Australian Bureau of Statistics Labour Force data:
 ingested from the ABS Data API with Python, modelled into a star schema with
 **dbt** on **SQL Server**, and delivered as a four-page **Power BI** report and a
@@ -163,6 +166,35 @@ cd dbt && dbt build          # models + tests
 dbt docs generate && dbt docs serve   # lineage graph and column docs
 ```
 
+### Continuous integration
+
+Two workflows, split by what a failure is supposed to tell you.
+
+**`dbt build`** runs on every push and pull request. It stands up a SQL Server
+service container, builds the warehouse from a committed fixture in
+`tests/fixtures/raw`, and runs all 124 tests. It deliberately does **not** call
+the ABS API — a pull request should fail because someone broke a model, never
+because a government website had an outage, and a portfolio repo with an
+intermittently red badge is worse than one with no badge. The fixture is a
+date-trimmed slice of a real extract (`scripts/make_fixture.py`), not synthetic
+data, and it preserves every property the tests assert — all eight
+jurisdictions included.
+
+It finishes with `scripts/check_mart_contract.py`, which guards the seam dbt
+cannot see: Power Query binds columns by **name**, so renaming or dropping a
+mart column leaves dbt green while the Power BI model and the Excel workbook
+break on their next refresh. That check compares the columns `model.bim`
+declares, and the headers of the committed Excel exports, against what the views
+actually return.
+
+**`ABS freshness`** runs weekly against the live API. That one is a canary
+rather than a build: its job is to fail when the ABS changes something, because
+that failure is the notification. It runs the stages separately so a failure
+names its own cause — an extract failure is an ABS problem, a dbt failure is
+ours — and writes the data vintage to the run summary. `extract.py`'s
+`expect: {"REGION": 8}` assertion is what makes it catch a jurisdiction
+disappearing from a series again.
+
 ## Deliverables
 
 ### Power BI — four pages, generated as code
@@ -258,9 +290,14 @@ aus_job_dashboard/
 │   ├── tests/                the three singular data-quality tests
 │   ├── macros/               generate_schema_name (verbatim custom schemas)
 │   └── profiles.yml          local target (default) + documented azure target
+├── .github/workflows/        dbt build (fixture) + ABS freshness (live, weekly)
+├── tests/fixtures/raw/       trimmed real extract, so CI needs no API
 ├── scripts/
 │   ├── extract.py            ABS Data API -> data/raw
 │   ├── load_raw.py           data/raw -> schema `raw`, verbatim
+│   ├── init_warehouse.py     wait for the server, seed the database
+│   ├── make_fixture.py       data/raw -> tests/fixtures/raw
+│   ├── check_mart_contract.py  guards the mart -> Power BI / Excel seam
 │   ├── export_mart.py        mart -> excel/data/*.csv
 │   ├── build_workbook.py     generates the Excel workbook
 │   └── export_dashboard.py   renders the dashboard PDF + PNG
