@@ -1,0 +1,277 @@
+DATAFLOW,MEASURE,SEX,AGE,TSEST,REGION,FREQ,TIME_PERIOD,OBS_VALUE,UNIT_MEASURE,UNIT_MULT,OBS_STATUS,OBS_COMMENT,DECIMALS
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2015-01,11622.43822098,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2015-02,11648.02258758,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2015-03,11673.21620335,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2015-04,11695.74000862,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2015-05,11715.74395141,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2015-06,11735.37484041,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2015-07,11757.4602252,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2015-08,11784.22588715,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2015-09,11815.32835827,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2015-10,11847.36606773,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2015-11,11877.93965142,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2015-12,11903.42800243,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2016-01,11921.44279645,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2016-02,11934.292621,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2016-03,11943.94316523,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2016-04,11953.09856092,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2016-05,11961.41253258,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2016-06,11967.48921067,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2016-07,11970.96663028,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2016-08,11973.08630026,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2016-09,11974.77856659,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2016-10,11977.63627959,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2016-11,11983.0186754,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2016-12,11992.86269167,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2017-01,12010.57319017,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2017-02,12036.72058123,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2017-03,12071.27396287,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2017-04,12113.1000506,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2017-05,12157.64377368,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2017-06,12201.03588545,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2017-07,12240.56111009,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2017-08,12275.01793621,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2017-09,12305.33210444,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2017-10,12333.11066099,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2017-11,12359.43676608,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2017-12,12383.3944385,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2018-01,12403.3702897,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2018-02,12418.73178891,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2018-03,12432.45551098,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2018-04,12448.25638221,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2018-05,12469.82941801,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2018-06,12498.11778843,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2018-07,12530.18550457,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2018-08,12563.41641762,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2018-09,12595.54578374,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2018-10,12623.98729293,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2018-11,12648.56315156,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2018-12,12672.09955141,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2019-01,12697.88946176,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2019-02,12725.92736173,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2019-03,12754.82933698,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2019-04,12783.42969613,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2019-05,12810.84309373,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2019-06,12834.7469325,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2019-07,12853.49152792,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2019-08,12867.03015878,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2019-09,12877.02135761,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2019-10,12886.70491462,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2019-11,12897.50092676,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2019-12,12908.36230391,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2020-01,12916.60930345,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2020-02,12920.82228938,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2020-03,12921.26287872,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2020-04,12258.8217629,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2020-05,12261.55687046,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2020-06,12379.29208214,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2020-07,12409.6141208,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2020-08,12547.96729364,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2020-09,12604.16581256,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2020-10,12663.53879101,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2020-11,12736.56848437,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2020-12,12786.82324039,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2021-01,12831.59014254,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2021-02,12872.99741599,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2021-03,12911.82061674,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2021-04,12947.54624004,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2021-05,12979.98231241,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2021-06,13007.96515385,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2021-07,13031.93944345,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2021-08,13054.62428842,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2021-09,13081.44042439,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2021-10,13117.57907212,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2021-11,13163.75533827,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2021-12,13217.87251245,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2022-01,13276.59634382,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2022-02,13347.97789039,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2022-03,13409.05177282,NUM,3,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2022-04,13469.2819056,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2022-05,13525.8334578,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2022-06,13576.20500652,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2022-07,13620.18040979,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2022-08,13657.22178817,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2022-09,13687.42063236,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2022-10,13713.76935625,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2022-11,13740.7421519,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2022-12,13772.81440222,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2023-01,13812.29544185,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2023-02,13857.48924928,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2023-03,13904.74574454,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2023-04,13949.82580181,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2023-05,13990.24305336,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2023-06,14025.51593882,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2023-07,14057.82274069,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2023-08,14087.56444328,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2023-09,14115.97319729,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2023-10,14143.09214398,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2023-11,14167.74908823,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2023-12,14189.81664502,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2024-01,14208.63878827,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2024-02,14228.03302564,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2024-03,14249.7697352,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2024-04,14274.72773855,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2024-05,14302.19410259,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2024-06,14331.63477218,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2024-07,14361.51349606,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2024-08,14392.42074896,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2024-09,14423.82169307,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2024-10,14452.90144336,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2024-11,14479.54855159,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2024-12,14503.16241367,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2025-01,14523.35024773,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2025-02,14539.52572834,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2025-03,14551.48990542,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2025-04,14560.77486571,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2025-05,14568.2995791,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2025-06,14576.58556014,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2025-07,14586.43953177,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2025-08,14599.19944119,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2025-09,14613.20918307,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2025-10,14628.81811459,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2025-11,14646.20173989,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2025-12,14663.69738402,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2026-01,14681.33495637,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2026-02,14699.59956641,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2026-03,14720.57741992,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2026-04,14745.51813466,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2026-05,14775.07005171,NUM,3,,,1
+ABS:LF(1.0.0),M3,3,1599,30,AUS,M,2026-06,14807.398734,NUM,3,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2015-01,6.23804279,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2015-02,6.1908323,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2015-03,6.14603223,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2015-04,6.11479307,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2015-05,6.09600739,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2015-06,6.08322944,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2015-07,6.06595804,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2015-08,6.03687085,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2015-09,5.99173165,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2015-10,5.93556386,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2015-11,5.87354656,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2015-12,5.81446338,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2016-01,5.76677205,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2016-02,5.73007313,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2016-03,5.70116179,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2016-04,5.6797958,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2016-05,5.66060015,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2016-06,5.64437269,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2016-07,5.63782809,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2016-08,5.64188874,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2016-09,5.65544408,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2016-10,5.68715534,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2016-11,5.7342511,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2016-12,5.7799609,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2017-01,5.803788,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2017-02,5.80091539,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2017-03,5.77155571,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2017-04,5.72434737,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2017-05,5.66979166,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2017-06,5.61539654,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2017-07,5.56518945,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2017-08,5.52768196,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2017-09,5.50823399,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2017-10,5.49890094,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2017-11,5.49859061,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2017-12,5.5106127,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2018-01,5.5263668,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2018-02,5.53264826,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2018-03,5.52137011,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2018-04,5.49060938,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2018-05,5.44118027,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2018-06,5.38156601,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2018-07,5.31463879,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2018-08,5.24191373,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2018-09,5.17061553,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2018-10,5.10733421,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2018-11,5.06027836,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2018-12,5.03198235,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2019-01,5.02710869,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2019-02,5.04608031,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2019-03,5.08342692,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2019-04,5.13065176,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2019-05,5.18110057,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2019-06,5.22591586,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2019-07,5.25476254,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2019-08,5.26136107,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2019-09,5.24738278,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2019-10,5.21871096,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2019-11,5.18521231,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2019-12,5.16044195,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2020-01,5.16418536,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2020-02,5.20394177,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2020-03,5.27649274,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2020-04,6.73539155,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2020-05,6.84939009,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2020-06,6.8819621,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2020-07,6.93215846,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2020-08,6.88957987,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2020-09,6.84313193,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2020-10,6.75225046,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2020-11,6.62558547,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2020-12,6.44382107,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2021-01,6.2881967,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2021-02,5.87641706,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2021-03,5.62650103,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2021-04,5.43786104,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2021-05,5.24731217,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2021-06,5.07166423,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2021-07,4.86419684,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2021-08,4.73871212,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2021-09,4.64310163,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2021-10,4.61585231,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2021-11,4.55678198,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2021-12,4.30474383,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2022-01,4.08404422,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2022-02,4.02374305,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2022-03,3.95006676,PCT,0,,"Given large month-to-month changes during the COVID-19 pandemic, resulting in multiple trend breaks, the ABS recommends caution when using trend estimates during this period. ",1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2022-04,3.85929001,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2022-05,3.75710885,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2022-06,3.65462268,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2022-07,3.56469075,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2022-08,3.50637489,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2022-09,3.48372381,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2022-10,3.49194671,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2022-11,3.51773937,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2022-12,3.54783009,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2023-01,3.56708349,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2023-02,3.57589668,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2023-03,3.58039989,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2023-04,3.58433602,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2023-05,3.59146746,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2023-06,3.60640581,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2023-07,3.63280921,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2023-08,3.67527768,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2023-09,3.72977146,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2023-10,3.78838376,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2023-11,3.84307795,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2023-12,3.89204571,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2024-01,3.93188027,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2024-02,3.96058642,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2024-03,3.98231783,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2024-04,4.00551416,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2024-05,4.03605194,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2024-06,4.06494792,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2024-07,4.08161054,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2024-08,4.07993277,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2024-09,4.06589916,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2024-10,4.05007328,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2024-11,4.03710275,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2024-12,4.02627069,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2025-01,4.02439214,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2025-02,4.03795991,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2025-03,4.06459416,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2025-04,4.1018278,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2025-05,4.14923313,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2025-06,4.20346798,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2025-07,4.25764474,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2025-08,4.29796491,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2025-09,4.31921555,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2025-10,4.31898435,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2025-11,4.30749299,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2025-12,4.29579852,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2026-01,4.29351245,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2026-02,4.30329528,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2026-03,4.324744,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2026-04,4.35320184,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2026-05,4.37843425,PCT,0,,,1
+ABS:LF(1.0.0),M13,3,1599,30,AUS,M,2026-06,4.39559076,PCT,0,,,1

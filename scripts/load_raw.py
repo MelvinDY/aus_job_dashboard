@@ -32,8 +32,10 @@ Requires:
   - a running warehouse:  docker compose up -d
 
 Run: py -3 scripts/load_raw.py
+     py -3 scripts/load_raw.py --raw-dir tests/fixtures/raw    (what CI does)
 """
 
+import argparse
 import os
 import sys
 from pathlib import Path
@@ -177,9 +179,9 @@ def recreate_table(engine, table: str, ddl: str) -> None:
         conn.execute(text(ddl.strip()))
 
 
-def read_extract(name: str, columns: list[str]) -> pd.DataFrame:
+def read_extract(name: str, columns: list[str], raw_dir: Path) -> pd.DataFrame:
     """Read one raw CSV and align it to the target table's columns."""
-    path = RAW_DIR / f"{name}.csv"
+    path = raw_dir / f"{name}.csv"
     if not path.exists():
         raise FileNotFoundError(f"{path} not found — run extract.py first.")
 
@@ -199,7 +201,20 @@ def read_extract(name: str, columns: list[str]) -> pd.DataFrame:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Land the ABS responses in the warehouse.")
+    parser.add_argument(
+        "--raw-dir",
+        default=str(RAW_DIR),
+        help="Directory of ABS CSVs to load. Defaults to data/raw; CI points this "
+             "at the committed fixture so its runs do not depend on the ABS API.",
+    )
+    args = parser.parse_args()
+    raw_dir = Path(args.raw_dir)
+    if not raw_dir.is_absolute():
+        raw_dir = ROOT / raw_dir
+
     print("=== ABS raw load ===\n")
+    print(f"source: {raw_dir}\n")
 
     engine = get_engine()
     try:
@@ -218,7 +233,7 @@ def main() -> None:
         print(f"[{table}]")
         frames = []
         for name in cfg["extracts"]:
-            df = read_extract(name, cfg["columns"])
+            df = read_extract(name, cfg["columns"], raw_dir)
             print(f"  {name}: {len(df):,} rows")
             frames.append(df)
 

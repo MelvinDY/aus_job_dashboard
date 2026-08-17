@@ -45,9 +45,14 @@ aus_job_dashboard/
 ├── docker-compose.yml      # SQL Server Developer + seeded database
 ├── run_pipeline.py         # one command, end to end
 ├── data/raw/               # ABS responses (gitignored)
+├── .github/workflows/      # ci.yml (fixture, every push) + abs-freshness.yml (live, weekly)
+├── tests/fixtures/raw/     # trimmed real extract so CI never calls the ABS API
 ├── scripts/
 │   ├── extract.py          # ABS Data API -> data/raw
-│   ├── load_raw.py         # data/raw -> schema `raw`, verbatim
+│   ├── load_raw.py         # data/raw -> schema `raw`, verbatim (--raw-dir for the fixture)
+│   ├── init_warehouse.py   # wait for the server, seed the database (used by CI)
+│   ├── make_fixture.py     # data/raw -> tests/fixtures/raw
+│   ├── check_mart_contract.py  # guards the mart -> Power BI / Excel seam
 │   ├── export_mart.py      # mart -> excel/data/*.csv
 │   ├── build_workbook.py   # generates the Excel workbook (needs Excel + pywin32)
 │   └── export_dashboard.py # renders dashboard PDF + PNG from the mart
@@ -189,13 +194,12 @@ the test.
 
 ---
 
-## HANDOFF — next session starts here (written 2026-08-14)
+## HANDOFF — next session starts here (updated 2026-08-17)
 
 ### Where the project stands
 
-**PRD v2 is implemented, verified, committed, merged and pushed.** `master` is at
-`6631219` (merge of `feat/v2-local-dbt-stack`) and is up to date with `origin/master`.
-Nothing is in flight. All four PRD phases are done:
+**PRD v2 is implemented, verified, committed, merged and pushed**, and CI now runs on top
+of it (next step 3 below, done 2026-08-17). Nothing is in flight. All four PRD phases:
 
 - `docker compose up -d && py -3 run_pipeline.py` runs green **from a destroyed volume**:
   live ABS extract → 21,560 raw rows → **137/137 dbt nodes pass** (5 seeds, 3 tables,
@@ -240,17 +244,37 @@ fix it in Desktop — that is a `build_report.py` bug. See report.json lessons 3
    **80.0% of employed men full-time vs 56.6% of women** (was ~80/57, so the story holds).
    Source material: `README.md` and `docs/migration-v1-to-v2.md`. Note `PROJECT_NOTES.txt`
    section 9's KEY NUMBERS are the April/May vintage — re-read from the mart before quoting.
-3. **CI on GitHub Actions** — my recommendation for the next real piece of work, and the
-   natural payoff of having written 124 tests. Everything is containerised and free now, so
-   a workflow can run the mssql service container and `dbt build` on push. Suggested split:
-   PRs build from a small committed raw fixture (fast, deterministic, no external
-   dependency); a weekly scheduled job runs the *live* extract, which turns `extract.py`'s
-   `expect: {"REGION": 8}` guard into an early-warning canary for ABS API drift — directly
-   covering the "ABS API shape has drifted" row in the PRD risk table. A "137 tests passing"
-   badge in the README is a strong signal for the technical-interviewer persona.
+3. ~~CI on GitHub Actions~~ — **DONE 2026-08-17.** Two workflows, split by what a failure
+   means. `ci.yml` runs on every push/PR from the committed fixture (no ABS call, so a red
+   badge always means someone broke a model); `abs-freshness.yml` runs the live extract
+   weekly as a drift canary. Both stand up an mssql service container. Verified locally by
+   building the whole thing from the fixture in a throwaway database: 137/137 pass.
+   **Not yet observed running on GitHub** — the first push will be its real test. If the
+   driver install step fails, that is the suspect (it tracks `lsb_release -rs`, so a runner
+   image change is the likely cause).
 4. Smaller, whenever they become annoying: deterministic GUIDs in `build_report.py` to cut
    git diff noise; publish `dbt docs` to GitHub Pages; the quarterly industry source (see
    data-quality rule 4) if the 2022 vintage ever becomes a sticking point.
+
+### About the CI fixture
+
+`tests/fixtures/raw/` is a **date-trimmed copy of a real extract** (2015 onward for the
+monthly files; the annual industry file kept whole), 576 KB, regenerated with
+`py -3 scripts/make_fixture.py`. It is not synthetic, and the trim is constrained: it must
+keep all 8 jurisdictions in every month, both sides of the deliberately overlapping series,
+and ≥13 months so the 12-month lags resolve. `make_fixture.py` asserts the jurisdiction
+count rather than trusting the trim.
+
+It does **not** need regenerating on a schedule — it exists to be stable. Regenerate it only
+when a *model* needs input the fixture does not contain (a new measure, dataflow or
+dimension). CI passing on a fixture from 2026 while the live pipeline has moved on is fine
+and intended; `abs-freshness.yml` is what watches the live data.
+
+`scripts/check_mart_contract.py` runs at the end of CI and is worth knowing about: it
+compares the columns `model.bim` declares, and the committed Excel export headers, against
+what the mart views actually return. It exists because Power Query binds by **name**, so a
+renamed mart column leaves dbt green and breaks both deliverables silently. It was
+negative-tested (rename a column → exit 1), not just assumed to work.
 
 ### Environment state as of session end
 
