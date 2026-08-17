@@ -191,6 +191,37 @@ the test.
 12. The built-in **map visual was dropped** — it rendered as a zoomed-out world map and read
     as broken. Two ranked bars tell the state story better. Page navigation uses the built-in
     `pageNavigator` visual.
+13. **Every column needs `sourceColumn`, including throwaway ones.** The `_Measures` table's
+    hidden `Placeholder` column had none. A *per-table* refresh works fine, so this hides
+    until someone clicks **Refresh All**, which is a full-model refresh and fails the entire
+    batch with `Column 'Placeholder' in table '_Measures' does not have its source pipeline
+    rowset column specified`. Desktop surfaces that as "some of the tables have incomplete or
+    no data", which points nowhere. Found via the model API, not the UI.
+
+### Connecting Desktop to the local warehouse
+
+The generated model names a server and database; it cannot carry the credential, because
+Power BI stores that per data source outside the file. So Desktop defaults to **Windows
+authentication**, which cannot work against a container that is not domain-joined, and fails
+with `The target principal name is incorrect. Cannot generate SSPI context`. Everyone
+cloning this repo will hit it.
+
+1. **File → Options and settings → Data source settings**, switch the selector to **Global
+   permissions** (the "in current file" view lists *native query approvals*, which is a
+   different thing and only offers "Revoke approvals"). Select `localhost,1433` → **Clear
+   Permissions**.
+2. **Refresh All** → in the prompt choose the **Database** tab, not Windows → `sa` /
+   `LocalDev_Passw0rd!`, applied at the server level so all four tables share it.
+3. "We were unable to connect using an encrypted connection" → click **OK**. The container
+   presents a self-signed certificate. Accepting the unencrypted fallback is fine *here*
+   because it is a loopback connection on the same machine; it would not be against a
+   remote server.
+4. Approve the native query prompts. They are the four `SELECT * FROM mart.v_*` statements
+   `build_report.py` generates.
+
+If the stored credential is wedged and no prompt appears, regenerate against a different
+data-source identity to force a fresh one — same warehouse, no saved credential:
+`PBI_SERVER=127.0.0.1,1433 py -3 powerbi/build_report.py`
 
 ---
 

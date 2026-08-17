@@ -325,7 +325,15 @@ def _make_model() -> dict:
     measures_table = {
         "name": "_Measures",
         "isHidden": True,
+        # sourceColumn is required even on this throwaway placeholder. Without it
+        # the column has no binding to its M query, and while a per-table refresh
+        # still works, a FULL MODEL refresh — which is what Desktop's "Refresh
+        # All" does — fails the whole batch with:
+        #   Column 'Placeholder' in table '_Measures' does not have its source
+        #   pipeline rowset column specified.
+        # The visible symptom is tables that stay empty with no useful error.
         "columns": [{"name": "Placeholder", "dataType": "int64", "isHidden": True,
+                     "sourceColumn": "Placeholder",
                      "annotations": [{"name": "SummarizationSetBy", "value": "Automatic"}]}],
         "measures": measure_defs,
         "partitions": [{"name": "_Measures", "mode": "import",

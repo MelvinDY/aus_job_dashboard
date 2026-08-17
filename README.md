@@ -221,6 +221,18 @@ Then open `powerbi/aus_job_dashboard.pbip` and click Refresh. It binds to
 elsewhere. **Close Desktop without saving before regenerating** — saving from
 Desktop overwrites the generated files.
 
+> **The first connection needs one manual step.** A generated model can't carry
+> a credential — Power BI stores that per data source, outside the file — so
+> Desktop defaults to **Windows authentication**, which cannot work against a
+> container that isn't domain-joined. It fails with *"The target principal name
+> is incorrect. Cannot generate SSPI context."*
+>
+> In the refresh prompt, pick the **Database** tab rather than Windows and use
+> `sa` / `LocalDev_Passw0rd!` at the server level. Accept the certificate
+> warning — the container's cert is self-signed and the connection is loopback.
+> If no prompt appears, clear the saved credential under **File → Options and
+> settings → Data source settings → Global permissions**.
+
 > Four-page export: **[powerbi/dashboard_export.pdf](powerbi/dashboard_export.pdf)**.
 > `scripts/export_dashboard.py` regenerates that PDF and the screenshot above
 > straight from the mart, no Desktop GUI needed.
