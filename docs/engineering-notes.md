@@ -336,7 +336,3 @@ negative-tested (rename a column → exit 1), not just assumed to work.
   that actually shipped; a failure means the data or the model is wrong.
 - **Do not move transformation logic back into Python.** Python calls the API and lands the
   response; everything else is a dbt model.
-
-  open. If used, remember `build_report.py` is authoritative — they will diverge otherwise.
-
-  open. If used, remember `build_report.py` is authoritative — they will diverge otherwise.
