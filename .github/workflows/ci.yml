@@ -1,0 +1,93 @@
+name: dbt build
+
+# Builds the whole warehouse from a committed fixture and runs every test.
+#
+# Deliberately does NOT call the ABS API. A pull request should fail because
+# someone broke a model, never because a government website had an outage — and
+# a portfolio repo with an intermittently red badge is worse than one with no
+# badge. The live API is exercised by abs-freshness.yml, on a schedule, where a
+# failure means something worth knowing rather than something worth retrying.
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and test the warehouse
+    runs-on: ubuntu-latest
+
+    services:
+      warehouse:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_PID: Developer
+          MSSQL_SA_PASSWORD: LocalDev_Passw0rd!
+        ports:
+          - 1433:1433
+
+    env:
+      MSSQL_HOST: localhost
+      MSSQL_PORT: "1433"
+      MSSQL_DATABASE: aus_job_dashboard
+      MSSQL_SA_PASSWORD: LocalDev_Passw0rd!
+      DBT_PROFILES_DIR: ${{ github.workspace }}/dbt
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install ODBC Driver 18
+        run: |
+          set -euo pipefail
+          curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+            | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc > /dev/null
+          # Track the runner's Ubuntu release rather than pinning one, so this
+          # keeps working when the ubuntu-latest image moves.
+          curl -fsSL "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list" \
+            | sudo tee /etc/apt/sources.list.d/mssql-release.list > /dev/null
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Wait for the warehouse and seed the database
+        run: python scripts/init_warehouse.py --timeout 180
+
+      - name: Load the fixture into schema `raw`
+        run: python scripts/load_raw.py --raw-dir tests/fixtures/raw
+
+      - name: dbt deps
+        working-directory: dbt
+        run: dbt deps
+
+      - name: dbt build
+        working-directory: dbt
+        run: dbt build
+
+      # The models are only half the contract. If a mart column is renamed,
+      # reordered or dropped, dbt stays green while the Power BI model and the
+      # Excel workbook both break on the next refresh -- silently, because Power
+      # Query binds by name. This fails the build instead.
+      - name: Verify the mart contract the report and workbook depend on
+        run: python scripts/check_mart_contract.py
+
+      - name: Upload dbt artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-target
+          path: |
+            dbt/target/manifest.json
+            dbt/target/run_results.json
+          retention-days: 7
