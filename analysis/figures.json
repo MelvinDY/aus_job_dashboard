@@ -1,0 +1,100 @@
+{
+  "period": {
+    "from": "1978-02-01",
+    "to": "2026-06-01"
+  },
+  "headline": {
+    "gap_now": 23.1,
+    "male_share_now": 79.7,
+    "female_share_now": 56.6,
+    "gap_start": 28.7,
+    "gap_peak": 32.1,
+    "gap_peak_date": "1992-10-01"
+  },
+  "turning_point": {
+    "date": "2017-01-01",
+    "female_share_at_trough": 53.2,
+    "female_share_now": 56.6,
+    "recovery_ppt": 3.5,
+    "years_of_decline_before": 39
+  },
+  "eras": [
+    {
+      "era": "1978\u20131990",
+      "male_change_ppt": -2.8,
+      "female_change_ppt": -5.3,
+      "gap_change_ppt": 2.5,
+      "gap_change_per_decade": 2.0
+    },
+    {
+      "era": "1990\u20132000",
+      "male_change_ppt": -4.8,
+      "female_change_ppt": -4.1,
+      "gap_change_ppt": -0.7,
+      "gap_change_per_decade": -0.7
+    },
+    {
+      "era": "2000\u20132010",
+      "male_change_ppt": -4.3,
+      "female_change_ppt": -2.6,
+      "gap_change_ppt": -1.6,
+      "gap_change_per_decade": -1.6
+    },
+    {
+      "era": "2010\u20132017",
+      "male_change_ppt": -1.7,
+      "female_change_ppt": -1.8,
+      "gap_change_ppt": 0.2,
+      "gap_change_per_decade": 0.3
+    },
+    {
+      "era": "2017\u20132026",
+      "male_change_ppt": -1.6,
+      "female_change_ppt": 4.4,
+      "gap_change_ppt": -6.0,
+      "gap_change_per_decade": -6.6
+    }
+  ],
+  "before_turn": {
+    "period": "2000\u20132017",
+    "gap_change_ppt": -1.5,
+    "male_change_ppt": -5.9,
+    "female_change_ppt": -4.5,
+    "from_men_pct": 57,
+    "from_women_pct": 43
+  },
+  "after_turn": {
+    "period": "2017\u20132026",
+    "gap_change_ppt": -6.0,
+    "male_change_ppt": -1.6,
+    "female_change_ppt": 4.4,
+    "from_men_pct": 27,
+    "from_women_pct": 73
+  },
+  "since_2000_naive": {
+    "period": "2000\u20132026",
+    "gap_change_ppt": -7.4,
+    "male_change_ppt": -7.5,
+    "female_change_ppt": -0.1,
+    "from_men_pct": 99,
+    "from_women_pct": 1
+  },
+  "levels": {
+    "female_ft_start": 1400,
+    "female_ft_now": 4031,
+    "female_ft_growth_pct": 188,
+    "male_ft_growth_pct": 67,
+    "female_pt_growth_pct": 330,
+    "women_share_of_ft_jobs_start": 27.6,
+    "women_share_of_ft_jobs_now": 39.6
+  },
+  "male_parttime": {
+    "start_pct": 5.2,
+    "now_pct": 20.3
+  },
+  "pace": {
+    "ppt_per_decade_since_2010": -4.6,
+    "years_to_parity_at_that_pace": 50,
+    "parity_year_at_that_pace": 2076
+  }
+}

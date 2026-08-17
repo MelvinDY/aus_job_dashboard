@@ -240,10 +240,15 @@ fix it in Desktop — that is a `build_report.py` bug. See report.json lessons 3
    README image. Overview and State are the strongest hero shots. **This cannot be automated.**
 2. **Update the portfolio page** at melvindy.vercel.app/projects/data. It still describes
    Azure SQL, which no longer exists. New stack line: `Python · dbt · SQL Server · Power BI
-   · Excel`. Numbers moved — data is current to June 2026 and the headline finding is now
-   **80.0% of employed men full-time vs 56.6% of women** (was ~80/57, so the story holds).
-   Source material: `README.md` and `docs/migration-v1-to-v2.md`. Note `PROJECT_NOTES.txt`
-   section 9's KEY NUMBERS are the April/May vintage — re-read from the mart before quoting.
+   · Excel`. Numbers moved — data is current to June 2026 (79.7% of employed men full-time
+   vs 56.6% of women). Source material: `README.md`, `docs/migration-v1-to-v2.md`, and now
+   `analysis/gender-fulltime-gap.md`. Note `PROJECT_NOTES.txt` section 9's KEY NUMBERS are
+   the April/May vintage — re-read from the mart before quoting.
+
+   **Lead the write-up with the analysis, not the pipeline.** Melvin is a junior analyst;
+   the engineering is already strong and has diminishing returns, while the analysis is what
+   junior roles screen on. The turning-point finding is the most interesting thing in the
+   project — see below.
 3. ~~CI on GitHub Actions~~ — **DONE 2026-08-17.** Two workflows, split by what a failure
    means. `ci.yml` runs on every push/PR from the committed fixture (no ABS call, so a red
    badge always means someone broke a model); `abs-freshness.yml` runs the live extract
@@ -255,6 +260,34 @@ fix it in Desktop — that is a `build_report.py` bug. See report.json lessons 3
 4. Smaller, whenever they become annoying: deterministic GUIDs in `build_report.py` to cut
    git diff noise; publish `dbt docs` to GitHub Pages; the quarterly industry source (see
    data-quality rule 4) if the 2022 vintage ever becomes a sticking point.
+
+### About the analysis (added 2026-08-17)
+
+`analysis/gender-fulltime-gap.md` answers "is the gender full-time gap closing?" and exists
+because the project was strong engineering with no actual analysis in it — a real weakness
+for a junior analyst portfolio, where insight and written communication are what get
+screened.
+
+**The finding, because it is easy to get wrong:** measured 2000→today, women's full-time
+share is unchanged (−0.1 ppt) while men's fell 7.5, which reads as "99% of the convergence
+came from men losing full-time work". That is an artefact of averaging across a structural
+break. Women's rate fell for 39 years, **bottomed January 2017 at 53.2%**, and has risen
+3.5 ppt since. Split at the break, **73% of the convergence since 2017 comes from women
+moving into full-time work** — the first era in the series where that holds.
+
+Rules for touching it:
+- `scripts/analysis_gender_gap.py` generates **every** number quoted, plus `figures.json`.
+  Do not hand-type a figure into the prose — add it to the script and quote the output.
+- The script **re-detects the turning point** (12-month centred minimum) rather than
+  hardcoding 2017, and builds its eras from whatever it finds. If the data revises, the
+  analysis moves with it.
+- Chart colours are `#3B82C4` / `#C2410C`, not the report's `#1F4E79`. The brand blue fails
+  a data-colour check (OKLab lightness 0.41, chroma 0.09 — reads grey as a mark). It is
+  fine as a *title* colour, which is all the Power BI report uses it for. Validate any new
+  palette with an OKLab contrast validator; do not eyeball it.
+- The caveats section is load-bearing. It is descriptive not causal, has no compositional
+  controls, and does not separate voluntary from involuntary part-time. The named next
+  step is ABS underemployment data.
 
 ### About the CI fixture
 
